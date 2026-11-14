@@ -1,0 +1,115 @@
+---
+/**
+ * SendAMessage — owned by Surya.
+ * Deep-space light-speed message moment for Pioneer 10 & 11.
+ */
+interface Props {
+  lightTimeSec?: number;
+  targetName?: string;
+}
+const { lightTimeSec = 66712, targetName = "Pioneer 10" } = Astro.props;
+const hours = Math.floor(lightTimeSec / 3600);
+const mins = Math.round((lightTimeSec % 3600) / 60);
+---
+<form class="send" data-reveal data-send data-light={lightTimeSec} data-target={targetName}>
+  <label class="k" for="pioneer-msg">SEND A SIGNAL TOWARD {targetName.toUpperCase()}</label>
+  <div class="row">
+    <input
+      id="pioneer-msg"
+      type="text"
+      maxlength="48"
+      placeholder="Still listening from Earth."
+      autocomplete="off"
+      data-send-input
+    />
+    <button type="submit" class="btn">Transmit</button>
+  </div>
+  <p class="status" aria-live="polite" data-send-status>
+    One-way travel time at light speed: <strong>{hours} h {mins} min</strong>
+  </p>
+</form>
+
+<style>
+  .send {
+    max-width: 640px;
+    margin: var(--s-8) auto var(--s-12);
+    padding: var(--s-6);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: rgba(17, 17, 20, 0.55);
+    display: grid;
+    gap: var(--s-4);
+  }
+  .k {
+    font: 500 0.68rem/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+  }
+  .row {
+    display: flex;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+  }
+  input {
+    flex: 1 1 220px;
+    background: rgba(8, 8, 10, 0.8);
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--r-sm);
+    padding: 10px 14px;
+    color: var(--c-ink);
+    font: 400 var(--t-sm)/1.4 var(--f-ui);
+  }
+  input::placeholder { color: var(--c-ink-faint); }
+  .btn {
+    appearance: none;
+    background: transparent;
+    color: var(--c-ink);
+    border: 1px solid var(--c-accent);
+    border-radius: var(--r-pill);
+    padding: 10px 20px;
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--d-fast) var(--ease-out), color var(--d-fast) var(--ease-out);
+  }
+  .btn:hover, .btn:focus-visible { background: var(--c-accent); color: var(--c-bg); }
+  .status {
+    margin: 0;
+    font: 400 var(--t-xs)/1.5 var(--f-record);
+    color: var(--c-ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .status strong { color: var(--c-accent); font-weight: 500; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("[data-send]").forEach((form) => {
+    const input = form.querySelector<HTMLInputElement>("[data-send-input]");
+    const status = form.querySelector<HTMLElement>("[data-send-status]");
+    if (!input || !status) return;
+
+    const totalSec = Number(form.dataset.light || "66712");
+    const target = form.dataset.target || "Pioneer 10";
+    let timer = 0;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      clearInterval(timer);
+      const msg = input.value.trim() || input.placeholder;
+      const sentAt = Date.now();
+
+      const update = () => {
+        const elapsedSec = (Date.now() - sentAt) / 1000;
+        const km = Math.round(elapsedSec * 299792.458).toLocaleString("en-US");
+        const rem = Math.max(0, totalSec - elapsedSec);
+        const rh = Math.floor(rem / 3600);
+        const rm = Math.floor((rem % 3600) / 60);
+        const rs = Math.floor(rem % 60);
+        status.innerHTML = `"${msg}" — <strong>${km} km</strong> from Earth · arrives at ${target} in <strong>${rh}h ${rm}m ${rs}s</strong>`;
+      };
+      update();
+      timer = window.setInterval(update, 250);
+    });
+  });
+</script>

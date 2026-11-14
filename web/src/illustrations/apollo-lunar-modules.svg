@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-alm">
+  <title id="t-alm">Apollo Lunar Module descent stage resting on the Moon</title>
+  <!-- octagonal descent stage -->
+  <path d="M96 86 L224 86 L236 116 L224 142 L96 142 L84 116 Z"/>
+  <path d="M126 86 L126 142 M194 86 L194 142"/>
+  <!-- ascent engine bell / docking ring pad on top -->
+  <ellipse cx="160" cy="86" rx="34" ry="6"/>
+  <!-- ladder + landing legs -->
+  <path d="M92 124 L52 174 M228 124 L268 174 M160 142 L160 176"/>
+  <path d="M154 148 L166 148 M154 156 L166 156 M154 164 L166 164"/>
+  <!-- footpads -->
+  <ellipse cx="52" cy="176" rx="14" ry="3.5"/>
+  <ellipse cx="160" cy="178" rx="14" ry="3.5"/>
+  <ellipse cx="268" cy="176" rx="14" ry="3.5"/>
+  <path d="M16 182 L304 182" opacity="0.35"/>
+</svg>

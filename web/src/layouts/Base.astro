@@ -3,6 +3,7 @@ import "../tokens/tokens.css";
 import "../styles/global.css";
 import SignalHUD from "../components/SignalHUD.astro";
 import Starfield from "../components/Starfield.astro";
+import TrajectoryNav from "../components/TrajectoryNav.astro";
 
 interface Props { title?: string; description?: string }
 const {
@@ -38,6 +39,7 @@ const {
   <body data-act="moon">
     <a class="skip" href="#archive">Skip the story, go to the facts</a>
     <Starfield />
+    <TrajectoryNav />
     <SignalHUD />
     
     <button

@@ -1,0 +1,143 @@
+---
+/**
+ * ThenNowSlider — owned by Surya.
+ * Tactile before/after NASA photo comparison. Desaturated by default to match
+ * the observatory palette; reveals full NASA color on hover or interaction.
+ */
+interface Img { src: string; alt: string; credit: string; sourceUrl: string }
+interface Props { thenImg: Img; nowImg: Img; title?: string }
+const { thenImg, nowImg, title = "Then & Now" } = Astro.props;
+---
+<figure class="then-now" data-reveal data-then-now>
+  <div class="frame">
+    <img class="img-now" src={nowImg.src} alt={nowImg.alt} loading="lazy" decoding="async" />
+    <div class="overlay" data-tn-overlay>
+      <img class="img-then" src={thenImg.src} alt={thenImg.alt} loading="lazy" decoding="async" />
+    </div>
+    <div class="divider" data-tn-divider aria-hidden="true">
+      <span class="handle">↔</span>
+    </div>
+    <span class="tag tag-then">THEN</span>
+    <span class="tag tag-now">NOW</span>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      class="scrubber"
+      aria-label={`${title}: drag to compare mission photo vs orbital photo today`}
+      data-tn-range
+    />
+  </div>
+  <figcaption class="caption">
+    <span>Then: {thenImg.credit}</span>
+    <span>Now: {nowImg.credit}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .then-now {
+    max-width: 780px;
+    margin: var(--s-8) auto var(--s-12);
+    padding-inline: var(--s-6);
+  }
+  .frame {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    border: 1px solid var(--c-line);
+    background: var(--c-bg-raised);
+    user-select: none;
+  }
+  .frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.25) contrast(1.04);
+    transition: filter var(--d-base) var(--ease-out);
+  }
+  .frame:hover img,
+  .frame:focus-within img {
+    filter: saturate(1) contrast(1);
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 50% 0 0);
+  }
+  .divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--c-accent);
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+  .handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(10, 10, 12, 0.85);
+    border: 1px solid var(--c-accent);
+    color: var(--c-ink);
+    display: grid;
+    place-items: center;
+    font: 500 0.75rem/1 var(--f-record);
+  }
+  .tag {
+    position: absolute;
+    top: var(--s-3);
+    font: 500 0.65rem/1 var(--f-record);
+    letter-spacing: 0.14em;
+    padding: 5px 9px;
+    border-radius: var(--r-pill);
+    background: rgba(10, 10, 12, 0.75);
+    border: 1px solid var(--c-line);
+    pointer-events: none;
+  }
+  .tag-then { left: var(--s-3); }
+  .tag-now { right: var(--s-3); color: var(--c-accent); }
+  .scrubber {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+  }
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-top: var(--s-3);
+    font: 400 0.72rem/1.4 var(--f-record);
+    color: var(--c-ink-dim);
+    flex-wrap: wrap;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-then-now]").forEach((root) => {
+    const range = root.querySelector<HTMLInputElement>("[data-tn-range]");
+    const overlay = root.querySelector<HTMLElement>("[data-tn-overlay]");
+    const divider = root.querySelector<HTMLElement>("[data-tn-divider]");
+    if (!range || !overlay || !divider) return;
+    const sync = () => {
+      const v = Number(range.value);
+      overlay.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+      divider.style.left = `${v}%`;
+    };
+    range.addEventListener("input", sync);
+    sync();
+  });
+</script>

@@ -11,6 +11,7 @@ html {
   color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
   transition: background-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out);
 }
 
@@ -19,7 +20,22 @@ body {
   font: 400 var(--t-md)/var(--lh-body) var(--f-ui);
   background-color: var(--c-bg);
   color: var(--c-ink);
-  transition: --c-accent var(--d-slow) var(--ease-in-out), background-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out);
+  overflow-x: hidden;
+  transition: --c-accent var(--d-slow) var(--ease-in-out),
+              --c-glow var(--d-slow) var(--ease-in-out),
+              background-color var(--d-base) var(--ease-out),
+              color var(--d-base) var(--ease-out);
+}
+
+/* Subtle fixed atmospheric horizon glow that shifts with each act */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-atmosphere);
+  pointer-events: none;
+  background: radial-gradient(75% 55% at 50% 18%, var(--c-glow), transparent 70%);
+  transition: opacity var(--d-slow) var(--ease-in-out);
 }
 
 img, svg { max-width: 100%; display: block; }
@@ -43,10 +59,16 @@ a { color: inherit; }
 .skip:focus { top: var(--s-4); }
 
 main { position: relative; z-index: var(--z-content); }
-.chapter { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
+.chapter {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1400px;
+  padding-bottom: var(--s-16);
+  border-bottom: 1px solid var(--c-line);
+}
 
 /* Hidden start state only when JS + motion are available, so no-JS users still see everything. */
 .js-motion [data-reveal], .js-motion [data-split] > * { opacity: 0; }
 
-/* Registered property so the act accent colour can transition smoothly. */
+/* Registered properties so act colours transition smoothly. */
 @property --c-accent { syntax: "<color>"; inherits: true; initial-value: #D96B43; }
+@property --c-glow { syntax: "<color>"; inherits: true; initial-value: rgba(224, 221, 213, 0.07); }

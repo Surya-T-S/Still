@@ -4,6 +4,7 @@
  * The primary journey page: Prologue → Act I (Moon) → Act II (Mars) → Act III (Deep Space) → Epilogue → Archive.
  * Emits clean data-* attributes for Surya's TrajectoryNav and GSAP ScrollTrigger engine.
  * Wires real data from data/artifacts.json, data/images/, and story/chapters/*.mdx with zero placeholder content.
+ * Integrates Surya's ActDivider, ThenNowSlider, and signature interaction moments cleanly.
  */
 import Base from "../layouts/Base.astro";
 import { getCollection, getEntry, render } from "astro:content";
@@ -11,14 +12,35 @@ import ChapterHero from "../components/ChapterHero.astro";
 import VoiceBlock from "../components/VoiceBlock.astro";
 import RecordCard from "../components/RecordCard.astro";
 import CitationChip from "../components/CitationChip.astro";
+import ActDivider from "../components/ActDivider.astro";
+import ThenNowSlider from "../interactions/ThenNowSlider.astro";
+import PingTheMoon from "../interactions/PingTheMoon.astro";
+import SolOdometer from "../interactions/SolOdometer.astro";
+import FlightCounter from "../interactions/FlightCounter.astro";
+import SendAMessage from "../interactions/SendAMessage.astro";
 import { lineArt } from "../illustrations";
 
 const ACT_ORDER = { moon: 0, mars: 1, deep: 2 } as const;
 const ACT_LABEL = { moon: "The Moon", mars: "Mars", deep: "Deep Space" } as const;
-const ACT_SUBTITLES = {
-  moon: "Act I · The Ones We Walked Beside",
-  mars: "Act II · The Ones Who Went Alone",
-  deep: "Act III · The Ones Still Going",
+const ACT_INFO = {
+  moon: {
+    roman: "I",
+    title: "The Moon",
+    subtitle: "The ones we walked beside.",
+    distanceNote: "~384,400 KM · 1.3 SECONDS OUT",
+  },
+  mars: {
+    roman: "II",
+    title: "Mars",
+    subtitle: "The ones who went alone.",
+    distanceNote: "~54 TO 400 MILLION KM · MINUTES AWAY",
+  },
+  deep: {
+    roman: "III",
+    title: "Deep Space",
+    subtitle: "The ones still going.",
+    distanceNote: "BILLIONS OF KM · HOURS OUT IN THE DARK",
+  },
 } as const;
 
 // Fetch and sort artifacts: Moon → Mars → Deep Space
@@ -101,11 +123,13 @@ function resolveImgSrc(pathStr?: string): string {
     return (
       <>
         {isNewAct && (
-          <div class="act-marker" data-reveal aria-label={ACT_SUBTITLES[a.act]}>
-            <span class="marker-line" aria-hidden="true"></span>
-            <span class="marker-badge">{ACT_SUBTITLES[a.act]}</span>
-            <span class="marker-line" aria-hidden="true"></span>
-          </div>
+          <ActDivider
+            act={a.act}
+            roman={ACT_INFO[a.act].roman}
+            title={ACT_INFO[a.act].title}
+            subtitle={ACT_INFO[a.act].subtitle}
+            distanceNote={ACT_INFO[a.act].distanceNote}
+          />
         )}
 
         <section
@@ -138,58 +162,58 @@ function resolveImgSrc(pathStr?: string): string {
             </div>
           )}
 
-          {/* NASA Photo Documentation Layer (Interactive Then vs Now Comparison) */}
-          {(a.images.then || a.images.now) && (
-            <div class="chapter-imagery" data-reveal data-chapter-imagery={a.slug}>
-              <div class="imagery-header">
-                <span class="imagery-kicker">PHOTO RECORD · ARCHIVAL vs MODERN SURVEY</span>
-                {hasBothImages && (
-                  <div class="imagery-tabs" role="tablist" aria-label="Photo view mode">
-                    <button type="button" class="img-tab active" data-view="both" role="tab" aria-selected="true">DUAL VIEW</button>
-                    <button type="button" class="img-tab" data-view="then" role="tab" aria-selected="false">THEN</button>
-                    <button type="button" class="img-tab" data-view="now" role="tab" aria-selected="false">NOW</button>
-                  </div>
-                )}
-              </div>
-
-              <div class={`imagery-grid ${hasBothImages ? 'is-dual' : 'is-single'}`} data-grid>
-                {a.images.then && (
-                  <figure class="image-card card-then" data-card="then">
-                    <div class="image-wrapper">
-                      <img
-                        src={resolveImgSrc(a.images.then.src)}
-                        alt={a.images.then.alt}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <span class="image-badge">THEN · HISTORIC</span>
-                    </div>
-                    <figcaption class="image-caption">
-                      <p class="caption-text">{a.images.then.alt}</p>
-                      <span class="caption-credit">CREDIT: {a.images.then.credit}</span>
-                    </figcaption>
-                  </figure>
-                )}
-
-                {a.images.now && (
-                  <figure class="image-card card-now" data-card="now">
-                    <div class="image-wrapper">
-                      <img
-                        src={resolveImgSrc(a.images.now.src)}
-                        alt={a.images.now.alt}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <span class="image-badge">NOW · ORBITAL</span>
-                    </div>
-                    <figcaption class="image-caption">
-                      <p class="caption-text">{a.images.now.alt}</p>
-                      <span class="caption-credit">CREDIT: {a.images.now.credit}</span>
-                    </figcaption>
-                  </figure>
-                )}
-              </div>
+          {/* NASA Photo Documentation Layer (Then vs Now Slider or Single Historic Card) */}
+          {hasBothImages ? (
+            <ThenNowSlider
+              thenImg={{ ...a.images.then!, src: resolveImgSrc(a.images.then!.src) }}
+              nowImg={{ ...a.images.now!, src: resolveImgSrc(a.images.now!.src) }}
+              title={a.nickname ?? a.name}
+            />
+          ) : a.images.then ? (
+            <div class="chapter-imagery" data-reveal>
+              <figure class="single-image-card">
+                <div class="image-wrapper">
+                  <img
+                    src={resolveImgSrc(a.images.then.src)}
+                    alt={a.images.then.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="image-badge">HISTORIC NASA PHOTO</span>
+                </div>
+                <figcaption class="image-caption">
+                  <p class="caption-text">{a.images.then.alt}</p>
+                  <span class="caption-credit">CREDIT: {a.images.then.credit}</span>
+                </figcaption>
+              </figure>
             </div>
+          ) : null}
+
+          {/* Signature Interactive Moments */}
+          {a.slug === "alsep" && (
+            <PingTheMoon lightTimeSec={a.lightTimeSec} />
+          )}
+
+          {a.slug === "spirit-opportunity" && (
+            <SolOdometer
+              planned={a.planned?.value}
+              actual={a.actual?.value}
+              unit={a.planned?.unit}
+            />
+          )}
+
+          {a.slug === "ingenuity" && (
+            <FlightCounter
+              planned={a.planned?.value}
+              actual={a.actual?.value}
+            />
+          )}
+
+          {a.slug === "pioneer" && (
+            <SendAMessage
+              lightTimeSec={a.lightTimeSec}
+              targetName={a.name}
+            />
           )}
 
           <RecordCard
@@ -338,43 +362,7 @@ function resolveImgSrc(pathStr?: string): string {
     });
   });
 
-  // 2. Interactive Then/Now view switching
-  document.querySelectorAll<HTMLElement>("[data-chapter-imagery]").forEach((container) => {
-    const tabs = container.querySelectorAll<HTMLButtonElement>(".img-tab");
-    const grid = container.querySelector<HTMLElement>("[data-grid]");
-    const cardThen = container.querySelector<HTMLElement>('[data-card="then"]');
-    const cardNow = container.querySelector<HTMLElement>('[data-card="now"]');
-
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((t) => {
-          t.classList.remove("active");
-          t.setAttribute("aria-selected", "false");
-        });
-        tab.classList.add("active");
-        tab.setAttribute("aria-selected", "true");
-
-        const view = tab.dataset.view;
-        if (!grid) return;
-
-        if (view === "both") {
-          grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
-          if (cardThen) cardThen.style.display = "flex";
-          if (cardNow) cardNow.style.display = "flex";
-        } else if (view === "then") {
-          grid.style.gridTemplateColumns = "1fr";
-          if (cardThen) cardThen.style.display = "flex";
-          if (cardNow) cardNow.style.display = "none";
-        } else if (view === "now") {
-          grid.style.gridTemplateColumns = "1fr";
-          if (cardThen) cardThen.style.display = "none";
-          if (cardNow) cardNow.style.display = "flex";
-        }
-      });
-    });
-  });
-
-  // 3. Interactive Archive Filtering & Row Jumps
+  // 2. Interactive Archive Filtering & Row Jumps
   const filterBtns = document.querySelectorAll<HTMLButtonElement>(".filter-btn");
   const tableRows = document.querySelectorAll<HTMLElement>(".archive-row");
 
@@ -402,7 +390,7 @@ function resolveImgSrc(pathStr?: string): string {
     });
   });
 
-  // 4. Epilogue Radio Simulator
+  // 3. Epilogue Radio Simulator
   const simBtns = document.querySelectorAll<HTMLButtonElement>(".sim-btn");
   const simTarget = document.querySelector<HTMLElement>("[data-sim-target]");
   const simDist = document.querySelector<HTMLElement>("[data-sim-dist]");
@@ -507,34 +495,6 @@ function resolveImgSrc(pathStr?: string): string {
     50% { transform: translateY(3px); }
   }
 
-  /* Act Transitions */
-  .act-marker {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--s-4);
-    max-width: 920px;
-    margin: var(--s-24) auto var(--s-8);
-    padding-inline: var(--s-6);
-  }
-  .marker-line {
-    flex: 1;
-    height: 1px;
-    background-color: var(--c-line);
-  }
-  .marker-badge {
-    font: 600 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--c-accent);
-    padding: var(--s-2) var(--s-4);
-    background: var(--c-bg-raised);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    white-space: nowrap;
-  }
-
   /* Narration */
   .narration {
     max-width: var(--measure);
@@ -548,75 +508,27 @@ function resolveImgSrc(pathStr?: string): string {
     margin-bottom: var(--s-6);
   }
 
-  /* Chapter NASA Imagery & View Switcher */
+  /* Chapter NASA Single Image Card */
   .chapter-imagery {
-    max-width: 920px;
-    margin: var(--s-12) auto;
+    max-width: 780px;
+    margin: var(--s-8) auto var(--s-12);
     padding-inline: var(--s-6);
   }
-  .imagery-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--s-3);
-    border-bottom: 1px solid var(--c-line);
-    padding-bottom: var(--s-2);
-  }
-  .imagery-kicker {
-    font: 600 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.14em;
-    color: var(--c-status-brass);
-  }
-  .imagery-tabs {
-    display: inline-flex;
-    gap: var(--s-1);
-    background: var(--c-bg-raised);
-    padding: 2px;
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-  }
-  .img-tab {
-    background: none;
-    border: none;
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.08em;
-    color: var(--c-ink-dim);
-    padding: 4px 8px;
-    border-radius: var(--r-pill);
-    cursor: pointer;
-    transition: color var(--d-fast) var(--ease-out), background-color var(--d-fast) var(--ease-out);
-  }
-  .img-tab.active {
-    background: var(--c-line);
-    color: var(--c-ink);
-    font-weight: 600;
-  }
-  .imagery-grid {
-    display: grid;
-    gap: var(--s-6);
-    transition: all var(--d-base) var(--ease-out);
-  }
-  .imagery-grid.is-dual {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  }
-  .imagery-grid.is-single {
-    grid-template-columns: 1fr;
-  }
-  .image-card {
+  .single-image-card {
     margin: 0;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--c-line);
-    border-radius: var(--r-sm);
+    border-radius: var(--r-md);
     background: var(--c-bg-raised);
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
     transition: border-color var(--d-fast) var(--ease-out),
                 box-shadow var(--d-fast) var(--ease-out);
   }
-  .image-card:hover {
+  .single-image-card:hover {
     border-color: var(--c-accent);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
   }
   .image-wrapper {
     position: relative;
@@ -628,13 +540,13 @@ function resolveImgSrc(pathStr?: string): string {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(0.2) contrast(1.04);
+    filter: saturate(0.25) contrast(1.04);
     transition: transform var(--d-slow) var(--ease-out),
                 filter var(--d-base) var(--ease-out);
   }
-  .image-card:hover .image-wrapper img {
-    transform: scale(1.025);
-    filter: grayscale(0) contrast(1);
+  .single-image-card:hover .image-wrapper img {
+    transform: scale(1.02);
+    filter: saturate(1) contrast(1);
   }
   .image-badge {
     position: absolute;
@@ -642,11 +554,11 @@ function resolveImgSrc(pathStr?: string): string {
     left: var(--s-3);
     font: 600 var(--t-xs)/1 var(--f-record);
     letter-spacing: 0.12em;
-    padding: var(--s-1) var(--s-2);
-    background: var(--c-bg-glass);
+    padding: 5px 9px;
+    background: rgba(10, 10, 12, 0.75);
     backdrop-filter: blur(8px);
     border: 1px solid var(--c-line);
-    border-radius: var(--r-sm);
+    border-radius: var(--r-pill);
     color: var(--c-accent);
   }
   .image-caption {
@@ -944,7 +856,7 @@ function resolveImgSrc(pathStr?: string): string {
     .cta-arrow {
       animation: none;
     }
-    .image-card:hover .image-wrapper img {
+    .single-image-card:hover .image-wrapper img {
       transform: none;
     }
   }

@@ -1,0 +1,62 @@
+---
+/**
+ * ActDivider — owned by Surya.
+ * Quiet atmospheric transition between acts (Moon -> Mars -> Deep Space).
+ */
+interface Props {
+  act: "moon" | "mars" | "deep";
+  roman: string;
+  title: string;
+  subtitle: string;
+  distanceNote: string;
+}
+const { act, roman, title, subtitle, distanceNote } = Astro.props;
+---
+<section class="act-divider" data-act={act} aria-label={`Act ${roman}: ${title}`}>
+  <div class="inner" data-reveal>
+    <p class="eyebrow">ACT {roman} · {distanceNote}</p>
+    <h2>{title}</h2>
+    <p class="sub">{subtitle}</p>
+    <div class="rule" aria-hidden="true"></div>
+  </div>
+</section>
+
+<style>
+  .act-divider {
+    min-height: 55vh;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    padding: var(--s-24) var(--s-6);
+  }
+  .inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--s-3);
+  }
+  .eyebrow {
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    margin: 0;
+  }
+  h2 {
+    font: 400 var(--t-xl)/var(--lh-tight) var(--f-voice);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
+    color: var(--c-ink-dim);
+    margin: 0;
+    max-width: 28ch;
+  }
+  .rule {
+    width: 1px;
+    height: 48px;
+    margin-top: var(--s-6);
+    background: linear-gradient(to bottom, var(--c-accent), transparent);
+    opacity: 0.6;
+  }
+</style>

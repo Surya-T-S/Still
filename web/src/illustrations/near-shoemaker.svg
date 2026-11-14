@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-near">
+  <title id="t-near">NEAR Shoemaker resting on asteroid 433 Eros</title>
+  <!-- four-petal solar panels -->
+  <path d="M128 84 L52 68 L48 92 L126 100 Z"/>
+  <path d="M192 84 L268 68 L272 92 L194 100 Z"/>
+  <!-- octagonal bus + dish -->
+  <rect x="132" y="76" width="56" height="54" rx="4"/>
+  <ellipse cx="160" cy="64" rx="28" ry="8"/>
+  <path d="M160 76 L160 64"/>
+  <!-- irregular Eros horizon -->
+  <path d="M16 170 Q84 140 160 154 T304 166" opacity="0.45"/>
+</svg>
