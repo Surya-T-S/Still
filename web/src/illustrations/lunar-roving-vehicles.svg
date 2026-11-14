@@ -1,19 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-lrv">
-  <title id="t-lrv">Apollo Lunar Roving Vehicle</title>
-  <!-- chassis -->
-  <path d="M72 132 L248 132 L262 146 L58 146 Z"/>
-  <!-- seats -->
-  <path d="M126 132 L126 102 L144 102 M168 132 L168 102 L186 102"/>
-  <!-- high-gain umbrella dish -->
-  <path d="M222 132 L222 86"/>
-  <path d="M198 76 Q222 94 246 76"/>
-  <path d="M222 86 L222 66"/>
-  <!-- TV camera mast -->
-  <path d="M202 132 L202 98 L210 98"/>
-  <!-- wire-mesh wheels -->
-  <circle cx="82" cy="154" r="20"/>
-  <circle cx="82" cy="154" r="7"/>
-  <circle cx="238" cy="154" r="20"/>
-  <circle cx="238" cy="154" r="7"/>
-  <path d="M18 176 L302 176" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-lrv">
+  <title id="t-lrv">Apollo Lunar Roving Vehicle technical blueprint</title>
+  <g class="svg-orbit" opacity="0.26">
+    <circle class="svg-dashed" cx="180" cy="112" r="90" stroke-dasharray="2 6"/>
+  </g>
+  <!-- High-gain antenna telemetry waves -->
+  <g class="svg-signal" opacity="0.7">
+    <path d="M258 46 Q272 34 286 46"/>
+    <path d="M250 36 Q272 18 294 36"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Folded aluminum chassis frame -->
+    <path d="M74 138 L286 138 L298 152 L62 152 Z"/>
+    <path d="M118 138 L118 152 M242 138 L242 152"/>
+    <!-- Twin lawn-chair crew seats & hand controller -->
+    <path d="M134 138 L134 98 L156 98 L156 106 M134 122 L158 122"/>
+    <path d="M178 138 L178 98 L200 98 L200 106 M178 122 L202 122"/>
+    <path d="M166 138 L166 112 L172 108"/>
+    <!-- Forward battery bay & color TV camera on tripod -->
+    <rect x="226" y="122" width="38" height="16" rx="2"/>
+    <path d="M232 122 L232 94 L246 94 L250 102 L232 102"/>
+    <!-- Umbrella S-band high-gain dish -->
+    <path d="M254 122 L254 70"/>
+    <path d="M226 56 Q254 82 282 56"/>
+    <path d="M226 56 L254 70 L282 56 M240 62 L254 70 L268 62"/>
+    <path d="M254 70 L266 48"/>
+    <!-- Rear tool carrier (lunar rake & sample bags) -->
+    <rect x="82" y="114" width="26" height="24" rx="2"/>
+    <path d="M94 114 L94 84"/>
+    <!-- Woven zinc-coated piano-wire wheels + chevrons & fenders -->
+    <path d="M62 134 A32 32 0 0 1 126 134"/>
+    <path d="M234 134 A32 32 0 0 1 298 134"/>
+    <circle cx="94" cy="158" r="24"/>
+    <circle cx="94" cy="158" r="14" stroke-dasharray="3 3"/>
+    <circle cx="94" cy="158" r="6"/>
+    <circle cx="266" cy="158" r="24"/>
+    <circle cx="266" cy="158" r="14" stroke-dasharray="3 3"/>
+    <circle cx="266" cy="158" r="6"/>
+  </g>
+  <path d="M16 184 Q180 178 344 184" opacity="0.4"/>
 </svg>

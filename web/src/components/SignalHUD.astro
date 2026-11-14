@@ -1,173 +1,32 @@
 ---
 /**
  * SignalHUD — owned by Vrindha (Platform & Structure).
- * The telemetry spine of STILL. Fixed, tabular, glassmorphic HUD updated in real-time
- * by engine.ts using chapter data-* attributes.
- * Includes interactive telemetry pulse, keyboard accessibility, and tactile hover feedback.
+ * Accessible live telemetry region (visual readout is integrated directly into
+ * the unified Top Editorial Bar in TrajectoryNav so there is zero floating clutter).
  */
 ---
-<aside
-  class="hud"
+<div
   id="signal-hud"
+  class="sr-only-hud"
   role="region"
   aria-live="polite"
-  aria-label="Real-time telemetry and signal delay from Earth"
-  tabindex="0"
-  title="Click to return to Earth origin"
+  aria-label="Active chapter signal telemetry"
 >
-  <div class="hud-item loc">
-    <span class="dot" aria-hidden="true"></span>
-    <span class="where" data-hud-where>EARTH</span>
-  </div>
-  <span class="hud-sep" aria-hidden="true"></span>
-  <div class="hud-item" title="Calculated distance from Earth">
-    <span class="k">DIST</span>
-    <span class="val" data-hud-dist>0 km</span>
-  </div>
-  <span class="hud-sep" aria-hidden="true"></span>
-  <div class="hud-item" title="One-way speed-of-light radio delay">
-    <span class="k">SIGNAL</span>
-    <span class="val" data-hud-light>0 s</span>
-  </div>
-  <span class="hud-ping" aria-hidden="true" title="Telemetry telemetry active">●</span>
-</aside>
-
-<script>
-  import { scrollToChapter } from "../scripts/engine";
-
-  const hud = document.getElementById("signal-hud");
-  hud?.addEventListener("click", () => {
-    scrollToChapter("prologue");
-  });
-  hud?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      scrollToChapter("prologue");
-    }
-  });
-</script>
+  <span data-hud-where>Earth</span>
+  <span data-hud-dist>0 km</span>
+  <span data-hud-light>0.00 s</span>
+</div>
 
 <style>
-  .hud {
-    position: fixed;
-    top: var(--s-4);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--z-hud);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-3);
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.12em;
-    color: var(--c-ink);
-    padding: calc(var(--s-2) * 1.1) var(--s-4);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-    background: var(--c-bg-glass);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.08);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    transition: transform var(--d-fast) var(--ease-out),
-                box-shadow var(--d-fast) var(--ease-out),
-                border-color var(--d-fast) var(--ease-out),
-                background-color var(--d-base) var(--ease-out);
-  }
-
-  .hud:hover {
-    transform: translateX(-50%) translateY(-1px);
-    border-color: var(--c-accent);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
-  }
-
-  .hud:focus-visible {
-    outline: 2px solid var(--c-accent);
-    outline-offset: 3px;
-  }
-
-  .hud-item {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-  }
-
-  .loc {
-    color: var(--c-accent);
-    font-weight: 600;
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--c-accent);
-    animation: blip 2.2s infinite ease-in-out;
-    transition: background-color var(--d-base) var(--ease-out);
-  }
-
-  .where {
-    color: var(--c-accent);
-    transition: color var(--d-base) var(--ease-out);
-  }
-
-  .k {
-    color: var(--c-ink-dim);
-    font-weight: 500;
-    transition: color var(--d-base) var(--ease-out);
-  }
-
-  .val {
-    color: var(--c-ink);
-    font-weight: 600;
-    transition: color var(--d-base) var(--ease-out);
-  }
-
-  .hud-sep {
+  .sr-only-hud {
+    position: absolute;
     width: 1px;
-    height: 10px;
-    background-color: var(--c-line);
-    transition: background-color var(--d-base) var(--ease-out);
-  }
-
-  .hud-ping {
-    font-size: 0.55rem;
-    color: var(--c-status-sage);
-    margin-left: var(--s-1);
-    animation: ping-pulse 3s infinite ease-in-out;
-  }
-
-  @keyframes blip {
-    0%, 100% { opacity: 0.3; transform: scale(0.9); }
-    50% { opacity: 1; transform: scale(1.25); }
-  }
-
-  @keyframes ping-pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
-  }
-
-  @media (max-width: 640px) {
-    .hud {
-      top: var(--s-3);
-      padding: var(--s-2) var(--s-3);
-      gap: var(--s-2);
-      font-size: 0.66rem;
-    }
-    .hud-sep {
-      height: 8px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .dot, .hud-ping {
-      animation: none;
-      opacity: 1;
-    }
-    .hud:hover {
-      transform: translateX(-50%);
-    }
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>

@@ -1,15 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-soj">
-  <title id="t-soj">Sojourner Mars rover</title>
-  <!-- flat solar deck -->
-  <rect x="92" y="96" width="136" height="14" rx="2"/>
-  <rect x="108" y="110" width="104" height="28" rx="2"/>
-  <!-- antenna -->
-  <path d="M210 96 L210 56"/>
-  <circle cx="210" cy="54" r="3"/>
-  <!-- 6-wheel rocker-bogie -->
-  <path d="M116 138 L86 164 M160 138 L160 164 M204 138 L234 164"/>
-  <circle cx="86" cy="166" r="10"/>
-  <circle cx="160" cy="166" r="10"/>
-  <circle cx="234" cy="166" r="10"/>
-  <path d="M20 178 L300 178" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-soj">
+  <title id="t-soj">Sojourner Mars Pathfinder rover blueprint</title>
+  <g class="svg-orbit" opacity="0.26">
+    <circle class="svg-dashed" cx="180" cy="112" r="86" stroke-dasharray="3 6"/>
+  </g>
+  <g class="svg-signal" opacity="0.7">
+    <circle cx="242" cy="48" r="7"/>
+    <circle cx="242" cy="48" r="14" opacity="0.5"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Flat GaAs solar panel deck with cell grid -->
+    <path d="M78 100 L282 100 L268 84 L92 84 Z"/>
+    <path d="M126 84 L120 100 M162 84 L160 100 M198 84 L200 100 M234 84 L240 100"/>
+    <!-- Warm Electronics Box (WEB) -->
+    <rect x="102" y="100" width="156" height="34" rx="3"/>
+    <path d="M132 100 L132 134 M228 100 L228 134"/>
+    <!-- APXS Alpha Proton X-Ray Spectrometer deployment arm on front -->
+    <path d="M102 118 L72 128 L64 148"/>
+    <rect x="54" y="148" width="18" height="12" rx="2"/>
+    <!-- Monopole whip antenna -->
+    <path d="M242 84 L242 48"/>
+    <circle cx="242" cy="48" r="2.5"/>
+    <!-- 6-wheel Rocker-Bogie suspension -->
+    <path d="M132 134 L96 154 L78 170 M96 154 L128 170"/>
+    <path d="M180 134 L180 170"/>
+    <path d="M228 134 L256 154 L278 170"/>
+    <circle cx="78" cy="172" r="13"/><circle cx="78" cy="172" r="5"/>
+    <circle cx="128" cy="172" r="13"/><circle cx="128" cy="172" r="5"/>
+    <circle cx="180" cy="172" r="13"/><circle cx="180" cy="172" r="5"/>
+    <circle cx="232" cy="172" r="13"/><circle cx="232" cy="172" r="5"/>
+    <circle cx="278" cy="172" r="13"/><circle cx="278" cy="172" r="5"/>
+  </g>
+  <path d="M16 186 Q180 180 344 186" opacity="0.4"/>
 </svg>

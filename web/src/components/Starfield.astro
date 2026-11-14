@@ -1,47 +1,288 @@
 ---
-/** One canvas, ~300 stars, gentle scroll parallax. Pauses when the tab is hidden. */
+/**
+ * Starfield — owned by Surya.
+ * Dual-physics background canvas:
+ * 1. VACUUM MODE (Dark): True zero-G inertial scroll mechanics. Stars reside on 3 depth
+ *    planes with Newtonian momentum damping, subtle orbital drift, and velocity-driven
+ *    relativistic light-streak stretching during scrolling and chapter transitions.
+ * 2. PAPER MODE (Light): Archival 1969 NASA Celestial Cartography sheet. Renders a
+ *    precision drafting graticule (Right Ascension / Declination lines, margin vernier
+ *    ticks) and plotted ink star-catalog symbols (+ crosshairs and magnitude rings)
+ *    that move with 1:1 mechanical page-sheet precision.
+ */
 ---
 <canvas class="stars" aria-hidden="true" data-stars></canvas>
 
 <style>
-  .stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: var(--z-stars); pointer-events: none; }
+  .stars {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-stars);
+    pointer-events: none;
+  }
 </style>
 
 <script>
   const c = document.querySelector<HTMLCanvasElement>("[data-stars]")!;
   const ctx = c.getContext("2d")!;
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  type S = { x: number; y: number; r: number; z: number; a: number };
-  let stars: S[] = [], w = 0, h = 0, raf = 0;
+
+  type Star = {
+    x: number;
+    y: number;
+    r: number;
+    z: number;
+    a: number;
+    phase: number;
+    speed: number;
+    color: string;
+    inkColor: string;
+    flare: boolean;
+    catalogRing: boolean;
+  };
+
+  const VACUUM_PALETTE = ["#e6e1d6", "#d4e2f7", "#f2dec2", "#b8cde8"];
+  const PAPER_PALETTE = ["#4a453c", "#325270", "#875238", "#5c574f"];
+
+  let stars: Star[] = [];
+  let w = 0;
+  let h = 0;
+  let raf = 0;
+
+  // Pointer parallax state
+  let ptrX = 0;
+  let ptrY = 0;
+  let curX = 0;
+  let curY = 0;
+
+  // Scroll & Zero-G inertial physics state
+  let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+  let vacuumPosY = lastScrollY;
+  let vacuumVelY = 0;
+  let warpImpulseY = 0;
+  let orbitalDriftX = 0;
 
   function resize() {
     const dpr = Math.min(devicePixelRatio || 1, 2);
-    w = innerWidth; h = innerHeight;
-    c.width = w * dpr; c.height = h * dpr;
+    w = innerWidth;
+    h = innerHeight;
+    c.width = w * dpr;
+    c.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.round(Math.min(320, (w * h) / 5000));
-    stars = Array.from({ length: n }, () => ({
-      x: Math.random() * w, y: Math.random() * h,
-      r: Math.random() * 1.1 + 0.2, z: Math.random() * 0.6 + 0.1, a: Math.random() * 0.6 + 0.2,
-    }));
+
+    const n = Math.round(Math.min(340, (w * h) / 4500));
+    stars = Array.from({ length: n }, (_, i) => {
+      const layer = i % 11 === 0 ? 3 : i % 3 === 0 ? 2 : 1;
+      const z = layer === 3 ? 0.88 : layer === 2 ? 0.46 : 0.18;
+      const r =
+        layer === 3
+          ? Math.random() * 1.0 + 1.15
+          : layer === 2
+            ? Math.random() * 0.6 + 0.65
+            : Math.random() * 0.4 + 0.35;
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r,
+        z,
+        a: layer === 3 ? 0.9 : layer === 2 ? 0.56 : 0.28,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.016 + 0.004,
+        color: VACUUM_PALETTE[i % VACUUM_PALETTE.length],
+        inkColor: PAPER_PALETTE[i % PAPER_PALETTE.length],
+        flare: layer === 3 && i % 22 === 0,
+        catalogRing: layer === 3 && i % 33 === 0,
+      };
+    });
   }
 
-  function draw() {
-    const sy = still ? 0 : scrollY;
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = "#edeae3";
-    for (const s of stars) {
-      const y = (((s.y - sy * s.z * 0.15) % h) + h) % h;
-      ctx.globalAlpha = s.a;
-      ctx.fillRect(s.x, y, s.r, s.r);
+  function drawPaperGraticule(sy: number) {
+    const gridStep = 140;
+    const offsetY = ((-sy * 0.35) % gridStep + gridStep) % gridStep;
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(27, 26, 23, 0.045)";
+    ctx.lineWidth = 1;
+
+    // Vertical meridian lines
+    for (let x = gridStep * 0.5; x < w; x += gridStep) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
     }
+
+    // Horizontal declination lines moving mechanically with paper scroll
+    for (let y = offsetY; y < h; y += gridStep) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Left & right archival ruler vernier ticks
+    ctx.strokeStyle = "rgba(27, 26, 23, 0.14)";
+    const tickStep = 28;
+    const tickOffset = ((-sy * 0.5) % tickStep + tickStep) % tickStep;
+    for (let y = tickOffset; y < h; y += tickStep) {
+      const isMajor = Math.round((y - tickOffset) / tickStep) % 5 === 0;
+      const len = isMajor ? 10 : 5;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(len, y);
+      ctx.moveTo(w - len, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function draw(t = 0) {
+    const isPaper = document.documentElement.dataset.theme === "light";
+    const sy = still ? 0 : window.scrollY;
+
+    // Compute instantaneous scroll delta
+    const scrollDelta = sy - lastScrollY;
+    lastScrollY = sy;
+
+    if (!still) {
+      // Zero-G Vacuum physics: Newtonian momentum + low-damping coasting
+      vacuumVelY = vacuumVelY * 0.92 + scrollDelta * 0.24 + warpImpulseY;
+      warpImpulseY *= 0.86;
+      vacuumPosY += vacuumVelY;
+      orbitalDriftX += 0.06;
+
+      // Pointer easing (more responsive in Paper, weightless in Vacuum)
+      const ptrEase = isPaper ? 0.14 : 0.045;
+      curX += (ptrX - curX) * ptrEase;
+      curY += (ptrY - curY) * ptrEase;
+    }
+
+    ctx.clearRect(0, 0, w, h);
+
+    if (isPaper) {
+      drawPaperGraticule(sy);
+    }
+
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+
+      if (isPaper) {
+        // PAPER MECHANICS: Crisp 1:1 mechanical drafting sheet parallax (no floaty streak)
+        const ox = still ? 0 : curX * s.z * 8;
+        const oy = still ? 0 : -sy * (0.15 + s.z * 0.25) + curY * s.z * 8;
+        const x = (((s.x + ox) % w) + w) % w;
+        const y = (((s.y + oy) % h) + h) % h;
+
+        ctx.globalAlpha = s.a * 0.52;
+        ctx.fillStyle = s.inkColor;
+        ctx.strokeStyle = s.inkColor;
+
+        if (s.flare) {
+          // Plotted archival crosshair (+)
+          const arm = s.r * 3.2;
+          ctx.lineWidth = 0.75;
+          ctx.beginPath();
+          ctx.moveTo(x - arm, y);
+          ctx.lineTo(x + arm, y);
+          ctx.moveTo(x, y - arm);
+          ctx.lineTo(x, y + arm);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, s.r * 0.95, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (s.catalogRing) {
+          ctx.lineWidth = 0.65;
+          ctx.globalAlpha = s.a * 0.35;
+          ctx.beginPath();
+          ctx.arc(x, y, s.r * 3.6, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      } else {
+        // VACUUM MECHANICS: Zero-G inertial drift + velocity light-streaks
+        const ox = still ? 0 : curX * s.z * 26 + orbitalDriftX * s.z;
+        const oy = still ? 0 : curY * s.z * 26 - vacuumPosY * s.z * 0.32;
+        const x = (((s.x + ox) % w) + w) % w;
+        const y = (((s.y + oy) % h) + h) % h;
+
+        const twinkle = still
+          ? 1
+          : 0.78 + 0.22 * Math.sin(t * 0.0014 * (s.speed * 100) + s.phase);
+        const alpha = s.a * twinkle;
+
+        const streak = still ? 0 : Math.min(28, Math.abs(vacuumVelY) * s.z * 1.35);
+
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = s.color;
+        ctx.strokeStyle = s.color;
+
+        if (streak > 1.2) {
+          ctx.lineWidth = s.r * 1.35;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y + (vacuumVelY >= 0 ? streak : -streak));
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (s.flare && streak < 4) {
+          ctx.lineWidth = 0.55;
+          ctx.globalAlpha = alpha * 0.45;
+          const arm = s.r * 4.8;
+          ctx.beginPath();
+          ctx.moveTo(x - arm, y);
+          ctx.lineTo(x + arm, y);
+          ctx.moveTo(x, y - arm);
+          ctx.lineTo(x, y + arm);
+          ctx.stroke();
+        }
+      }
+    }
+
     if (!still) raf = requestAnimationFrame(draw);
   }
 
-  resize(); draw();
-  addEventListener("resize", () => { resize(); if (still) draw(); }, { passive: true });
+  if (!still) {
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        ptrX = (e.clientX / Math.max(1, w) - 0.5) * 2;
+        ptrY = (e.clientY / Math.max(1, h) - 0.5) * 2;
+      },
+      { passive: true },
+    );
+
+    // React to chapter transitions with a directional zero-G warp impulse
+    window.addEventListener("still:warp", (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const dir = detail?.dir ?? 1;
+      warpImpulseY = dir * 16;
+    });
+  }
+
+  resize();
+  draw();
+  addEventListener(
+    "resize",
+    () => {
+      resize();
+      if (still) draw();
+    },
+    { passive: true },
+  );
   document.addEventListener("visibilitychange", () => {
     if (still) return;
-    if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(draw);
+    if (document.hidden) cancelAnimationFrame(raf);
+    else raf = requestAnimationFrame(draw);
   });
 </script>

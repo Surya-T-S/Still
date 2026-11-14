@@ -1,14 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-ins">
-  <title id="t-ins">InSight and Phoenix circular solar lander</title>
-  <!-- circular decagonal solar wings -->
-  <ellipse cx="64" cy="112" rx="44" ry="18"/>
-  <ellipse cx="256" cy="112" rx="44" ry="18"/>
-  <!-- central lander deck -->
-  <rect x="116" y="102" width="88" height="26" rx="3"/>
-  <!-- robotic arm + seismometer dome -->
-  <path d="M144 102 L126 72 L106 84"/>
-  <path d="M180 144 A16 16 0 0 1 212 144 Z"/>
-  <!-- legs -->
-  <path d="M128 128 L108 172 M160 128 L160 174 M192 128 L212 172"/>
-  <path d="M18 176 L302 176" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-ins">
+  <title id="t-ins">Phoenix and InSight Mars lander technical blueprint</title>
+  <g class="svg-orbit" opacity="0.25">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+  </g>
+  <!-- Seismic wave rings under the surface -->
+  <g class="svg-signal" opacity="0.65">
+    <path d="M206 184 Q228 196 250 184"/>
+    <path d="M196 190 Q228 208 260 190"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Twin decagonal fan-folded solar arrays with radial ribs -->
+    <ellipse cx="68" cy="114" rx="48" ry="20"/>
+    <path d="M20 114 L116 114 M68 94 L68 134 M34 100 L102 128 M34 128 L102 100"/>
+    <ellipse cx="292" cy="114" rx="48" ry="20"/>
+    <path d="M244 114 L340 114 M292 94 L292 134 M258 100 L326 128 M258 128 L326 100"/>
+    <!-- Central science deck & UHF helix antenna -->
+    <rect x="122" y="102" width="116" height="28" rx="3"/>
+    <path d="M150 102 L150 130 M210 102 L210 130"/>
+    <rect x="196" y="74" width="12" height="28" rx="2"/>
+    <!-- Robotic Instrument Deployment Arm & grapple -->
+    <path d="M164 102 L144 64 L218 82 L228 144"/>
+    <!-- SEIS Wind and Thermal Shield dome on Martian soil -->
+    <path d="M208 178 L248 178 L242 154 L214 154 Z"/>
+    <path d="M228 144 L228 154"/>
+    <!-- Three landing legs -->
+    <path d="M134 130 L108 178 M180 130 L180 180 M226 130 L256 178"/>
+    <ellipse cx="108" cy="180" rx="12" ry="3"/>
+    <ellipse cx="180" cy="182" rx="12" ry="3"/>
+    <ellipse cx="256" cy="180" rx="12" ry="3"/>
+  </g>
+  <path d="M16 182 L344 182" opacity="0.4"/>
 </svg>

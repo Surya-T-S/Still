@@ -1,14 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-ing">
-  <title id="t-ing">Ingenuity Mars Helicopter</title>
-  <!-- solar panel on top -->
-  <rect x="128" y="34" width="64" height="10" rx="2"/>
-  <!-- coaxial rotors -->
-  <path d="M52 54 L268 54"/>
-  <path d="M64 68 L256 68"/>
-  <path d="M160 44 L160 98"/>
-  <!-- tissue-box fuselage -->
-  <rect x="136" y="98" width="48" height="34" rx="3"/>
-  <!-- four carbon-fiber legs -->
-  <path d="M138 132 L104 174 M148 132 L128 174 M172 132 L192 174 M182 132 L216 174"/>
-  <path d="M24 176 L296 176" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-ing">
+  <title id="t-ing">Ingenuity Mars Helicopter technical blueprint</title>
+  <g class="svg-orbit" opacity="0.26">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+  </g>
+  <!-- Rotor wash / flight telemetry arc -->
+  <g class="svg-signal" opacity="0.6">
+    <ellipse cx="180" cy="58" rx="116" ry="8" stroke-dasharray="6 6"/>
+    <ellipse cx="180" cy="74" rx="112" ry="8" stroke-dasharray="6 6"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Top solar array & monopole antenna -->
+    <path d="M180 20 L180 34"/>
+    <rect x="136" y="34" width="88" height="10" rx="2"/>
+    <path d="M158 34 L158 44 M180 34 L180 44 M202 34 L202 44"/>
+    <!-- Counter-rotating carbon-fiber coaxial rotor blades -->
+    <path d="M58 58 Q118 50 180 58 Q242 66 302 58 Q242 50 180 58 Q118 66 58 58 Z"/>
+    <path d="M64 74 Q122 82 180 74 Q238 66 296 74 Q238 82 180 74 Q122 66 64 74 Z"/>
+    <!-- Mast & swashplate pitch links -->
+    <path d="M175 44 L175 98 M185 44 L185 98"/>
+    <rect x="170" y="62" width="20" height="8" rx="2"/>
+    <!-- Tissue-box Kapton avionics fuselage & navcam eye -->
+    <rect x="150" y="98" width="60" height="42" rx="3"/>
+    <path d="M150 112 L210 112 M166 98 L166 140 M194 98 L194 140"/>
+    <circle cx="180" cy="126" r="5"/>
+    <!-- Four ultra-light carbon-fiber landing legs -->
+    <path d="M152 134 L102 180 M162 140 L132 180 M198 140 L228 180 M208 134 L258 180"/>
+    <circle cx="102" cy="180" r="2.5"/><circle cx="132" cy="180" r="2.5"/>
+    <circle cx="228" cy="180" r="2.5"/><circle cx="258" cy="180" r="2.5"/>
+  </g>
+  <path d="M24 184 Q180 178 336 184" opacity="0.4"/>
 </svg>

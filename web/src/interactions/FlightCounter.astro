@@ -12,12 +12,12 @@ const { planned = 5, actual = 72 } = Astro.props;
 <div class="flights" data-reveal data-flights data-planned={planned} data-actual={actual}>
   <div class="top">
     <div>
-      <span class="k">GOAL</span>
+      <span class="k">Planned Demonstration</span>
       <span class="v dim">{planned} flights</span>
     </div>
     <div class="right">
-      <span class="k">FLOWN ON MARS</span>
-      <span class="v accent"><span data-fl-count>0</span> flights</span>
+      <span class="k">Flown on Mars</span>
+      <span class="v accent"><span data-fl-count>{actual}</span> flights</span>
     </div>
   </div>
 
@@ -28,18 +28,18 @@ const { planned = 5, actual = 72 } = Astro.props;
   </div>
 
   <p class="note">
-    Each mark is one powered takeoff and landing in Martian air.
+    Each mark represents one powered takeoff and landing in Jezero Crater’s thin atmosphere.
   </p>
 </div>
 
 <style>
   .flights {
-    max-width: 640px;
-    margin: var(--s-8) auto var(--s-12);
+    max-width: var(--measure);
+    margin: var(--s-8) auto var(--s-10);
     padding: var(--s-6);
     border: 1px solid var(--c-line);
-    border-radius: var(--r-md);
-    background: rgba(17, 17, 20, 0.55);
+    border-radius: var(--r-sm);
+    background: var(--c-bg-raised);
     display: grid;
     gap: var(--s-4);
   }
@@ -51,8 +51,9 @@ const { planned = 5, actual = 72 } = Astro.props;
   .right { text-align: right; }
   .k {
     display: block;
-    font: 500 0.68rem/1 var(--f-record);
-    letter-spacing: 0.16em;
+    font: 400 0.68rem/1 var(--f-record);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--c-ink-dim);
     margin-bottom: var(--s-2);
   }
@@ -65,10 +66,10 @@ const { planned = 5, actual = 72 } = Astro.props;
     gap: 6px;
   }
   .fdot {
-    height: 6px;
-    border-radius: 2px;
+    height: 5px;
+    border-radius: 1px;
     background: var(--c-accent);
-    opacity: 0.15;
+    opacity: 0.18;
     transition: opacity 160ms ease;
   }
   .fdot.is-goal { background: var(--c-ink); }
@@ -79,10 +80,7 @@ const { planned = 5, actual = 72 } = Astro.props;
 
 <script>
   import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
   import { reduced } from "../motion/index";
-
-  gsap.registerPlugin(ScrollTrigger);
 
   document.querySelectorAll<HTMLElement>("[data-flights]").forEach((root) => {
     const countEl = root.querySelector<HTMLElement>("[data-fl-count]");
@@ -96,17 +94,25 @@ const { planned = 5, actual = 72 } = Astro.props;
       return;
     }
 
-    const state = { v: 0 };
-    gsap.to(state, {
-      v: actual,
-      duration: 2.0,
-      ease: "power2.out",
-      scrollTrigger: { trigger: root, start: "top 80%", once: true },
-      onUpdate: () => {
-        const cur = Math.round(state.v);
-        countEl.textContent = String(cur);
-        dots.forEach((d, idx) => d.classList.toggle("is-lit", idx < cur));
-      },
-    });
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          const state = { v: 0 };
+          gsap.to(state, {
+            v: actual,
+            duration: 1.8,
+            ease: "power2.out",
+            onUpdate: () => {
+              const cur = Math.round(state.v);
+              countEl.textContent = String(cur);
+              dots.forEach((d, idx) => d.classList.toggle("is-lit", idx < cur));
+            },
+          });
+          io.disconnect();
+        }
+      }
+    }, { threshold: 0.2 });
+
+    io.observe(root);
   });
 </script>

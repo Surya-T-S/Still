@@ -1,15 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-surv">
-  <title id="t-surv">Surveyor 3 lunar lander</title>
-  <!-- tripod mast -->
-  <path d="M160 44 L160 132"/>
-  <rect x="136" y="42" width="48" height="16" rx="2"/>
-  <rect x="150" y="68" width="20" height="24" rx="2"/>
-  <!-- three splayed legs -->
-  <path d="M142 118 L74 170 M178 118 L246 170 M160 132 L160 174"/>
-  <circle cx="74" cy="172" r="5"/>
-  <circle cx="160" cy="176" r="5"/>
-  <circle cx="246" cy="172" r="5"/>
-  <!-- soil scoop arm -->
-  <path d="M142 128 L106 138 L94 152"/>
-  <path d="M16 178 L304 178" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-surv">
+  <title id="t-surv">Surveyor 3 lunar lander technical blueprint</title>
+  <g class="svg-orbit" opacity="0.26">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+  </g>
+  <g class="svg-signal" opacity="0.65">
+    <path d="M158 24 Q180 12 202 24"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Planar array & solar panel at top of mast -->
+    <rect x="136" y="34" width="88" height="16" rx="2"/>
+    <path d="M158 34 L158 50 M180 34 L180 50 M202 34 L202 50"/>
+    <!-- Central mast & spaceframe -->
+    <path d="M180 50 L180 142"/>
+    <path d="M180 62 L138 134 L222 134 Z"/>
+    <!-- Survey TV camera housing (returned by Apollo 12) & thermal compartments -->
+    <rect x="192" y="76" width="18" height="28" rx="2"/>
+    <circle cx="201" cy="84" r="4"/>
+    <rect x="144" y="108" width="28" height="24" rx="2"/>
+    <rect x="188" y="108" width="28" height="24" rx="2"/>
+    <!-- Pantograph surface sampler scoop arm -->
+    <path d="M144 122 L108 132 L118 144 L92 154 L84 166"/>
+    <path d="M144 130 L118 132 L98 158"/>
+    <path d="M78 166 L90 166 L86 174 L76 172 Z"/>
+    <!-- Three splayed landing legs with shock absorbers & crushable footpads -->
+    <path d="M138 134 L66 180 M152 134 L88 180"/>
+    <path d="M222 134 L294 180 M208 134 L272 180"/>
+    <path d="M180 134 L180 184"/>
+    <ellipse cx="66" cy="182" rx="14" ry="4"/>
+    <ellipse cx="180" cy="186" rx="14" ry="4"/>
+    <ellipse cx="294" cy="182" rx="14" ry="4"/>
+  </g>
+  <path d="M16 188 Q180 180 344 188" opacity="0.4"/>
 </svg>

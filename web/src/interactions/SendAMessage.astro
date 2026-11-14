@@ -12,7 +12,7 @@ const hours = Math.floor(lightTimeSec / 3600);
 const mins = Math.round((lightTimeSec % 3600) / 60);
 ---
 <form class="send" data-reveal data-send data-light={lightTimeSec} data-target={targetName}>
-  <label class="k" for="pioneer-msg">SEND A SIGNAL TOWARD {targetName.toUpperCase()}</label>
+  <label class="k" for="pioneer-msg">Transmit a radio signal toward {targetName}</label>
   <div class="row">
     <input
       id="pioneer-msg"
@@ -22,65 +22,64 @@ const mins = Math.round((lightTimeSec % 3600) / 60);
       autocomplete="off"
       data-send-input
     />
-    <button type="submit" class="btn">Transmit</button>
+    <button
+      type="submit"
+      class="btn-orbital is-primary"
+      data-nav-dir="next"
+      data-target-act="deep"
+    >
+      <span>Transmit</span>
+      <svg class="btn-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
   </div>
   <p class="status" aria-live="polite" data-send-status>
-    One-way travel time at light speed: <strong>{hours} h {mins} min</strong>
+    One-way travel time at the speed of light: <strong>{hours} h {mins} min</strong>
   </p>
 </form>
 
 <style>
   .send {
-    max-width: 640px;
-    margin: var(--s-8) auto var(--s-12);
+    max-width: var(--measure);
+    margin: var(--s-8) auto var(--s-10);
     padding: var(--s-6);
     border: 1px solid var(--c-line);
     border-radius: var(--r-md);
-    background: rgba(17, 17, 20, 0.55);
+    background: var(--c-bg-raised);
+    box-shadow: var(--sh-card);
     display: grid;
     gap: var(--s-4);
   }
   .k {
-    font: 500 0.68rem/1 var(--f-record);
-    letter-spacing: 0.16em;
+    font: 700 0.66rem/1 var(--f-record);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--c-ink-dim);
   }
   .row {
     display: flex;
     gap: var(--s-3);
     flex-wrap: wrap;
+    align-items: center;
   }
   input {
     flex: 1 1 220px;
-    background: rgba(8, 8, 10, 0.8);
+    background: var(--c-bg);
     border: 1px solid var(--c-line-strong);
-    border-radius: var(--r-sm);
-    padding: 10px 14px;
+    border-radius: var(--r-pill);
+    padding: 12px 18px;
     color: var(--c-ink);
     font: 400 var(--t-sm)/1.4 var(--f-ui);
   }
   input::placeholder { color: var(--c-ink-faint); }
-  .btn {
-    appearance: none;
-    background: transparent;
-    color: var(--c-ink);
-    border: 1px solid var(--c-accent);
-    border-radius: var(--r-pill);
-    padding: 10px 20px;
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background-color var(--d-fast) var(--ease-out), color var(--d-fast) var(--ease-out);
-  }
-  .btn:hover, .btn:focus-visible { background: var(--c-accent); color: var(--c-bg); }
   .status {
     margin: 0;
     font: 400 var(--t-xs)/1.5 var(--f-record);
     color: var(--c-ink-dim);
     font-variant-numeric: tabular-nums;
   }
-  .status strong { color: var(--c-accent); font-weight: 500; }
+  .status strong { color: var(--c-accent); font-weight: 700; }
 </style>
 
 <script>
@@ -106,7 +105,7 @@ const mins = Math.round((lightTimeSec % 3600) / 60);
         const rh = Math.floor(rem / 3600);
         const rm = Math.floor((rem % 3600) / 60);
         const rs = Math.floor(rem % 60);
-        status.innerHTML = `"${msg}" — <strong>${km} km</strong> from Earth · arrives at ${target} in <strong>${rh}h ${rm}m ${rs}s</strong>`;
+        status.innerHTML = `“${msg}” — <strong>${km} km</strong> from Earth · reaches ${target} in <strong>${rh}h ${rm}m ${rs}s</strong>`;
       };
       update();
       timer = window.setInterval(update, 250);

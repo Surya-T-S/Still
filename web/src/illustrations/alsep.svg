@@ -1,16 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-alsep">
-  <title id="t-alsep">ALSEP central station and laser retroreflector</title>
-  <!-- central station box -->
-  <rect x="74" y="114" width="64" height="44" rx="2"/>
-  <path d="M106 114 L106 62"/>
-  <path d="M96 62 L116 62"/>
-  <!-- RTG power fin -->
-  <rect x="34" y="130" width="24" height="28" rx="2"/>
-  <path d="M58 146 L74 146"/>
-  <!-- laser retroreflector array -->
-  <path d="M204 156 L264 156 L252 126 L216 126 Z"/>
-  <path d="M222 126 L222 156 M234 126 L234 156 M246 126 L246 156"/>
-  <!-- laser ping beam -->
-  <path d="M234 126 L284 42" stroke-dasharray="4 4" opacity="0.65"/>
-  <path d="M16 160 L304 160" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-alsep">
+  <title id="t-alsep">ALSEP central station, RTG, and laser retroreflector blueprint</title>
+  <g class="svg-orbit" opacity="0.25">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+  </g>
+  <!-- Active laser ranging beam & echo -->
+  <g class="svg-signal">
+    <path d="M266 128 L328 24" stroke-dasharray="6 4"/>
+    <path d="M274 132 L336 28" stroke-dasharray="3 6" opacity="0.6"/>
+    <circle cx="266" cy="128" r="5"/>
+  </g>
+  <g class="svg-craft">
+    <!-- SNAP-27 Radioisotope Thermoelectric Generator (cooling fins) -->
+    <rect x="44" y="122" width="22" height="46" rx="2"/>
+    <path d="M36 126 L44 126 M36 136 L44 136 M36 146 L44 146 M36 156 L44 156"/>
+    <path d="M66 126 L74 126 M66 136 L74 136 M66 146 L74 146 M66 156 L74 156"/>
+    <!-- Power ribbon cable -->
+    <path d="M66 160 Q86 168 106 160"/>
+    <!-- ALSEP Central Station & telemetry mast -->
+    <rect x="106" y="116" width="72" height="52" rx="2"/>
+    <path d="M106 132 L178 132 M124 132 L124 168 M160 132 L160 168"/>
+    <path d="M142 116 L142 54"/>
+    <path d="M128 54 L156 54 M134 64 L150 64"/>
+    <!-- Passive Seismic Experiment dome -->
+    <path d="M188 168 L216 168 L212 146 L192 146 Z"/>
+    <!-- Lunar Laser Ranging Retroreflector (100 corner-cube prisms) -->
+    <path d="M232 168 L306 168 L292 128 L246 128 Z"/>
+    <path d="M250 128 L240 168 M264 128 L258 168 M278 128 L276 168 M292 128 L294 168"/>
+    <path d="M242 142 L297 142 M237 155 L301 155"/>
+  </g>
+  <path d="M16 170 L344 170" opacity="0.4"/>
 </svg>

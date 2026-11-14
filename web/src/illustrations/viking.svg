@@ -1,17 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-vik">
-  <title id="t-vik">Viking Mars lander</title>
-  <!-- hexagonal body -->
-  <path d="M90 106 L230 106 L246 128 L230 144 L90 144 L74 128 Z"/>
-  <!-- high-gain dish -->
-  <path d="M126 106 L126 62"/>
-  <path d="M100 50 Q126 70 152 50"/>
-  <!-- camera + meteorology mast -->
-  <path d="M196 106 L196 64"/>
-  <rect x="190" y="54" width="12" height="10" rx="2"/>
-  <!-- three landing legs -->
-  <path d="M96 144 L66 176 M160 144 L160 178 M224 144 L254 176"/>
-  <ellipse cx="66" cy="178" rx="10" ry="3"/>
-  <ellipse cx="160" cy="180" rx="10" ry="3"/>
-  <ellipse cx="254" cy="178" rx="10" ry="3"/>
-  <path d="M16 182 L304 182" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-vik">
+  <title id="t-vik">Viking 1 and 2 Mars lander technical blueprint</title>
+  <g class="svg-orbit" opacity="0.26">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+  </g>
+  <g class="svg-signal" opacity="0.7">
+    <path d="M120 34 Q142 18 164 34"/>
+    <path d="M112 24 Q142 4 172 24"/>
+  </g>
+  <g class="svg-craft">
+    <!-- Hexagonal aluminum body & twin RTG windscreens -->
+    <path d="M98 112 L262 112 L278 134 L262 152 L98 152 L82 134 Z"/>
+    <path d="M136 112 L136 152 M224 112 L224 152"/>
+    <rect x="148" y="96" width="24" height="16" rx="2"/>
+    <rect x="188" y="96" width="24" height="16" rx="2"/>
+    <!-- Steerable S-band parabolic dish -->
+    <path d="M142 112 L142 66"/>
+    <path d="M110 50 Q142 78 174 50"/>
+    <path d="M110 50 L142 66 L174 50 M142 66 L142 40"/>
+    <!-- Twin facsimile scanning camera cylinders -->
+    <rect x="210" y="72" width="14" height="40" rx="3"/>
+    <rect x="232" y="76" width="14" height="36" rx="3"/>
+    <!-- Surface sampler collector boom -->
+    <path d="M262 128 L314 146 L326 168"/>
+    <path d="M320 168 L332 168 L328 176 L318 174 Z"/>
+    <!-- Three landing leg trusses & circular honeycomb footpads -->
+    <path d="M104 152 L68 182 M122 152 L88 182"/>
+    <path d="M180 152 L180 184"/>
+    <path d="M256 152 L292 182 M238 152 L272 182"/>
+    <ellipse cx="74" cy="184" rx="16" ry="4"/>
+    <ellipse cx="180" cy="186" rx="16" ry="4"/>
+    <ellipse cx="286" cy="184" rx="16" ry="4"/>
+  </g>
+  <path d="M16 190 Q180 182 344 190" opacity="0.4"/>
 </svg>

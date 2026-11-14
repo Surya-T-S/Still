@@ -7,8 +7,8 @@ import TrajectoryNav from "../components/TrajectoryNav.astro";
 
 interface Props { title?: string; description?: string }
 const {
-  title = "STILL · Abandoned, not forgotten",
-  description = "A journey to the hardware humanity left on the Moon, Mars and in deep space, and what each piece gave us.",
+  title = "STILL · Abandoned, Not Forgotten",
+  description = "An interactive archival exhibition of the spacecraft humanity left on the Moon, Mars, and in deep space.",
 } = Astro.props;
 ---
 <!doctype html>
@@ -18,7 +18,13 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0E1013" />
+    <meta name="theme-color" content="#07080a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
     <script is:inline>
       (function() {
         try {
@@ -27,7 +33,7 @@ const {
           document.documentElement.dataset.theme = theme;
           const metaTheme = document.querySelector('meta[name="theme-color"]');
           if (metaTheme) {
-            metaTheme.setAttribute("content", theme === "light" ? "#F4F1EA" : "#0E1013");
+            metaTheme.setAttribute("content", theme === "light" ? "#f3efe6" : "#07080a");
           }
         } catch (_) {}
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -37,114 +43,15 @@ const {
     </script>
   </head>
   <body data-act="moon">
-    <a class="skip" href="#archive">Skip the story, go to the facts</a>
+    <a class="skip" href="#archive">Skip to the archival registry</a>
     <Starfield />
     <TrajectoryNav />
     <SignalHUD />
-    
-    <button
-      id="theme-toggle"
-      type="button"
-      class="theme-toggle"
-      aria-label="Toggle color mode"
-      title="Toggle between Lunar Obsidian and Archival Blueprint"
-    >
-      <span class="toggle-dot" aria-hidden="true"></span>
-      <span class="toggle-text" data-theme-label>OBSIDIAN</span>
-    </button>
 
     <main><slot /></main>
 
     <script>
       import "../scripts/engine.ts";
-
-      const toggle = document.getElementById("theme-toggle");
-      const label = document.querySelector<HTMLElement>("[data-theme-label]");
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-
-      function syncUI(theme: string) {
-        if (label) {
-          label.textContent = theme === "light" ? "ARCHIVE" : "OBSIDIAN";
-        }
-        if (toggle) {
-          toggle.setAttribute(
-            "aria-label",
-            `Current theme: ${theme === "light" ? "Archival Light" : "Lunar Obsidian Dark"}. Click to toggle.`
-          );
-        }
-      }
-
-      const initialTheme = document.documentElement.dataset.theme || "dark";
-      syncUI(initialTheme);
-
-      toggle?.addEventListener("click", () => {
-        const current = document.documentElement.dataset.theme || "dark";
-        const next = current === "light" ? "dark" : "light";
-        document.documentElement.dataset.theme = next;
-        try {
-          localStorage.setItem("still-theme", next);
-        } catch (_) {}
-        if (metaTheme) {
-          metaTheme.setAttribute("content", next === "light" ? "#F4F1EA" : "#0E1013");
-        }
-        syncUI(next);
-      });
     </script>
   </body>
 </html>
-
-<style>
-  .theme-toggle {
-    position: fixed;
-    top: var(--s-4);
-    right: var(--s-4);
-    z-index: var(--z-toggle);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    padding: var(--s-2) var(--s-3);
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.12em;
-    color: var(--c-ink-dim);
-    background: var(--c-bg-glass);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transition: color var(--d-fast) var(--ease-out),
-                border-color var(--d-fast) var(--ease-out),
-                background var(--d-base) var(--ease-out),
-                transform var(--d-fast) var(--ease-out);
-  }
-
-  .theme-toggle:hover {
-    color: var(--c-accent);
-    border-color: var(--c-accent);
-    transform: translateY(-1px);
-  }
-
-  .theme-toggle:focus-visible {
-    outline: 2px solid var(--c-accent);
-    outline-offset: 3px;
-  }
-
-  .toggle-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--c-accent);
-    transition: background-color var(--d-fast) var(--ease-out);
-  }
-
-  @media (max-width: 600px) {
-    .theme-toggle {
-      top: auto;
-      bottom: var(--s-4);
-      right: var(--s-4);
-      font-size: 0.68rem;
-      padding: var(--s-2) var(--s-3);
-    }
-  }
-</style>

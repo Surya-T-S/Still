@@ -1,16 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-alm">
-  <title id="t-alm">Apollo Lunar Module descent stage resting on the Moon</title>
-  <!-- octagonal descent stage -->
-  <path d="M96 86 L224 86 L236 116 L224 142 L96 142 L84 116 Z"/>
-  <path d="M126 86 L126 142 M194 86 L194 142"/>
-  <!-- ascent engine bell / docking ring pad on top -->
-  <ellipse cx="160" cy="86" rx="34" ry="6"/>
-  <!-- ladder + landing legs -->
-  <path d="M92 124 L52 174 M228 124 L268 174 M160 142 L160 176"/>
-  <path d="M154 148 L166 148 M154 156 L166 156 M154 164 L166 164"/>
-  <!-- footpads -->
-  <ellipse cx="52" cy="176" rx="14" ry="3.5"/>
-  <ellipse cx="160" cy="178" rx="14" ry="3.5"/>
-  <ellipse cx="268" cy="176" rx="14" ry="3.5"/>
-  <path d="M16 182 L304 182" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-alm">
+  <title id="t-alm">Apollo Lunar Module descent stage technical blueprint</title>
+  <!-- Orbital telemetry ring -->
+  <g class="svg-orbit" opacity="0.28">
+    <circle class="svg-dashed" cx="180" cy="112" r="88" stroke-dasharray="3 6"/>
+    <path d="M180 18 L180 26 M180 198 L180 206 M86 112 L94 112 M266 112 L274 112"/>
+  </g>
+  <!-- Telemetry signal arcs -->
+  <g class="svg-signal" opacity="0.65">
+    <path d="M162 56 Q180 42 198 56"/>
+    <path d="M150 44 Q180 24 210 44"/>
+  </g>
+  <!-- Spacecraft structure -->
+  <g class="svg-craft">
+    <!-- Blast deflector & upper deck ring -->
+    <ellipse cx="180" cy="84" rx="44" ry="8"/>
+    <ellipse cx="180" cy="84" rx="22" ry="3.5"/>
+    <!-- Octagonal descent stage body -->
+    <path d="M108 86 L252 86 L266 116 L252 146 L108 146 L94 116 Z"/>
+    <!-- Internal bay cross-bracing & thermal Kapton panels -->
+    <path d="M142 86 L142 146 M218 86 L218 146"/>
+    <path d="M108 116 L252 116"/>
+    <path d="M142 86 L180 116 L218 86 M142 146 L180 116 L218 146"/>
+    <!-- Descent engine skirt -->
+    <path d="M162 146 L154 164 L206 164 L198 146"/>
+    <!-- Primary landing gear trusses & shock struts -->
+    <path d="M102 118 L52 180 M114 142 L68 180"/>
+    <path d="M258 118 L308 180 M246 142 L292 180"/>
+    <path d="M180 146 L180 184"/>
+    <!-- Forward crew ladder -->
+    <path d="M173 94 L173 176 M187 94 L187 176"/>
+    <path d="M173 104 L187 104 M173 114 L187 114 M173 124 L187 124 M173 134 L187 134 M173 144 L187 144 M173 154 L187 154 M173 164 L187 164"/>
+    <!-- Dish footpads & surface sensing probes -->
+    <ellipse cx="56" cy="182" rx="16" ry="4"/>
+    <ellipse cx="180" cy="185" rx="16" ry="4"/>
+    <ellipse cx="304" cy="182" rx="16" ry="4"/>
+    <path d="M56 186 L56 196 M304 186 L304 196"/>
+  </g>
+  <!-- Lunar horizon -->
+  <path d="M16 190 Q180 182 344 190" opacity="0.4"/>
 </svg>

@@ -1,68 +1,241 @@
 ---
-/** ChapterHero — owned by Surya. Props are the contract with index.astro. */
+/**
+ * ChapterHero — owned by Surya.
+ * Minimal, museum-grade chapter header with a delicate micro-SVG signal-path
+ * filament showing the physical distance and speed-of-light delay from Earth.
+ * No large spacecraft illustrations or artificial HUD chrome.
+ */
 interface Props {
-  name: string;        // official name
-  nickname?: string;   // big title if present
-  hook: string;        // Nandana's first line
+  name: string;          // official name
+  nickname?: string;     // display title if present
+  hook: string;          // Nandana's opening line
   act: "moon" | "mars" | "deep";
-  lineArt: string;     // raw SVG markup (passed via lineArt())
+  index?: number;        // 1..13
+  total?: number;        // 13
+  mission?: string;      // e.g. "Apollo 11–17 (1969–1972)"
+  site?: string;         // e.g. "Mare Tranquillitatis"
+  distanceKm?: number;
+  lightTimeSec?: number;
+  lineArt?: string;      // kept optional for compatibility, intentionally not rendered
 }
-const { name, nickname, hook, act, lineArt } = Astro.props;
+
+const {
+  name,
+  nickname,
+  hook,
+  act,
+  index = 1,
+  total = 13,
+  mission,
+  site,
+  distanceKm = 384400,
+  lightTimeSec = 1.28,
+} = Astro.props;
+
+const ACT_TITLE = {
+  moon: "Act I · The Moon",
+  mars: "Act II · Mars",
+  deep: "Act III · Deep Space",
+}[act];
+
+const padIdx = String(index).padStart(2, "0");
+const padTotal = String(total).padStart(2, "0");
+
+function fmtDistance(km: number): string {
+  if (km >= 1e9) return `${(km / 1e9).toFixed(2)} billion km`;
+  if (km >= 1e6) return `${(km / 1e6).toFixed(1)} million km`;
+  return `${Math.round(km).toLocaleString("en-US")} km`;
+}
+
+function fmtLight(sec: number): string {
+  if (sec < 60) return `${sec.toFixed(2)} s light-time`;
+  if (sec < 3600) return `${Math.floor(sec / 60)}m ${Math.round(sec % 60)}s light-time`;
+  return `${Math.floor(sec / 3600)}h ${Math.round((sec % 3600) / 60)}m light-time`;
+}
+
+const pulseDuration = act === "moon" ? "2.6s" : act === "mars" ? "5.2s" : "9s";
 ---
-<header class="hero" data-act={act}>
-  <div class="art-wrap">
-    <div class="halo" aria-hidden="true"></div>
-    <div class="art" data-draw set:html={lineArt} />
+<header class="chapter-hero" data-act={act}>
+  <div class="eyebrow" data-reveal>
+    <span class="ch-num">Chapter {padIdx} / {padTotal}</span>
+    <span class="sep" aria-hidden="true">·</span>
+    <span class="ch-act">{ACT_TITLE}</span>
+    {mission && (
+      <>
+        <span class="sep" aria-hidden="true">·</span>
+        <span class="ch-mission">{mission}</span>
+      </>
+    )}
   </div>
-  <p class="kicker" data-reveal>{nickname ? name : act.toUpperCase()}</p>
-  <h2 class="title" data-reveal>{nickname ?? name}</h2>
-  <p class="hook" data-reveal>{hook}</p>
+
+  <div class="title-block">
+    <h1 class="title" data-reveal>{nickname ?? name}</h1>
+    {nickname && <p class="official-name" data-reveal>{name}</p>}
+    <p class="hook" data-reveal>“{hook}”</p>
+  </div>
+
+  <!-- Micro-SVG Storytelling Element: Earth-to-Artifact Signal Filament -->
+  <div class="signal-filament" data-reveal aria-label={`Distance from Earth: ${fmtDistance(distanceKm)}, ${fmtLight(lightTimeSec)}`}>
+    <div class="filament-labels">
+      <span class="node-label">Earth</span>
+      <span class="filament-telemetry">{fmtDistance(distanceKm)} — {fmtLight(lightTimeSec)}</span>
+      <span class="node-label dest">{site ?? ACT_TITLE}</span>
+    </div>
+
+    <svg class="filament-svg" viewBox="0 0 640 24" fill="none" aria-hidden="true">
+      <!-- Baseline hairline -->
+      <line x1="8" y1="12" x2="632" y2="12" stroke="currentColor" stroke-opacity="0.22" stroke-width="1" />
+      <!-- Subtle graduation ticks -->
+      <line x1="164" y1="9" x2="164" y2="15" stroke="currentColor" stroke-opacity="0.25" stroke-width="1" />
+      <line x1="320" y1="8" x2="320" y2="16" stroke="currentColor" stroke-opacity="0.3" stroke-width="1" />
+      <line x1="476" y1="9" x2="476" y2="15" stroke="currentColor" stroke-opacity="0.25" stroke-width="1" />
+      <!-- Origin ring (Earth) -->
+      <circle cx="8" cy="12" r="3.5" fill="var(--c-bg)" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.2" />
+      <!-- Traveling photon pulse -->
+      <circle class="photon" cx="8" cy="12" r="2.5" fill="var(--c-accent)" style={`--pulse-dur: ${pulseDuration}`} />
+      <!-- Destination resting marker -->
+      <circle cx="632" cy="12" r="4" fill="var(--c-accent)" />
+      <circle cx="632" cy="12" r="7.5" stroke="var(--c-accent)" stroke-opacity="0.35" stroke-width="1" />
+    </svg>
+  </div>
 </header>
 
 <style>
-  .hero {
-    display: grid;
-    justify-items: center;
+  .chapter-hero {
+    max-width: 780px;
+    margin-inline: auto;
+    padding: var(--s-16) var(--s-6) var(--s-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    gap: var(--s-4);
-    padding: var(--s-24) var(--s-6) var(--s-12);
+    gap: var(--s-6);
   }
-  .art-wrap {
-    position: relative;
-    display: grid;
-    place-items: center;
-    margin-bottom: var(--s-4);
+
+  .eyebrow {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--s-2);
+    font: 400 var(--t-xs)/1.4 var(--f-record);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-ink-dim);
   }
-  .halo {
-    position: absolute;
-    width: 72%;
-    height: 72%;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--c-glow), transparent 70%);
-    pointer-events: none;
-  }
-  .art {
-    position: relative;
-    width: min(520px, 84vw);
+  .ch-num {
     color: var(--c-accent);
+    font-weight: 500;
   }
-  .art :global(svg) { width: 100%; height: auto; display: block; }
-  .kicker {
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.2em;
+  .sep {
+    opacity: 0.4;
+  }
+
+  .title-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .title {
+    font: 400 var(--t-hero)/var(--lh-tight) var(--f-voice);
+    color: var(--c-ink);
+    margin: 0;
+    letter-spacing: -0.015em;
+    max-width: 16ch;
+  }
+
+  .official-name {
+    font: 400 var(--t-xs)/1.3 var(--f-record);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
     margin: 0;
   }
-  .title {
-    font: 400 var(--t-hero)/var(--lh-tight) var(--f-voice);
-    margin: 0;
-    max-width: 14ch;
-  }
+
   .hook {
     font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
     color: var(--c-accent);
     margin: var(--s-2) 0 0;
-    max-width: 34ch;
+    max-width: 38ch;
+  }
+
+  .signal-filament {
+    width: 100%;
+    max-width: 600px;
+    margin-top: var(--s-2);
+    padding-top: var(--s-4);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--c-ink-dim);
+  }
+
+  .filament-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-3);
+    font: 400 0.68rem/1.2 var(--f-record);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .node-label {
+    color: var(--c-ink-dim);
+  }
+  .node-label.dest {
+    color: var(--c-accent);
+    text-align: right;
+  }
+  .filament-telemetry {
+    color: var(--c-ink);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
+  }
+
+  .filament-svg {
+    width: 100%;
+    height: 24px;
+    display: block;
+    overflow: visible;
+  }
+
+  .photon {
+    animation: photon-travel var(--pulse-dur, 3.5s) cubic-bezier(0.35, 0, 0.25, 1) infinite;
+  }
+
+  @keyframes photon-travel {
+    0% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(624px);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .chapter-hero {
+      padding-top: var(--s-12);
+    }
+    .filament-telemetry {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photon {
+      animation: none;
+      transform: translateX(312px);
+      opacity: 0.7;
+    }
   }
 </style>

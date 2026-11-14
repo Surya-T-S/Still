@@ -15,12 +15,12 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
 <div class="odo" data-reveal data-odo data-planned={planned} data-actual={actual}>
   <div class="nums">
     <div>
-      <span class="k">PLANNED</span>
+      <span class="k">Planned Mission</span>
       <span class="v dim">{planned} {unit}</span>
     </div>
     <div class="right">
-      <span class="k">ACTUAL</span>
-      <span class="v accent"><span data-odo-count>0</span> {unit}</span>
+      <span class="k">Actual Endurance</span>
+      <span class="v accent"><span data-odo-count>{actual.toLocaleString("en-US")}</span> {unit}</span>
     </div>
   </div>
 
@@ -30,18 +30,18 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
   </div>
 
   <p class="note">
-    Outlived its original {planned}-sol warranty by <strong>{ratio}×</strong>.
+    Outlived its original {planned}-sol design life by <strong>{ratio}×</strong> before the global dust storm of 2018.
   </p>
 </div>
 
 <style>
   .odo {
-    max-width: 640px;
-    margin: var(--s-8) auto var(--s-12);
+    max-width: var(--measure);
+    margin: var(--s-8) auto var(--s-10);
     padding: var(--s-6);
     border: 1px solid var(--c-line);
-    border-radius: var(--r-md);
-    background: rgba(17, 17, 20, 0.55);
+    border-radius: var(--r-sm);
+    background: var(--c-bg-raised);
     display: grid;
     gap: var(--s-4);
   }
@@ -54,8 +54,9 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
   .right { text-align: right; }
   .k {
     display: block;
-    font: 500 0.68rem/1 var(--f-record);
-    letter-spacing: 0.16em;
+    font: 400 0.68rem/1 var(--f-record);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--c-ink-dim);
     margin-bottom: var(--s-2);
   }
@@ -67,9 +68,8 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
   .accent { color: var(--c-accent); }
   .bar-track {
     position: relative;
-    height: 8px;
-    border-radius: var(--r-pill);
-    background: rgba(237, 234, 227, 0.08);
+    height: 4px;
+    background: var(--c-line-strong);
     overflow: hidden;
   }
   .bar-fill {
@@ -78,6 +78,10 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
     background: var(--c-accent);
     transform-origin: left center;
     transform: scaleX(0);
+    transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .bar-fill.is-active {
+    transform: scaleX(1);
   }
   .bar-planned {
     position: absolute;
@@ -85,7 +89,6 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
     bottom: 0;
     width: 2px;
     background: var(--c-ink);
-    opacity: 0.7;
   }
   .note {
     margin: 0;
@@ -97,10 +100,7 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
 
 <script>
   import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
   import { reduced } from "../motion/index";
-
-  gsap.registerPlugin(ScrollTrigger);
 
   document.querySelectorAll<HTMLElement>("[data-odo]").forEach((root) => {
     const countEl = root.querySelector<HTMLElement>("[data-odo-count]");
@@ -110,20 +110,28 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
     const actual = Number(root.dataset.actual || "5352");
     if (reduced()) {
       countEl.textContent = actual.toLocaleString("en-US");
-      barEl.style.transform = "scaleX(1)";
+      barEl.classList.add("is-active");
       return;
     }
 
-    const state = { v: 0 };
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger: root, start: "top 80%", once: true },
-    });
-    tl.to(state, {
-      v: actual,
-      duration: 2.2,
-      ease: "power2.out",
-      onUpdate: () => { countEl.textContent = Math.round(state.v).toLocaleString("en-US"); },
-    }, 0);
-    tl.to(barEl, { scaleX: 1, duration: 2.2, ease: "power2.out" }, 0);
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          barEl.classList.add("is-active");
+          const state = { v: 0 };
+          gsap.to(state, {
+            v: actual,
+            duration: 1.8,
+            ease: "power2.out",
+            onUpdate: () => {
+              countEl.textContent = Math.round(state.v).toLocaleString("en-US");
+            },
+          });
+          io.disconnect();
+        }
+      }
+    }, { threshold: 0.2 });
+
+    io.observe(root);
   });
 </script>

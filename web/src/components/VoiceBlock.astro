@@ -1,55 +1,124 @@
 ---
-/** VoiceBlock — owned by Surya. The imagined first-person layer; always clearly labelled. */
-interface Props { lines: string[]; truthNote?: string }
+/**
+ * VoiceBlock — owned by Surya.
+ * Literary epigraph presenting the imagined voice of the spacecraft,
+ * anchored by a delicate micro-SVG vertical reading filament.
+ * Clean, quiet distinction between poetic voice and historical fact.
+ */
+interface Props {
+  lines: string[];
+  truthNote?: string;
+}
 const { lines, truthNote } = Astro.props;
 ---
-<section class="voice" aria-label="Imagined voice">
-  <span class="label">imagined voice</span>
-  <blockquote data-split>
-    {lines.map((l) => <p>{l}</p>)}
-  </blockquote>
-  {truthNote && <p class="truth" data-reveal><span>Myth check</span>{truthNote}</p>}
+<section class="voice-stage" aria-label="Imagined voice of the spacecraft">
+  <div class="voice-layout">
+    <!-- Micro-SVG Reading Thread Filament -->
+    <div class="voice-filament" aria-hidden="true">
+      <svg class="thread-svg" viewBox="0 0 16 120" preserveAspectRatio="none" fill="none">
+        <path d="M8 2 L10 6 L14 8 L10 10 L8 14 L6 10 L2 8 L6 6 Z" fill="var(--c-accent)" opacity="0.8" />
+        <line x1="8" y1="20" x2="8" y2="116" stroke="var(--c-accent)" stroke-opacity="0.35" stroke-width="1" />
+        <circle cx="8" cy="116" r="2" fill="var(--c-accent)" opacity="0.6" />
+      </svg>
+    </div>
+
+    <div class="voice-body">
+      <span class="voice-caption" data-reveal>Imagined voice</span>
+      <blockquote class="transmissions" data-split>
+        {lines.map((l) => (
+          <p class="voice-line">{l}</p>
+        ))}
+      </blockquote>
+    </div>
+  </div>
+
+  {truthNote && (
+    <aside class="truth-note" data-reveal aria-label="Historical note">
+      <span class="truth-label">Historical Note</span>
+      <p class="truth-text">{truthNote}</p>
+    </aside>
+  )}
 </section>
 
 <style>
-  .voice {
+  .voice-stage {
     max-width: var(--measure);
     margin-inline: auto;
-    padding: var(--s-12) var(--s-6) var(--s-16);
+    padding: var(--s-4) var(--s-6) var(--s-10);
   }
-  .label {
-    display: inline-block;
-    font: 500 0.68rem/1 var(--f-record);
-    letter-spacing: 0.18em;
+
+  .voice-layout {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: var(--s-5);
+    align-items: stretch;
+  }
+
+  .voice-filament {
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+  }
+
+  .thread-svg {
+    width: 14px;
+    height: 100%;
+    min-height: 84px;
+    display: block;
+  }
+
+  .voice-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+
+  .voice-caption {
+    font: 400 0.68rem/1 var(--f-record);
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-    padding: 6px 12px;
   }
-  blockquote {
-    margin: var(--s-6) 0 0;
-    padding-left: var(--s-6);
-    border-left: 1px solid var(--c-line-strong);
+
+  .transmissions {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
   }
-  blockquote p {
-    font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
-    margin: 0 0 var(--s-4);
+
+  .voice-line {
+    font: italic 400 clamp(1.25rem, 1.08rem + 0.75vw, 1.68rem)/1.44 var(--f-voice);
+    margin: 0;
     color: var(--c-ink);
   }
-  blockquote p:last-child { margin-bottom: 0; }
-  .truth {
-    font: 400 var(--t-sm)/var(--lh-body) var(--f-ui);
-    color: var(--c-ink-dim);
-    border-left: 2px solid var(--c-accent);
-    padding-left: var(--s-4);
+
+  .truth-note {
     margin-top: var(--s-8);
+    padding: var(--s-4) 0 var(--s-2) var(--s-5);
+    border-left: 1px solid var(--c-status-brass);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
   }
-  .truth span {
-    display: block;
-    font: 500 var(--t-xs)/1.6 var(--f-record);
-    text-transform: uppercase;
+
+  .truth-label {
+    font: 500 0.66rem/1.2 var(--f-record);
     letter-spacing: 0.14em;
-    color: var(--c-accent);
+    text-transform: uppercase;
+    color: var(--c-status-brass);
+  }
+
+  .truth-text {
+    margin: 0;
+    font: 400 var(--t-sm)/1.6 var(--f-ui);
+    color: var(--c-ink-dim);
+  }
+
+  @media (max-width: 600px) {
+    .voice-layout {
+      grid-template-columns: 14px 1fr;
+      gap: var(--s-3);
+    }
   }
 </style>
