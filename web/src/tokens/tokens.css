@@ -1,21 +1,29 @@
 /* ==========================================================
-   STILL — Design Tokens v0 (owned by Surya & Vrindha)
-   Everything visual reads from these. Change here, not inline.
+   STILL — Design Tokens
+   Museum-Grade Space Exploration Palette (Dark & Light)
+   Strict Rule: No generic AI gradients, purple, violet, or cyan.
    ========================================================== */
 
-:root {
-  /* Canvas & ink */
-  --c-bg: #0a0a0b;
-  --c-bg-raised: #131315;
-  --c-ink: #edeae3;
-  --c-ink-dim: #8a877f;
-  --c-line: rgba(237, 234, 227, 0.14);
+:root,
+[data-theme="dark"] {
+  /* Dark Mode: "Lunar Obsidian & Telemetry" (Default) */
+  --c-bg: #0E1013;            /* Deep basalt / obsidian */
+  --c-bg-raised: #171A1F;     /* Elevated regolith slate cards */
+  --c-bg-glass: rgba(14, 16, 19, 0.72);
+  --c-ink: #EAE6DF;           /* Warm titanium off-white */
+  --c-ink-dim: #949089;       /* Muted regolith dust */
+  --c-line: rgba(234, 230, 223, 0.12);
 
-  /* Act accents (D's scroll engine sets body[data-act], which swaps --c-accent) */
-  --c-moon: #d9d3c3;
-  --c-mars: #c2502a;
-  --c-deep: #7fa2ff;
-  --c-accent: var(--c-moon);
+  /* Primary & Status Accents */
+  --c-primary: #D96B43;        /* Oxidized Martian terracotta / amber */
+  --c-status-brass: #C4A35A;   /* Muted telemetry brass / gold */
+  --c-status-sage: #6E8B74;    /* Muted sage status tone */
+
+  /* Act Accents */
+  --c-moon: #E0DDD5;           /* Lunar regolith titanium */
+  --c-mars: #D96B43;           /* Oxidized terracotta */
+  --c-deep: #8E9EA8;           /* Muted celestial basalt slate (no neon cyan/purple) */
+  --c-accent: var(--c-primary);
 
   /* Type */
   --f-voice: "Instrument Serif", "Iowan Old Style", Georgia, serif;
@@ -55,12 +63,41 @@
   --z-stars: 0;
   --z-content: 1;
   --z-hud: 50;
+  --z-toggle: 60;
 }
 
+[data-theme="light"] {
+  /* Light Mode: "Archival Blueprint & Regolith" */
+  --c-bg: #F4F1EA;            /* Archival paper / limestone */
+  --c-bg-raised: #FCFBF7;     /* Crisp warm ivory card surfaces */
+  --c-bg-glass: rgba(244, 241, 234, 0.82);
+  --c-ink: #181A1D;           /* Deep carbon ink */
+  --c-ink-dim: #6B6862;       /* Archival graphite */
+  --c-line: rgba(24, 26, 29, 0.12);
+
+  /* Primary & Status Accents */
+  --c-primary: #B84A27;        /* Burnt sienna / rust */
+  --c-status-brass: #8C6E2D;   /* Antique ochre / deep brass */
+  --c-status-sage: #4B6852;    /* Deep archival olive */
+
+  /* Act Accents */
+  --c-moon: #545047;           /* Deep lunar graphite */
+  --c-mars: #B84A27;           /* Burnt sienna */
+  --c-deep: #475E6D;           /* Deep archival telemetry slate */
+  --c-accent: var(--c-primary);
+}
+
+/* Dynamic Act switches driven by engine.ts */
 [data-act="moon"] { --c-accent: var(--c-moon); }
 [data-act="mars"] { --c-accent: var(--c-mars); }
 [data-act="deep"] { --c-accent: var(--c-deep); }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --d-fast: 0ms; --d-base: 0ms; --d-slow: 0ms; }
+  :root,
+  [data-theme="light"],
+  [data-theme="dark"] {
+    --d-fast: 0ms;
+    --d-base: 0ms;
+    --d-slow: 0ms;
+  }
 }

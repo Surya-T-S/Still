@@ -1,42 +1,301 @@
 ---
-/** RecordCard — owned by C. The factual layer (Depth 2). Max 3 stats visible. */
+/**
+ * RecordCard — owned by Vrindha (Platform & Structure).
+ * The factual archival layer (Depth 2). Max 3 stats visible, tactile card depth,
+ * 1px hairline borders, responsive telemetry layout, and museum-grade typography.
+ */
 import CitationChip from "./CitationChip.astro";
-interface Stat { label: string; value: string; comparison?: string; sourceUrl: string }
+
+interface Stat {
+  label: string;
+  value: string;
+  comparison?: string;
+  sourceUrl: string;
+}
+
 interface Props {
   stats: Stat[];
-  lastContact: string;   // ISO
+  lastContact: string;   // ISO string e.g. "1969-07-22"
   site?: string;
   nssdcaId: string;
   nssdcaUrl: string;
   legacy: string;
 }
+
 const { stats, lastContact, site, nssdcaId, nssdcaUrl, legacy } = Astro.props;
 ---
-<section class="record" aria-label="The record">
-  <dl class="stats">
+<section class="record-card" aria-label="Official telemetry and historical record">
+  <div class="card-eyebrow" data-reveal>
+    <div class="eyebrow-left">
+      <span class="telemetry-beacon" aria-hidden="true"></span>
+      <span class="eyebrow-text">THE RECORD · OFFICIAL TELEMETRY</span>
+    </div>
+    <span class="eyebrow-stamp">NASA ARCHIVE</span>
+  </div>
+
+  <dl class="stats-grid">
     {stats.slice(0, 3).map((s) => (
-      <div class="stat" data-reveal>
-        <dt>{s.label}</dt>
-        <dd class="value">{s.value}</dd>
-        {s.comparison && <dd class="cmp">{s.comparison}</dd>}
+      <div class="stat-cell" data-reveal tabindex="0">
+        <dt class="stat-label">{s.label}</dt>
+        <dd class="stat-value">{s.value}</dd>
+        {s.comparison && <dd class="stat-cmp">{s.comparison}</dd>}
       </div>
     ))}
   </dl>
-  <p class="meta" data-reveal>
-    LAST CONTACT {lastContact}{site && <> · {site.toUpperCase()}</>}
-    · SILENT FOR <span data-silent-since={lastContact}>—</span> DAYS
-  </p>
-  <p class="legacy" data-reveal>{legacy}</p>
-  <CitationChip href={nssdcaUrl} label={`NSSDCA ${nssdcaId}`} />
+
+  <div class="telemetry-meta" data-reveal>
+    <div class="meta-item">
+      <span class="meta-label">LAST CONTACT</span>
+      <span class="meta-val">{lastContact}</span>
+    </div>
+    {site && (
+      <div class="meta-item">
+        <span class="meta-label">LANDING SITE</span>
+        <span class="meta-val">{site.toUpperCase()}</span>
+      </div>
+    )}
+    <div class="meta-item highlight">
+      <span class="meta-label">SILENT TELEMETRY</span>
+      <span class="meta-val">
+        <span class="pulse-indicator" aria-hidden="true"></span>
+        <span data-silent-since={lastContact}>—</span> DAYS
+      </span>
+    </div>
+  </div>
+
+  <div class="legacy-wrapper" data-reveal>
+    <div class="legacy-header">
+      <span class="legacy-tag">HISTORICAL LEGACY</span>
+    </div>
+    <blockquote class="legacy-quote">{legacy}</blockquote>
+  </div>
+
+  <div class="card-footer" data-reveal>
+    <span class="verify-note">All telemetry verified via NSSDCA Master Catalog</span>
+    <CitationChip href={nssdcaUrl} label={`NSSDCA ID ${nssdcaId}`} />
+  </div>
 </section>
 
 <style>
-  .record { max-width: 960px; margin-inline: auto; padding: var(--s-12) var(--s-6) var(--s-24); display: grid; gap: var(--s-8); justify-items: center; text-align: center; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-8); width: 100%; margin: 0; }
-  .stat { border-top: 1px solid var(--c-line); padding-top: var(--s-4); }
-  dt { font: 500 var(--t-xs)/1.4 var(--f-record); letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-ink-dim); }
-  .value { font: 400 var(--t-xl)/1.1 var(--f-voice); margin: var(--s-2) 0 0; color: var(--c-accent); }
-  .cmp { font: 400 var(--t-sm)/1.4 var(--f-ui); color: var(--c-ink-dim); margin: var(--s-1) 0 0; }
-  .meta { font: 400 var(--t-xs)/1.6 var(--f-record); letter-spacing: 0.1em; color: var(--c-ink-dim); margin: 0; }
-  .legacy { font: 400 var(--t-lg)/var(--lh-voice) var(--f-voice); max-width: 32ch; margin: 0; }
+  .record-card {
+    max-width: 920px;
+    margin-inline: auto;
+    margin-top: var(--s-12);
+    margin-bottom: var(--s-24);
+    padding: var(--s-8) var(--s-8) var(--s-10);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-8);
+    background: var(--c-bg-raised);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-sm);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: background-color var(--d-base) var(--ease-out),
+                border-color var(--d-base) var(--ease-out),
+                box-shadow var(--d-base) var(--ease-out);
+  }
+
+  .card-eyebrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--c-line);
+    padding-bottom: var(--s-3);
+  }
+
+  .eyebrow-left {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+
+  .telemetry-beacon {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--c-status-brass);
+  }
+
+  .eyebrow-text {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.14em;
+    color: var(--c-status-brass);
+  }
+
+  .eyebrow-stamp {
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+    font-size: 0.68rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--s-6);
+    margin: 0;
+    padding: 0;
+  }
+
+  .stat-cell {
+    display: flex;
+    flex-direction: column;
+    padding: var(--s-4) var(--s-5);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-sm);
+    background: rgba(0, 0, 0, 0.02);
+    cursor: default;
+    transition: transform var(--d-fast) var(--ease-out),
+                border-color var(--d-fast) var(--ease-out),
+                box-shadow var(--d-fast) var(--ease-out),
+                background-color var(--d-fast) var(--ease-out);
+  }
+
+  :global([data-theme="dark"]) .stat-cell {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .stat-cell:hover,
+  .stat-cell:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--c-accent);
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    outline: none;
+  }
+
+  :global([data-theme="dark"]) .stat-cell:hover,
+  :global([data-theme="dark"]) .stat-cell:focus-visible {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .stat-label {
+    font: 500 var(--t-xs)/1.3 var(--f-record);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-ink-dim);
+    margin-bottom: var(--s-2);
+  }
+
+  .stat-value {
+    font: 400 var(--t-xl)/1.1 var(--f-voice);
+    color: var(--c-accent);
+    margin: 0 0 var(--s-2);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--d-base) var(--ease-out);
+  }
+
+  .stat-cmp {
+    font: 400 var(--t-sm)/1.45 var(--f-ui);
+    color: var(--c-ink-dim);
+    margin: 0;
+  }
+
+  .telemetry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4) var(--s-8);
+    align-items: center;
+    padding: var(--s-4) var(--s-6);
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px dashed var(--c-line);
+    border-radius: var(--r-sm);
+    font: 400 var(--t-xs)/1.4 var(--f-record);
+    letter-spacing: 0.1em;
+  }
+
+  :global([data-theme="dark"]) .telemetry-meta {
+    background: rgba(255, 255, 255, 0.015);
+  }
+
+  .meta-item {
+    display: inline-flex;
+    gap: var(--s-2);
+    align-items: center;
+  }
+
+  .meta-label {
+    color: var(--c-ink-dim);
+    font-weight: 500;
+  }
+
+  .meta-val {
+    color: var(--c-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+  }
+
+  .pulse-indicator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--c-status-sage);
+    display: inline-block;
+  }
+
+  .legacy-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    border-left: 2px solid var(--c-accent);
+    padding-left: var(--s-4);
+    margin-block: var(--s-2);
+    transition: border-color var(--d-base) var(--ease-out);
+  }
+
+  .legacy-tag {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+  }
+
+  .legacy-quote {
+    font: italic 400 var(--t-md)/var(--lh-voice) var(--f-voice);
+    color: var(--c-ink);
+    margin: 0;
+    max-width: 72ch;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+    padding-top: var(--s-2);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .verify-note {
+    font: 400 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+    font-size: 0.72rem;
+  }
+
+  @media (max-width: 640px) {
+    .record-card {
+      margin-inline: var(--s-3);
+      padding: var(--s-6) var(--s-4) var(--s-8);
+      gap: var(--s-6);
+    }
+    .telemetry-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-2);
+    }
+    .card-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--s-3);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stat-cell:hover, .stat-cell:focus-visible {
+      transform: none;
+    }
+  }
 </style>

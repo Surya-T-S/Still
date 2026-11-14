@@ -1,26 +1,41 @@
 ---
+/**
+ * index.astro — owned by Vrindha (Platform & Structure).
+ * The primary journey page: Prologue → Act I (Moon) → Act II (Mars) → Act III (Deep Space) → Epilogue → Archive.
+ * Emits clean data-* attributes for Surya's TrajectoryNav and GSAP ScrollTrigger engine.
+ * Wires real data from data/artifacts.json, data/images/, and story/chapters/*.mdx with zero placeholder content.
+ */
 import Base from "../layouts/Base.astro";
 import { getCollection, getEntry, render } from "astro:content";
 import ChapterHero from "../components/ChapterHero.astro";
 import VoiceBlock from "../components/VoiceBlock.astro";
 import RecordCard from "../components/RecordCard.astro";
+import CitationChip from "../components/CitationChip.astro";
 import { lineArt } from "../illustrations";
 
 const ACT_ORDER = { moon: 0, mars: 1, deep: 2 } as const;
 const ACT_LABEL = { moon: "The Moon", mars: "Mars", deep: "Deep Space" } as const;
+const ACT_SUBTITLES = {
+  moon: "Act I · The Ones We Walked Beside",
+  mars: "Act II · The Ones Who Went Alone",
+  deep: "Act III · The Ones Still Going",
+} as const;
 
-// B's data, ordered Moon → Mars → Deep Space
-const artifacts = (await getCollection("artifacts"))
+// Fetch and sort artifacts: Moon → Mars → Deep Space
+const rawArtifacts = await getCollection("artifacts");
+const artifacts = rawArtifacts
   .map((e) => e.data)
   .sort((a, b) => ACT_ORDER[a.act] - ACT_ORDER[b.act] || a.order - b.order);
 
-// Fact gate: `npm run build:strict` refuses to ship unverified data.
+// Fact verification gate: `npm run build:strict` enforces verified facts
 if (process.env.STRICT_FACTS === "true") {
-  const bad = artifacts.filter((a) => !a.verified).map((a) => a.slug);
-  if (bad.length) throw new Error(`Unverified artifacts (B must check): ${bad.join(", ")}`);
+  const unverified = artifacts.filter((a) => !a.verified).map((a) => a.slug);
+  if (unverified.length > 0) {
+    throw new Error(`Unverified artifacts detected (Data review required): ${unverified.join(", ")}`);
+  }
 }
 
-// Pair each artifact with A's story
+// Pair artifacts with story MDX chapters
 const chapters = await Promise.all(
   artifacts.map(async (a) => {
     const story = await getEntry("story", a.slug);
@@ -28,67 +43,909 @@ const chapters = await Promise.all(
     return { a, story: story?.data, Body };
   }),
 );
-const prologue = (await getEntry("story", "prologue"))?.data;
+
+// Fetch Prologue and Epilogue stories
+const prologueEntry = await getEntry("story", "prologue");
+const prologue = prologueEntry?.data;
+
+const epilogueEntry = await getEntry("story", "epilogue");
+const EpilogueBody = epilogueEntry ? (await render(epilogueEntry)).Content : null;
+const epilogue = epilogueEntry?.data;
+
+// Helper to sanitize image paths for public asset serving
+function resolveImgSrc(pathStr?: string): string {
+  if (!pathStr) return "";
+  if (pathStr.startsWith("/")) return pathStr;
+  return pathStr.replace("../data/images/", "/images/").replace("../data/", "/");
+}
 ---
 <Base>
+  <!-- PROLOGUE: Earth & Countdown of Silence -->
   {prologue && (
-    <section class="prologue" data-chapter data-label="Earth" data-act="moon" data-distance="0" data-light="0">
-      <div data-split class="pro-lines">
-        {prologue.voice.map((l) => <p>{l}</p>)}
+    <section
+      class="chapter prologue"
+      id="prologue"
+      data-chapter
+      data-label="Earth"
+      data-act="moon"
+      data-distance="0"
+      data-light="0"
+    >
+      <div class="prologue-content">
+        <span class="prologue-telemetry" data-reveal>POINT OF ORIGIN · EARTH · 0 LIGHT-SECONDS</span>
+        <div data-split class="pro-lines">
+          {prologue.voice.map((line) => (
+            <p>{line}</p>
+          ))}
+        </div>
+        <button
+          type="button"
+          class="cta cta-scroll-btn"
+          data-reveal
+          data-scroll-target="apollo-lunar-modules"
+          aria-label="Begin scroll journey toward the Moon"
+        >
+          <span class="cta-text">{prologue.legacyLine}</span>
+          <span class="cta-arrow" aria-hidden="true">↓</span>
+        </button>
       </div>
-      <p class="cta" data-reveal>{prologue.legacyLine} <span aria-hidden="true">↓</span></p>
     </section>
   )}
 
-  {chapters.map(({ a, story, Body }) => (
-    <section
-      class="chapter"
-      id={a.slug}
-      data-chapter
-      data-label={`${ACT_LABEL[a.act]} · ${a.nickname ?? a.name}`}
-      data-act={a.act}
-      data-distance={a.distanceKm}
-      data-light={a.lightTimeSec}
-    >
-      <ChapterHero
-        name={a.name}
-        nickname={a.nickname}
-        hook={story?.hook ?? ""}
-        act={a.act}
-        lineArt={lineArt(a.images.lineArt)}
-      />
-      {story && <VoiceBlock lines={story.voice} truthNote={story.truthNote} />}
-      {Body && <div class="narration" data-reveal><Body /></div>}
-      <RecordCard
-        stats={a.stats}
-        lastContact={a.lastContact}
-        site={a.location.site}
-        nssdcaId={a.nssdcaId}
-        nssdcaUrl={a.nssdcaUrl}
-        legacy={a.legacy}
-      />
-    </section>
-  ))}
+  <!-- CHAPTERS: Act I (Moon), Act II (Mars), Act III (Deep Space) -->
+  {chapters.map(({ a, story, Body }, idx) => {
+    const prevAct = idx > 0 ? chapters[idx - 1].a.act : null;
+    const isNewAct = prevAct !== a.act;
+    const hasBothImages = Boolean(a.images.then && a.images.now);
 
-  <section id="archive" class="archive">
-    <h2>The Archive</h2>
-    <ul>
-      {artifacts.map((a) => (
-        <li><a href={`#${a.slug}`}>{a.nickname ?? a.name}</a> · {a.mission} · <a href={a.nssdcaUrl} target="_blank" rel="noopener">NSSDCA {a.nssdcaId}</a></li>
-      ))}
-    </ul>
-    <p class="credit">Imagery and data courtesy of NASA. This project is not endorsed by NASA.</p>
+    return (
+      <>
+        {isNewAct && (
+          <div class="act-marker" data-reveal aria-label={ACT_SUBTITLES[a.act]}>
+            <span class="marker-line" aria-hidden="true"></span>
+            <span class="marker-badge">{ACT_SUBTITLES[a.act]}</span>
+            <span class="marker-line" aria-hidden="true"></span>
+          </div>
+        )}
+
+        <section
+          class="chapter"
+          id={a.slug}
+          data-chapter
+          data-label={`${ACT_LABEL[a.act]} · ${a.nickname ?? a.name}`}
+          data-act={a.act}
+          data-distance={a.distanceKm}
+          data-light={a.lightTimeSec}
+        >
+          <ChapterHero
+            name={a.name}
+            nickname={a.nickname}
+            hook={story?.hook ?? ""}
+            act={a.act}
+            lineArt={lineArt(a.images.lineArt)}
+          />
+
+          {story && (
+            <VoiceBlock
+              lines={story.voice}
+              truthNote={story.truthNote}
+            />
+          )}
+
+          {Body && (
+            <div class="narration" data-reveal>
+              <Body />
+            </div>
+          )}
+
+          {/* NASA Photo Documentation Layer (Interactive Then vs Now Comparison) */}
+          {(a.images.then || a.images.now) && (
+            <div class="chapter-imagery" data-reveal data-chapter-imagery={a.slug}>
+              <div class="imagery-header">
+                <span class="imagery-kicker">PHOTO RECORD · ARCHIVAL vs MODERN SURVEY</span>
+                {hasBothImages && (
+                  <div class="imagery-tabs" role="tablist" aria-label="Photo view mode">
+                    <button type="button" class="img-tab active" data-view="both" role="tab" aria-selected="true">DUAL VIEW</button>
+                    <button type="button" class="img-tab" data-view="then" role="tab" aria-selected="false">THEN</button>
+                    <button type="button" class="img-tab" data-view="now" role="tab" aria-selected="false">NOW</button>
+                  </div>
+                )}
+              </div>
+
+              <div class={`imagery-grid ${hasBothImages ? 'is-dual' : 'is-single'}`} data-grid>
+                {a.images.then && (
+                  <figure class="image-card card-then" data-card="then">
+                    <div class="image-wrapper">
+                      <img
+                        src={resolveImgSrc(a.images.then.src)}
+                        alt={a.images.then.alt}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span class="image-badge">THEN · HISTORIC</span>
+                    </div>
+                    <figcaption class="image-caption">
+                      <p class="caption-text">{a.images.then.alt}</p>
+                      <span class="caption-credit">CREDIT: {a.images.then.credit}</span>
+                    </figcaption>
+                  </figure>
+                )}
+
+                {a.images.now && (
+                  <figure class="image-card card-now" data-card="now">
+                    <div class="image-wrapper">
+                      <img
+                        src={resolveImgSrc(a.images.now.src)}
+                        alt={a.images.now.alt}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span class="image-badge">NOW · ORBITAL</span>
+                    </div>
+                    <figcaption class="image-caption">
+                      <p class="caption-text">{a.images.now.alt}</p>
+                      <span class="caption-credit">CREDIT: {a.images.now.credit}</span>
+                    </figcaption>
+                  </figure>
+                )}
+              </div>
+            </div>
+          )}
+
+          <RecordCard
+            stats={a.stats}
+            lastContact={a.lastContact}
+            site={a.location.site}
+            nssdcaId={a.nssdcaId}
+            nssdcaUrl={a.nssdcaUrl}
+            legacy={a.legacy}
+          />
+        </section>
+      </>
+    );
+  })}
+
+  <!-- EPILOGUE: Leave Something Behind -->
+  {epilogue && (
+    <section
+      class="chapter epilogue"
+      id="epilogue"
+      data-chapter
+      data-label="Epilogue · The Silent Fleet"
+      data-act="deep"
+      data-distance="24000000000"
+      data-light="80000"
+    >
+      <div class="epilogue-container">
+        <header class="epilogue-header" data-reveal>
+          <span class="epilogue-kicker">EPILOGUE · COLD TELEMETRY</span>
+          <h2 class="epilogue-title">{epilogue.hook}</h2>
+        </header>
+
+        <div class="epilogue-voice" data-split>
+          {epilogue.voice.map((line) => (
+            <p class="epilogue-line">{line}</p>
+          ))}
+        </div>
+
+        {EpilogueBody && (
+          <div class="narration epilogue-prose" data-reveal>
+            <EpilogueBody />
+          </div>
+        )}
+
+        {epilogue.keepsake && (
+          <aside class="keepsake-card" data-reveal>
+            <div class="keepsake-header">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="keepsake-title">ORBITAL KEEPSAKE · MISSION LOG</span>
+            </div>
+            <p class="keepsake-body">{epilogue.keepsake}</p>
+
+            <!-- Interactive Speed of Light Radio Simulator -->
+            <div class="simulator-box" id="echo-sim">
+              <span class="sim-label">CALCULATE RADIO ECHO FROM EARTH:</span>
+              <div class="sim-targets" role="group" aria-label="Select target spacecraft">
+                {artifacts.filter((x) => ["apollo-lunar-modules", "spirit-opportunity", "dawn", "pioneer"].includes(x.slug)).map((x, i) => (
+                  <button
+                    type="button"
+                    class={`sim-btn ${i === 0 ? 'active' : ''}`}
+                    data-dist={x.distanceKm}
+                    data-light={x.lightTimeSec}
+                    data-name={x.nickname ?? x.name}
+                  >
+                    {x.nickname ?? x.name}
+                  </button>
+                ))}
+              </div>
+              <div class="sim-readout">
+                <span class="sim-where" data-sim-target>EAGLE (APOLLO 11)</span>
+                <span class="sim-dist" data-sim-dist>384,400 km</span>
+                <span class="sim-time" data-sim-delay>1.28 s round-trip delay</span>
+              </div>
+            </div>
+          </aside>
+        )}
+
+        <div class="epilogue-legacy-box" data-reveal>
+          <p class="legacy-final-line">{epilogue.legacyLine}</p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ARCHIVE: Master Historical Index -->
+  <section id="archive" class="archive" data-reveal>
+    <div class="archive-header">
+      <span class="archive-kicker">MASTER INDEX</span>
+      <h2>The Silent Fleet Archive</h2>
+      <p class="archive-sub">Complete verifiable historical registry of humanity's ambassadors beyond Earth.</p>
+      
+      <!-- Interactive Archive Act Filter -->
+      <div class="archive-filters" role="group" aria-label="Filter artifacts by act">
+        <button type="button" class="filter-btn active" data-filter="all">ALL (13)</button>
+        <button type="button" class="filter-btn" data-filter="moon">THE MOON (4)</button>
+        <button type="button" class="filter-btn" data-filter="mars">MARS (5)</button>
+        <button type="button" class="filter-btn" data-filter="deep">DEEP SPACE (4)</button>
+      </div>
+    </div>
+
+    <div class="archive-table-wrapper">
+      <table class="archive-table" id="archive-table">
+        <thead>
+          <tr>
+            <th>HARDWARE</th>
+            <th>BODY</th>
+            <th>MISSION</th>
+            <th>LAST CONTACT</th>
+            <th>DELAY</th>
+            <th>RECORD</th>
+          </tr>
+        </thead>
+        <tbody>
+          {artifacts.map((a) => (
+            <tr data-act={a.act} data-slug={a.slug} class="archive-row">
+              <td class="name-col">
+                <a href={`#${a.slug}`} class="archive-link" data-scroll-slug={a.slug}>{a.nickname ?? a.name}</a>
+              </td>
+              <td><span class={`body-tag tag-${a.act}`}>{a.location.body}</span></td>
+              <td class="mission-col">{a.mission}</td>
+              <td class="contact-col">{a.lastContact}</td>
+              <td class="delay-col">{a.lightTimeSec < 60 ? `${a.lightTimeSec}s` : `${Math.floor(a.lightTimeSec / 60)}m`}</td>
+              <td class="chip-col">
+                <CitationChip href={a.nssdcaUrl} label={`NSSDCA ${a.nssdcaId}`} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="archive-footer">
+      <p class="credit">Imagery, coordinates, and telemetry courtesy of NASA / JPL-Caltech / ASU / Goddard Space Flight Center. This project is created for the NASA Space Apps Challenge 2026 and is not endorsed by NASA.</p>
+    </footer>
   </section>
 </Base>
 
+<script>
+  import { scrollToChapter } from "../scripts/engine";
+
+  // 1. Prologue CTA click-to-scroll
+  document.querySelectorAll<HTMLElement>("[data-scroll-target]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.scrollTarget;
+      if (target) scrollToChapter(target);
+    });
+  });
+
+  // 2. Interactive Then/Now view switching
+  document.querySelectorAll<HTMLElement>("[data-chapter-imagery]").forEach((container) => {
+    const tabs = container.querySelectorAll<HTMLButtonElement>(".img-tab");
+    const grid = container.querySelector<HTMLElement>("[data-grid]");
+    const cardThen = container.querySelector<HTMLElement>('[data-card="then"]');
+    const cardNow = container.querySelector<HTMLElement>('[data-card="now"]');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        const view = tab.dataset.view;
+        if (!grid) return;
+
+        if (view === "both") {
+          grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
+          if (cardThen) cardThen.style.display = "flex";
+          if (cardNow) cardNow.style.display = "flex";
+        } else if (view === "then") {
+          grid.style.gridTemplateColumns = "1fr";
+          if (cardThen) cardThen.style.display = "flex";
+          if (cardNow) cardNow.style.display = "none";
+        } else if (view === "now") {
+          grid.style.gridTemplateColumns = "1fr";
+          if (cardThen) cardThen.style.display = "none";
+          if (cardNow) cardNow.style.display = "flex";
+        }
+      });
+    });
+  });
+
+  // 3. Interactive Archive Filtering & Row Jumps
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>(".filter-btn");
+  const tableRows = document.querySelectorAll<HTMLElement>(".archive-row");
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const act = btn.dataset.filter;
+      tableRows.forEach((row) => {
+        if (act === "all" || row.dataset.act === act) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-scroll-slug]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const slug = link.dataset.scrollSlug;
+      if (slug) scrollToChapter(slug);
+    });
+  });
+
+  // 4. Epilogue Radio Simulator
+  const simBtns = document.querySelectorAll<HTMLButtonElement>(".sim-btn");
+  const simTarget = document.querySelector<HTMLElement>("[data-sim-target]");
+  const simDist = document.querySelector<HTMLElement>("[data-sim-dist]");
+  const simDelay = document.querySelector<HTMLElement>("[data-sim-delay]");
+
+  const fmtDist = (km: number) =>
+    km >= 1e9 ? `${(km / 1e9).toFixed(2)} Billion km`
+    : km >= 1e6 ? `${(km / 1e6).toFixed(1)} Million km`
+    : `${Math.round(km).toLocaleString("en-US")} km`;
+
+  const fmtDelay = (sec: number) => {
+    const roundTrip = sec * 2;
+    if (roundTrip < 60) return `${roundTrip.toFixed(2)} s round-trip light delay`;
+    if (roundTrip < 3600) return `${Math.floor(roundTrip / 60)}m ${Math.round(roundTrip % 60)}s round-trip delay`;
+    return `${Math.floor(roundTrip / 3600)}h ${Math.round((roundTrip % 3600) / 60)}m round-trip delay`;
+  };
+
+  simBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      simBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const name = btn.dataset.name ?? "";
+      const dist = Number(btn.dataset.dist ?? 0);
+      const light = Number(btn.dataset.light ?? 0);
+
+      if (simTarget) simTarget.textContent = name.toUpperCase();
+      if (simDist) simDist.textContent = fmtDist(dist);
+      if (simDelay) simDelay.textContent = fmtDelay(light);
+    });
+  });
+</script>
+
 <style>
-  .prologue { min-height: 100vh; display: grid; place-content: center; text-align: center; padding: var(--s-8); gap: var(--s-12); }
-  .pro-lines p { font: italic 400 var(--t-xl)/var(--lh-voice) var(--f-voice); margin: 0 auto var(--s-4); max-width: 22ch; }
-  .pro-lines p:last-child { font-style: normal; color: var(--c-accent); }
-  .cta { font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-ink-dim); }
-  .narration { max-width: var(--measure); margin-inline: auto; padding-inline: var(--s-6); color: var(--c-ink-dim); }
-  .archive { max-width: var(--measure); margin-inline: auto; padding: var(--s-24) var(--s-6); font-family: var(--f-record); font-size: var(--t-sm); }
-  .archive h2 { font: 400 var(--t-lg)/1 var(--f-voice); }
-  .archive li { margin-bottom: var(--s-2); color: var(--c-ink-dim); }
-  .credit { margin-top: var(--s-12); color: var(--c-ink-dim); font-size: var(--t-xs); }
+  /* Prologue */
+  .prologue {
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    padding: var(--s-16) var(--s-6);
+  }
+  .prologue-content {
+    max-width: 68ch;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  .prologue-telemetry {
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-status-brass);
+    border: 1px solid var(--c-line);
+    padding: var(--s-2) var(--s-4);
+    border-radius: var(--r-pill);
+    background: var(--c-bg-raised);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .pro-lines p {
+    font: italic 400 var(--t-xl)/var(--lh-voice) var(--f-voice);
+    margin: 0 0 var(--s-4);
+    color: var(--c-ink);
+  }
+  .pro-lines p:last-child {
+    font-style: normal;
+    color: var(--c-accent);
+    font-weight: 500;
+  }
+  .cta-scroll-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-ink-dim);
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+    padding: var(--s-3) var(--s-6);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: color var(--d-fast) var(--ease-out),
+                border-color var(--d-fast) var(--ease-out),
+                transform var(--d-fast) var(--ease-out),
+                box-shadow var(--d-fast) var(--ease-out);
+  }
+  .cta-scroll-btn:hover {
+    color: var(--c-accent);
+    border-color: var(--c-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  }
+  .cta-arrow {
+    font-size: 1.1em;
+    animation: bounce 2.2s infinite ease-in-out;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+  }
+
+  /* Act Transitions */
+  .act-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-4);
+    max-width: 920px;
+    margin: var(--s-24) auto var(--s-8);
+    padding-inline: var(--s-6);
+  }
+  .marker-line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--c-line);
+  }
+  .marker-badge {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    padding: var(--s-2) var(--s-4);
+    background: var(--c-bg-raised);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+  }
+
+  /* Narration */
+  .narration {
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding-inline: var(--s-6);
+    color: var(--c-ink-dim);
+    font-size: var(--t-md);
+    line-height: var(--lh-body);
+  }
+  .narration :global(p) {
+    margin-bottom: var(--s-6);
+  }
+
+  /* Chapter NASA Imagery & View Switcher */
+  .chapter-imagery {
+    max-width: 920px;
+    margin: var(--s-12) auto;
+    padding-inline: var(--s-6);
+  }
+  .imagery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-3);
+    border-bottom: 1px solid var(--c-line);
+    padding-bottom: var(--s-2);
+  }
+  .imagery-kicker {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.14em;
+    color: var(--c-status-brass);
+  }
+  .imagery-tabs {
+    display: inline-flex;
+    gap: var(--s-1);
+    background: var(--c-bg-raised);
+    padding: 2px;
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+  }
+  .img-tab {
+    background: none;
+    border: none;
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+    padding: 4px 8px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: color var(--d-fast) var(--ease-out), background-color var(--d-fast) var(--ease-out);
+  }
+  .img-tab.active {
+    background: var(--c-line);
+    color: var(--c-ink);
+    font-weight: 600;
+  }
+  .imagery-grid {
+    display: grid;
+    gap: var(--s-6);
+    transition: all var(--d-base) var(--ease-out);
+  }
+  .imagery-grid.is-dual {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .imagery-grid.is-single {
+    grid-template-columns: 1fr;
+  }
+  .image-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-sm);
+    background: var(--c-bg-raised);
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: border-color var(--d-fast) var(--ease-out),
+                box-shadow var(--d-fast) var(--ease-out);
+  }
+  .image-card:hover {
+    border-color: var(--c-accent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  }
+  .image-wrapper {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.2) contrast(1.04);
+    transition: transform var(--d-slow) var(--ease-out),
+                filter var(--d-base) var(--ease-out);
+  }
+  .image-card:hover .image-wrapper img {
+    transform: scale(1.025);
+    filter: grayscale(0) contrast(1);
+  }
+  .image-badge {
+    position: absolute;
+    top: var(--s-3);
+    left: var(--s-3);
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.12em;
+    padding: var(--s-1) var(--s-2);
+    background: var(--c-bg-glass);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-sm);
+    color: var(--c-accent);
+  }
+  .image-caption {
+    padding: var(--s-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .caption-text {
+    font: 400 var(--t-sm)/1.45 var(--f-ui);
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .caption-credit {
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+  }
+
+  /* Epilogue */
+  .epilogue {
+    padding: var(--s-24) var(--s-6);
+  }
+  .epilogue-container {
+    max-width: 920px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-8);
+  }
+  .epilogue-header {
+    text-align: center;
+  }
+  .epilogue-kicker {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.18em;
+    color: var(--c-status-brass);
+    display: block;
+    margin-bottom: var(--s-2);
+  }
+  .epilogue-title {
+    font: 400 var(--t-xl)/1.15 var(--f-voice);
+    color: var(--c-ink);
+    margin: 0;
+  }
+  .epilogue-voice {
+    max-width: var(--measure);
+    margin: 0 auto;
+    text-align: center;
+  }
+  .epilogue-line {
+    font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
+    color: var(--c-ink);
+    margin-bottom: var(--s-4);
+  }
+  .keepsake-card {
+    background: var(--c-bg-raised);
+    border: 1px solid var(--c-line);
+    border-left: 3px solid var(--c-status-brass);
+    border-radius: var(--r-sm);
+    padding: var(--s-6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  .keepsake-header {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-3);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--c-status-brass);
+  }
+  .keepsake-title {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.14em;
+    color: var(--c-status-brass);
+  }
+  .keepsake-body {
+    font: 400 var(--t-md)/1.6 var(--f-ui);
+    color: var(--c-ink);
+    margin: 0;
+  }
+
+  /* Simulator */
+  .simulator-box {
+    margin-top: var(--s-6);
+    padding-top: var(--s-4);
+    border-top: 1px dashed var(--c-line);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .sim-label {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.12em;
+    color: var(--c-ink-dim);
+  }
+  .sim-targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .sim-btn {
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+    color: var(--c-ink-dim);
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    padding: var(--s-2) var(--s-3);
+    cursor: pointer;
+    transition: all var(--d-fast) var(--ease-out);
+  }
+  .sim-btn:hover {
+    color: var(--c-accent);
+    border-color: var(--c-accent);
+  }
+  .sim-btn.active {
+    background: var(--c-accent);
+    color: var(--c-bg);
+    border-color: var(--c-accent);
+    font-weight: 600;
+  }
+  .sim-readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    align-items: center;
+    background: rgba(0, 0, 0, 0.03);
+    padding: var(--s-3) var(--s-4);
+    border-radius: var(--r-sm);
+    font: 500 var(--t-xs)/1 var(--f-record);
+  }
+  :global([data-theme="dark"]) .sim-readout {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .sim-where {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+  .sim-dist, .sim-time {
+    color: var(--c-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .epilogue-legacy-box {
+    text-align: center;
+    padding: var(--s-6);
+    border-top: 1px solid var(--c-line);
+    border-bottom: 1px solid var(--c-line);
+  }
+  .legacy-final-line {
+    font: 400 var(--t-lg)/1.3 var(--f-voice);
+    color: var(--c-accent);
+    margin: 0;
+  }
+
+  /* Archive */
+  .archive {
+    max-width: 960px;
+    margin-inline: auto;
+    padding: var(--s-24) var(--s-6);
+  }
+  .archive-header {
+    text-align: center;
+    margin-bottom: var(--s-10);
+  }
+  .archive-kicker {
+    font: 600 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.2em;
+    color: var(--c-status-brass);
+    display: block;
+    margin-bottom: var(--s-2);
+  }
+  .archive-header h2 {
+    font: 400 var(--t-xl)/1.1 var(--f-voice);
+    color: var(--c-ink);
+    margin: 0 0 var(--s-2);
+  }
+  .archive-sub {
+    font: 400 var(--t-sm)/1.5 var(--f-ui);
+    color: var(--c-ink-dim);
+    max-width: 52ch;
+    margin: 0 auto var(--s-6);
+  }
+  .archive-filters {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    justify-content: center;
+    background: var(--c-bg-raised);
+    padding: var(--s-1) var(--s-2);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+  }
+  .filter-btn {
+    background: none;
+    border: none;
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: all var(--d-fast) var(--ease-out);
+  }
+  .filter-btn.active {
+    background: var(--c-line);
+    color: var(--c-ink);
+    font-weight: 600;
+  }
+  .archive-table-wrapper {
+    overflow-x: auto;
+    background: var(--c-bg-raised);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-sm);
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+  }
+  .archive-table {
+    width: 100%;
+    border-collapse: collapse;
+    font: 400 var(--t-sm)/1.4 var(--f-record);
+    text-align: left;
+  }
+  .archive-table th {
+    padding: var(--s-4);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--c-ink-dim);
+    border-bottom: 1px solid var(--c-line);
+    background: rgba(0, 0, 0, 0.02);
+  }
+  .archive-table td {
+    padding: var(--s-4);
+    border-bottom: 1px solid var(--c-line);
+    vertical-align: middle;
+  }
+  .archive-row {
+    transition: background-color var(--d-fast) var(--ease-out);
+  }
+  .archive-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+  :global([data-theme="dark"]) .archive-row:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+  .archive-table tr:last-child td {
+    border-bottom: none;
+  }
+  .archive-link {
+    color: var(--c-ink);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--d-fast) var(--ease-out);
+  }
+  .archive-link:hover {
+    color: var(--c-accent);
+  }
+  .body-tag {
+    font-size: var(--t-xs);
+    padding: 2px 6px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--c-line);
+  }
+  .tag-moon { color: var(--c-moon); }
+  .tag-mars { color: var(--c-mars); }
+  .tag-deep { color: var(--c-deep); }
+  .contact-col, .delay-col {
+    font-variant-numeric: tabular-nums;
+    color: var(--c-ink-dim);
+  }
+  .archive-footer {
+    margin-top: var(--s-8);
+    text-align: center;
+  }
+  .credit {
+    font: 400 var(--t-xs)/1.5 var(--f-record);
+    color: var(--c-ink-dim);
+    max-width: 60ch;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 640px) {
+    .archive-table th, .archive-table td {
+      padding: var(--s-3);
+      font-size: 0.72rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-arrow {
+      animation: none;
+    }
+    .image-card:hover .image-wrapper img {
+      transform: none;
+    }
+  }
 </style>

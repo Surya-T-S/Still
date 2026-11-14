@@ -1,13 +1,63 @@
 ---
-/** CitationChip — owned by C. Links any fact to its archive record. */
-interface Props { href: string; label: string }
-const { href, label } = Astro.props;
+/** CitationChip — owned by Vrindha (Platform & Structure). Links any fact to its official archive record. */
+interface Props {
+  href: string;
+  label: string;
+  ariaLabel?: string;
+}
+const { href, label, ariaLabel } = Astro.props;
 ---
-<a class="chip" href={href} target="_blank" rel="noopener">
-  <span aria-hidden="true">↗</span> {label}
+<a
+  class="citation-chip"
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={ariaLabel ?? `External record: ${label}`}
+>
+  <span class="chip-label">{label}</span>
+  <span class="chip-arrow" aria-hidden="true">↗</span>
 </a>
 
 <style>
-  .chip { display: inline-flex; gap: var(--s-2); align-items: center; font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.08em; color: var(--c-ink-dim); text-decoration: none; border: 1px solid var(--c-line); border-radius: var(--r-pill); padding: var(--s-2) var(--s-3); transition: color var(--d-fast) var(--ease-out), border-color var(--d-fast) var(--ease-out), transform var(--d-fast) var(--ease-out); }
-  .chip:hover, .chip:focus-visible { color: var(--c-accent); border-color: var(--c-accent); transform: translateY(-1px); }
+  .citation-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+    background: var(--c-bg-raised);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+    padding: calc(var(--s-1) * 1.5) var(--s-3);
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: color var(--d-fast) var(--ease-out),
+                border-color var(--d-fast) var(--ease-out),
+                background-color var(--d-fast) var(--ease-out),
+                transform var(--d-fast) var(--ease-out),
+                box-shadow var(--d-fast) var(--ease-out);
+  }
+
+  .citation-chip:hover {
+    color: var(--c-accent);
+    border-color: var(--c-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .citation-chip:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+
+  .chip-arrow {
+    display: inline-block;
+    font-size: 0.9em;
+    transition: transform var(--d-fast) var(--ease-out);
+  }
+
+  .citation-chip:hover .chip-arrow {
+    transform: translate(1px, -1px);
+  }
 </style>
