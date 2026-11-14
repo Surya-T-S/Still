@@ -2,15 +2,15 @@
   "apollo-lunar-modules": {
     "slug": "apollo-lunar-modules",
     "name": "Apollo Lunar Modules",
-    "nickname": "Eagle & The Descent Stages",
+    "nickname": "Eagle - Apollo 11, Intrepid - Apollo 12, Falcon - Apollo 15",
     "act": "moon",
     "order": 1,
     "mission": "Apollo 11–17",
-    "nssdcaId": "1969-059C",
+    "nssdcaId": "1969-059C - Apollo 11, 1969-099C - Apollo 12, 1971-063C - Apollo 15",
     "nssdcaUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C",
     "launchDate": "1969-07-16",
     "arrivalDate": "1969-07-20",
-    "lastContact": "1969-07-21",
+    "lastContact": "1969-07-22",
     "status": "silent",
     "location": {
       "body": "Moon",
@@ -41,7 +41,21 @@
       }
     ],
     "legacy": "Because of these descent stages, astronauts had a launch pad to lift off the Moon and come home.",
-    "images": { "lineArt": "apollo-lunar-modules.svg" },
+    "images": {
+      "lineArt": "apollo-lunar-modules.svg",
+      "then": {
+        "src": "../data/images/apollo-lunar-modules-then.jpg",
+        "alt": "Apollo 11 Lunar Module Eagle on the Moon's surface at Tranquility Base",
+        "credit": "NASA",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+      },
+      "now": {
+        "src": "../data/images/apollo-lunar-modules-now.jpg",
+        "alt": "Orbital view of the Apollo 11 landing site showing the Eagle descent stage and astronaut tracks",
+        "credit": "NASA/GSFC/Arizona State University",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+      }
+    },
     "sources": [
       "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
     ],
@@ -89,7 +103,21 @@
       }
     ],
     "legacy": "Because of the Moon Buggies, astronauts explored miles beyond their landing site instead of just walking distance.",
-    "images": { "lineArt": "lunar-roving-vehicles.svg" },
+    "images": {
+      "lineArt": "lunar-roving-vehicles.svg",
+      "then": {
+        "src": "../data/images/lunar-roving-vehicles-then.jpg",
+        "alt": "Apollo 15 Lunar Roving Vehicle parked on the Moon at Hadley–Apennine",
+        "credit": "NASA",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+      },
+      "now": {
+        "src": "../data/images/lunar-roving-vehicles-now.jpg",
+        "alt": "Orbital view of the Apollo 15 site showing the parked rover and its tracks",
+        "credit": "NASA/GSFC/Arizona State University",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+      }
+    },
     "sources": [
       "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
     ],
@@ -135,7 +163,21 @@
       }
     ],
     "legacy": "Because of ALSEP and Apollo's mirrors, we know the Moon has quakes and drifts slowly away from Earth.",
-    "images": { "lineArt": "alsep.svg" },
+    "images": {
+      "lineArt": "alsep.svg",
+      "then": {
+        "src": "../data/images/alsep-then.jpg",
+        "alt": "Apollo 12 ALSEP science station deployed on the lunar surface",
+        "credit": "NASA",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+      },
+      "now": {
+        "src": "../data/images/alsep-now.jpg",
+        "alt": "Orbital view of the Apollo 12 site showing the ALSEP station",
+        "credit": "NASA/GSFC/Arizona State University",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+      }
+    },
     "sources": [
       "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
     ],
@@ -178,12 +220,26 @@
       {
         "label": "Last signal",
         "value": "May 4, 1967",
-        "comparison": "Fell silent after its first lunar night",
+        "comparison": "Went silent as its first lunar night began",
         "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
       }
     ],
     "legacy": "Because of Surveyor, engineers knew the Moon's dust wouldn't swallow Apollo's landers.",
-    "images": { "lineArt": "surveyor.svg" },
+    "images": {
+      "lineArt": "surveyor.svg",
+      "then": {
+        "src": "../data/images/surveyor-then.jpg",
+        "alt": "Apollo 12 astronaut standing beside the Surveyor 3 lander on the Moon",
+        "credit": "NASA",
+        "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
+      },
+      "now": {
+        "src": "../data/images/surveyor-now.jpg",
+        "alt": "Orbital view of Surveyor 3 resting in its crater near the Apollo 12 landing site",
+        "credit": "NASA/GSFC/Arizona State University",
+        "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/surveyor-3/"
     ],
@@ -231,7 +287,21 @@
       }
     ],
     "legacy": "Because of Sojourner, humanity learned how to drive across Mars.",
-    "images": { "lineArt": "sojourner.svg" },
+    "images": {
+      "lineArt": "sojourner.svg",
+      "then": {
+        "src": "../data/images/sojourner-then.jpg",
+        "alt": "Sojourner rover on the Martian surface beside Pathfinder's rocks",
+        "credit": "NASA/JPL",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-pathfinder/"
+      },
+      "now": {
+        "src": "../data/images/sojourner-now.jpg",
+        "alt": "Orbital view of the Mars Pathfinder landing site",
+        "credit": "NASA/JPL-Caltech/University of Arizona",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-pathfinder/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/mars-pathfinder/"
     ],
@@ -256,8 +326,14 @@
     },
     "distanceKm": 225000000,
     "lightTimeSec": 750.5,
-    "planned": { "value": 90, "unit": "sols" },
-    "actual": { "value": 5352, "unit": "sols" },
+    "planned": {
+      "value": 90,
+      "unit": "sols"
+    },
+    "actual": {
+      "value": 5111,
+      "unit": "sols"
+    },
     "stats": [
       {
         "label": "Planned mission",
@@ -279,7 +355,15 @@
       }
     ],
     "legacy": "Because of Spirit and Opportunity, we know liquid water once shaped ancient Mars.",
-    "images": { "lineArt": "spirit-opportunity.svg" },
+    "images": {
+      "lineArt": "spirit-opportunity.svg",
+      "then": {
+        "src": "../data/images/spirit-opportunity-then.webp",
+        "alt": "Spirit and Opportunity twin Mars rovers",
+        "credit": "NASA/JPL-Caltech",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
     ],
@@ -296,7 +380,7 @@
     "nssdcaUrl": "https://science.nasa.gov/mission/viking-1/",
     "launchDate": "1975-08-20",
     "arrivalDate": "1976-07-20",
-    "lastContact": "1982-11-13",
+    "lastContact": "1982-11-11",
     "status": "silent",
     "location": {
       "body": "Mars",
@@ -314,7 +398,7 @@
       {
         "label": "Viking 1 operated",
         "value": "6+ years",
-        "comparison": "Last contact November 13, 1982",
+        "comparison": "Last contact November 11, 1982",
         "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
       },
       {
@@ -325,7 +409,21 @@
       }
     ],
     "legacy": "Because of Viking 1 and 2, humanity saw the red rocks and pink sky of Mars up close for the first time.",
-    "images": { "lineArt": "viking.svg" },
+    "images": {
+      "lineArt": "viking.svg",
+      "then": {
+        "src": "../data/images/viking-then.jpg",
+        "alt": "Viking 1 lander's view of the rocky Martian surface at Chryse Planitia",
+        "credit": "NASA/JPL",
+        "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
+      },
+      "now": {
+        "src": "../data/images/viking-now.jpg",
+        "alt": "Orbital view of the Viking lander resting on Mars",
+        "credit": "NASA/JPL-Caltech/University of Arizona",
+        "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/viking-1/"
     ],
@@ -371,7 +469,21 @@
       }
     ],
     "legacy": "Because of Phoenix and InSight, we know Mars hides ice under its surface and still rumbles deep inside.",
-    "images": { "lineArt": "phoenix-insight.svg" },
+    "images": {
+      "lineArt": "phoenix-insight.svg",
+      "then": {
+        "src": "../data/images/phoenix-insight-then.jpg",
+        "alt": "InSight lander on the surface of Mars",
+        "credit": "NASA/JPL-Caltech",
+        "sourceUrl": "https://science.nasa.gov/mission/insight/"
+      },
+      "now": {
+        "src": "../data/images/phoenix-insight-now.jpg",
+        "alt": "Orbital view of the retired InSight lander on Mars",
+        "credit": "NASA/JPL-Caltech/University of Arizona",
+        "sourceUrl": "https://science.nasa.gov/mission/insight/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/insight/"
     ],
@@ -396,8 +508,14 @@
     },
     "distanceKm": 225000000,
     "lightTimeSec": 750.5,
-    "planned": { "value": 5, "unit": "flights" },
-    "actual": { "value": 72, "unit": "flights" },
+    "planned": {
+      "value": 5,
+      "unit": "flights"
+    },
+    "actual": {
+      "value": 72,
+      "unit": "flights"
+    },
     "stats": [
       {
         "label": "Planned flights",
@@ -419,7 +537,21 @@
       }
     ],
     "legacy": "Because of Ingenuity, humanity proved powered flight is possible on another planet.",
-    "images": { "lineArt": "ingenuity.svg" },
+    "images": {
+      "lineArt": "ingenuity.svg",
+      "then": {
+        "src": "../data/images/ingenuity-then.jpg",
+        "alt": "Ingenuity helicopter hovering above Jezero Crater on Mars",
+        "credit": "NASA/JPL-Caltech",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      },
+      "now": {
+        "src": "../data/images/ingenuity-now.jpg",
+        "alt": "Ingenuity resting on the Martian surface after its final flight",
+        "credit": "NASA/JPL-Caltech",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
     ],
@@ -452,7 +584,7 @@
         "sourceUrl": "https://science.nasa.gov/mission/dawn/"
       },
       {
-        "label": "Fuel depleted",
+        "label": "Mission ended",
         "value": "Nov 1, 2018",
         "comparison": "Ran out of hydrazine while still circling dwarf planet Ceres",
         "sourceUrl": "https://science.nasa.gov/mission/dawn/"
@@ -465,7 +597,15 @@
       }
     ],
     "legacy": "Because of Dawn, we mapped the largest worlds in the asteroid belt—time capsules from the solar system's birth.",
-    "images": { "lineArt": "dawn.svg" },
+    "images": {
+      "lineArt": "dawn.svg",
+      "then": {
+        "src": "../data/images/dawn-then.jpg",
+        "alt": "Dawn's view of dwarf planet Ceres",
+        "credit": "NASA/JPL-Caltech/UCLA/MPS/DLR/IDA",
+        "sourceUrl": "https://science.nasa.gov/mission/dawn/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/dawn/"
     ],
@@ -488,8 +628,8 @@
       "body": "433 Eros",
       "site": "Surface of asteroid 433 Eros"
     },
-    "distanceKm": 315000000,
-    "lightTimeSec": 1051,
+    "distanceKm": 355000000,
+    "lightTimeSec": 1184.1,
     "stats": [
       {
         "label": "Historic landing",
@@ -511,7 +651,15 @@
       }
     ],
     "legacy": "Because of NEAR Shoemaker, we know asteroids aren't just dots of light—they are worlds you can land on.",
-    "images": { "lineArt": "near-shoemaker.svg" },
+    "images": {
+      "lineArt": "near-shoemaker.svg",
+      "then": {
+        "src": "../data/images/near-shoemaker-then.jpg",
+        "alt": "NEAR Shoemaker's view of asteroid 433 Eros",
+        "credit": "NASA/JHUAPL",
+        "sourceUrl": "https://science.nasa.gov/mission/near-shoemaker/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/near-shoemaker/"
     ],
@@ -527,15 +675,15 @@
     "nssdcaId": "1972-012A",
     "nssdcaUrl": "https://science.nasa.gov/mission/pioneer-10/",
     "launchDate": "1972-03-02",
-    "arrivalDate": "1973-12-03",
+    "arrivalDate": "1973-12-04",
     "lastContact": "2003-01-23",
     "status": "drifting",
     "location": {
       "body": "Interstellar",
       "site": "Beyond the outer solar system"
     },
-    "distanceKm": 20000000000,
-    "lightTimeSec": 66712,
+    "distanceKm": 12230000000,
+    "lightTimeSec": 40794.9,
     "stats": [
       {
         "label": "Launched",
@@ -557,7 +705,15 @@
       }
     ],
     "legacy": "Because of Pioneer 10 and 11, humanity sent its first greeting cards out toward the stars.",
-    "images": { "lineArt": "pioneer.svg" },
+    "images": {
+      "lineArt": "pioneer.svg",
+      "then": {
+        "src": "../data/images/pioneer-then.jpg",
+        "alt": "Pioneer 10 mission image",
+        "credit": "NASA",
+        "sourceUrl": "https://science.nasa.gov/mission/pioneer-10/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/pioneer-10/"
     ],
@@ -602,7 +758,15 @@
       }
     ],
     "legacy": "Because of Kepler, we know the night sky is crowded with worlds orbiting other stars.",
-    "images": { "lineArt": "kepler.svg" },
+    "images": {
+      "lineArt": "kepler.svg",
+      "then": {
+        "src": "../data/images/kepler-then.jpg",
+        "alt": "Kepler space telescope",
+        "credit": "NASA/Ames Research Center",
+        "sourceUrl": "https://science.nasa.gov/mission/kepler/"
+      }
+    },
     "sources": [
       "https://science.nasa.gov/mission/kepler/"
     ],
