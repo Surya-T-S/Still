@@ -32,9 +32,12 @@
   --c-status-sage: #6fa086;
 
   /* Sector accents: weathered physical materials */
-  --c-moon: #d4c6ab;   /* sun-bleached Apollo Kapton & lunar regolith */
-  --c-mars: #cc7154;   /* oxidized Martian iron-oxide dust */
-  --c-deep: #87a2be;   /* cold heliocentric & interstellar steel */
+  --c-moon: #d4c6ab;
+  /* sun-bleached Apollo Kapton & lunar regolith */
+  --c-mars: #cc7154;
+  /* oxidized Martian iron-oxide dust */
+  --c-deep: #87a2be;
+  /* cold heliocentric & interstellar steel */
   --c-accent: var(--c-moon);
   --c-glow: rgba(212, 198, 171, 0.045);
 }
@@ -83,12 +86,12 @@
   --t-xl: clamp(1.50rem, 1.28rem + 1.0vw, 2.10rem);
   --t-hero: clamp(2.10rem, 1.60rem + 2.3vw, 3.35rem);
 
-  /* Optimal reading rhythm & measure */
+  /* Optimal reading rhythm & measure (slightly wider horizontal span) */
   --t-prose: var(--t-md);
   --lh-tight: 1.24;
   --lh-voice: 1.82;
   --lh-body: 1.90;
-  --measure: 60ch;
+  --measure: 77ch;
 
   /* Space scale */
   --s-1: 0.25rem;
@@ -133,15 +136,21 @@ body[data-act="moon"] {
   --c-accent: var(--c-moon);
   --c-glow: rgba(212, 198, 171, 0.045);
 }
+
 body[data-act="mars"] {
   --c-accent: var(--c-mars);
   --c-glow: rgba(204, 113, 84, 0.05);
 }
+
 body[data-act="deep"] {
   --c-accent: var(--c-deep);
   --c-glow: rgba(135, 162, 190, 0.05);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --d-fast: 0ms; --d-base: 0ms; --d-slow: 0ms; }
+  :root {
+    --d-fast: 0ms;
+    --d-base: 0ms;
+    --d-slow: 0ms;
+  }
 }
