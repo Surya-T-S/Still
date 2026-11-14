@@ -1,795 +1,249 @@
 ---
 /**
  * TrajectoryNav — owned by Surya.
- * Unique 3-Part Astrophile Navigation System:
- * 1. Top "Light-Speed Frequency Tuner" Spine:
- *    - Interactive horizontal telemetry ruler where all 16 stops sit as frequency nodes
- *      grouped by orbital zone (EARTH · MOON 1.28s · MARS 12.5m · DEEP 18.5h) with a
- *      live sliding reticle and hover preview chip.
- *    - Integrated Vacuum / Paper physics mode switch and Celestial Star-Chart trigger.
- * 2. Bottom Floating "Flight Deck Capsule" (Command Pod):
- *    - Sculpted pill dock at the bottom center of the screen with navigation-dependent
- *      Prev & Next wing buttons (dynamically adopting the target chapter's name & sector color)
- *      and an interactive center telemetry core.
- * 3. Interactive Celestial Polar Star-Chart Modal:
- *    - Split-view orbital radar SVG (clickable spacecraft plotted on concentric Moon, Mars,
- *      and Deep Space rings) paired with a synchronized mission manifest.
+ * Ultra-minimal, whisper-quiet Top Navigation Bar.
+ * Features a 1px reading progress filament, brand wordmark,
+ * pure-black Chapters directory trigger, Prev/Next step controls,
+ * and Vacuum/Paper mode toggle.
  */
 ---
-<!-- 1. TOP LIGHT-SPEED FREQUENCY TUNER SPINE -->
-<header class="tuner-bar" data-traj>
-  <div class="tuner-inner">
-    <!-- Left: Brand Emblem + Origin Reset -->
-    <button type="button" class="brand-capsule" data-nav-home title="Return to Opening Cover (Earth · 0.00s)">
-      <svg class="brand-orbit-svg" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-opacity="0.45" stroke-width="1.2" stroke-dasharray="3 2" />
-        <circle cx="10" cy="10" r="2.5" fill="var(--c-accent)" />
-      </svg>
-      <span class="brand-word">STILL</span>
-    </button>
+<header class="minimal-nav" data-traj>
+  <div class="scroll-progress-track" aria-hidden="true">
+    <div class="scroll-progress-bar" data-scroll-progress></div>
+  </div>
 
-    <!-- Center: Interactive Light-Time Frequency Ruler -->
-    <nav class="frequency-ruler" aria-label="Solar system frequency tuner">
-      <div class="ruler-zones" aria-hidden="true">
-        <span class="zone-tag" data-zone-ind="origin">EARTH · 0s</span>
-        <span class="zone-tag" data-zone-ind="moon">I · MOON · 1.28s</span>
-        <span class="zone-tag" data-zone-ind="mars">II · MARS · 12.5m</span>
-        <span class="zone-tag" data-zone-ind="deep">III · DEEP · 18.5h</span>
-      </div>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <button type="button" class="brand-btn" data-nav-home title="Return to Opening Cover">
+        STILL
+      </button>
+      <span class="nav-sep" aria-hidden="true">·</span>
+      <span class="status-where" data-hud-where>Origin</span>
+    </div>
 
-      <div class="ruler-track">
-        <div class="ruler-line" aria-hidden="true">
-          <div class="ruler-fill" data-traj-progress></div>
-        </div>
-        <ol class="ruler-nodes" data-traj-nodes></ol>
-      </div>
-    </nav>
-
-    <!-- Right: Star-Chart Trigger + Vacuum/Paper Mode Switch -->
-    <div class="tuner-controls">
+    <div class="nav-right">
       <button
         type="button"
-        class="capsule-ctrl map-btn"
-        aria-haspopup="dialog"
-        aria-expanded="false"
-        aria-controls="solar-chart-modal"
-        title="Open Celestial Polar Star-Chart (Shortcut: M)"
-        data-traj-open-map
+        class="nav-pill chapters-trigger"
+        data-open-chapters
+        title="Open Chapters Index (Shortcut: C)"
       >
-        <svg class="ctrl-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.2" />
-          <circle cx="8" cy="8" r="2.2" stroke="var(--c-accent)" stroke-width="1.2" />
-          <line x1="8" y1="0.5" x2="8" y2="3" stroke="currentColor" stroke-width="1.2" />
-          <line x1="8" y1="13" x2="8" y2="15.5" stroke="currentColor" stroke-width="1.2" />
-          <line x1="0.5" y1="8" x2="3" y2="8" stroke="currentColor" stroke-width="1.2" />
-          <line x1="13" y1="8" x2="15.5" y2="8" stroke="currentColor" stroke-width="1.2" />
-        </svg>
-        <span>Star-Chart</span>
-        <kbd class="kbd-hint">M</kbd>
+        <span data-chapters-btn-label>Chapters</span>
       </button>
+
+      <div class="step-pair" role="group" aria-label="Chapter navigation">
+        <button
+          type="button"
+          class="step-btn"
+          data-traj-prev
+          aria-label="Previous chapter"
+          title="Previous chapter (←)"
+        >
+          ←
+        </button>
+        <span class="step-readout" data-traj-counter>00</span>
+        <button
+          type="button"
+          class="step-btn"
+          data-traj-next
+          aria-label="Next chapter"
+          title="Next chapter (→)"
+        >
+          →
+        </button>
+      </div>
 
       <button
         id="theme-toggle"
         type="button"
-        class="capsule-ctrl mode-btn"
-        aria-label="Toggle Vacuum / Paper physics mode"
-        title="Switch between Vacuum Zero-G Mode and Archival Paper Mode"
+        class="nav-pill mode-pill"
+        aria-label="Toggle Vacuum or Paper mode"
+        title="Switch between Vacuum and Paper mode"
       >
-        <span class="mode-dot" aria-hidden="true"></span>
         <span data-theme-label>Vacuum</span>
       </button>
     </div>
   </div>
 </header>
 
-<!-- 2. FLOATING BOTTOM FLIGHT DECK CAPSULE (Navigation-Dependent Pod) -->
-<aside class="flight-deck" aria-label="Chapter flight controls">
-  <div class="deck-capsule">
-    <!-- Left Wing: Inbound / Previous Stop -->
-    <button
-      type="button"
-      class="deck-wing prev-wing"
-      data-nav-dir="prev"
-      data-target-act="moon"
-      data-traj-prev
-      aria-label="Previous chapter"
-    >
-      <svg class="wing-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M10.5 3.5L6 8L10.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      <div class="wing-meta">
-        <span class="wing-dir" data-prev-kicker>ORIGIN</span>
-        <span class="wing-target" data-prev-title>Earth</span>
-      </div>
-    </button>
-
-    <!-- Center Core: Active Mission & Live Signal Delay (Opens Star-Chart) -->
-    <button
-      type="button"
-      class="deck-core"
-      data-traj-open-deck
-      title="Click to open full Celestial Polar Star-Chart"
-    >
-      <div class="core-top">
-        <span class="core-index" data-traj-counter>01 / 16</span>
-        <span class="core-sep">·</span>
-        <span class="core-where" data-hud-where>Earth · Origin</span>
-      </div>
-      <div class="core-telemetry">
-        <span data-hud-dist>0 km</span>
-        <span class="core-dot">●</span>
-        <span class="core-light" data-hud-light>0.00 s</span>
-      </div>
-    </button>
-
-    <!-- Right Wing: Outbound / Next Stop (Adapts to destination sector) -->
-    <button
-      type="button"
-      class="deck-wing next-wing"
-      data-nav-dir="next"
-      data-target-act="moon"
-      data-traj-next
-      aria-label="Next chapter"
-    >
-      <div class="wing-meta right">
-        <span class="wing-dir" data-next-kicker>NEXT · MOON</span>
-        <span class="wing-target" data-next-title>Eagle</span>
-      </div>
-      <svg class="wing-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M5.5 3.5L10 8L5.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-    </button>
-  </div>
-</aside>
-
-<!-- 3. INTERACTIVE CELESTIAL POLAR STAR-CHART MODAL -->
-<div
-  id="solar-chart-modal"
-  class="chart-backdrop"
-  role="dialog"
-  aria-modal="true"
-  aria-label="Celestial Polar Star-Chart"
-  hidden
-  data-traj-modal
->
-  <div class="chart-dialog">
-    <header class="chart-header">
-      <div>
-        <span class="chart-eyebrow">Interactive Trajectory Compass · 13 Missions</span>
-        <h2 class="chart-title">Celestial Polar Star-Chart</h2>
-      </div>
-      <button type="button" class="capsule-ctrl close-btn" aria-label="Close star-chart" data-traj-close>
-        <span>Close</span>
-        <kbd class="kbd-hint">ESC</kbd>
-      </button>
-    </header>
-
-    <div class="chart-body">
-      <!-- Left: Interactive Concentric Orbital Radar SVG -->
-      <div class="polar-radar-pane">
-        <svg class="polar-svg" viewBox="0 0 420 420" fill="none" data-polar-svg>
-          <!-- Crosshairs -->
-          <line x1="210" y1="16" x2="210" y2="404" stroke="currentColor" stroke-opacity="0.12" stroke-width="1" />
-          <line x1="16" y1="210" x2="404" y2="210" stroke="currentColor" stroke-opacity="0.12" stroke-width="1" />
-
-          <!-- Ring I: Moon (r=76) -->
-          <circle cx="210" cy="210" r="76" stroke="var(--c-moon)" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="3 5" />
-          <text x="210" y="128" fill="var(--c-moon)" font-size="8" font-family="var(--f-record)" text-anchor="middle" letter-spacing="1.5">I · MOON (1.28s)</text>
-
-          <!-- Ring II: Mars (r=132) -->
-          <circle cx="210" cy="210" r="132" stroke="var(--c-mars)" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="4 6" />
-          <text x="210" y="72" fill="var(--c-mars)" font-size="8" font-family="var(--f-record)" text-anchor="middle" letter-spacing="1.5">II · MARS (12.5m)</text>
-
-          <!-- Ring III: Deep Space (r=186) -->
-          <circle cx="210" cy="210" r="186" stroke="var(--c-deep)" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="2 6" />
-          <text x="210" y="18" fill="var(--c-deep)" font-size="8" font-family="var(--f-record)" text-anchor="middle" letter-spacing="1.5">III · DEEP SPACE (18.5h)</text>
-
-          <!-- Active Vector Line from Earth to Selected Spacecraft -->
-          <line x1="210" y1="210" x2="210" y2="210" stroke="var(--c-accent)" stroke-width="1.2" stroke-dasharray="3 3" data-polar-vector />
-
-          <!-- Earth Origin Node -->
-          <g class="polar-origin" data-polar-earth style="cursor: pointer;">
-            <circle cx="210" cy="210" r="12" fill="var(--c-bg-elevated)" stroke="var(--c-line-strong)" stroke-width="1.2" />
-            <circle cx="210" cy="210" r="3.5" fill="var(--c-ink)" />
-          </g>
-
-          <!-- Plotted Spacecraft Nodes injected by script -->
-          <g data-polar-nodes></g>
-        </svg>
-        <p class="polar-caption">Click any plotted spacecraft on the orbital rings or select from the manifest.</p>
-      </div>
-
-      <!-- Right: Sector Manifest Columns -->
-      <div class="chart-sectors" data-traj-sectors></div>
-    </div>
-  </div>
-</div>
-
 <style>
-  /* ==========================================================
-     1. TOP LIGHT-SPEED FREQUENCY TUNER SPINE
-     ========================================================== */
-  .tuner-bar {
+  .minimal-nav {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: 62px;
+    height: 56px;
     z-index: var(--z-nav);
     background: var(--c-bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--c-line);
     display: flex;
     align-items: center;
+    transition: background-color var(--d-base) var(--ease-out), border-color var(--d-base) var(--ease-out);
   }
 
-  .tuner-inner {
-    max-width: 1400px;
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: var(--s-5);
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--s-6);
+  :global(body[data-view="chapters"]) .minimal-nav {
+    background: rgba(0, 0, 0, 0.94);
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+    color: #f2efe9;
   }
 
-  .brand-capsule {
-    appearance: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 16px 7px 11px;
-    border-radius: var(--r-pill);
-    background: var(--c-bg-raised);
-    border: 1px solid var(--c-line-strong);
-    box-shadow: var(--sh-btn);
-    color: var(--c-ink);
-    cursor: pointer;
-    transition: transform var(--d-fast) var(--ease-spring), border-color var(--d-fast);
-  }
-  .brand-capsule:hover {
-    transform: translateY(-1px);
-    border-color: var(--c-accent);
-  }
-  .brand-orbit-svg {
-    width: 18px;
-    height: 18px;
-    color: var(--c-accent);
-  }
-  .brand-word {
-    font: 700 0.82rem/1 var(--f-record);
-    letter-spacing: 0.22em;
-  }
-
-  /* Center Frequency Ruler */
-  .frequency-ruler {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-width: 680px;
-    width: 100%;
-    justify-self: center;
-  }
-
-  .ruler-zones {
-    display: flex;
-    justify-content: space-between;
-    font: 400 0.60rem/1 var(--f-record);
-    letter-spacing: 0.14em;
-    color: var(--c-ink-faint);
-    padding-inline: 4px;
-  }
-  .zone-tag.is-active {
-    color: var(--c-accent);
-    font-weight: 700;
-  }
-
-  .ruler-track {
-    position: relative;
-    height: 22px;
-    display: flex;
-    align-items: center;
-  }
-
-  .ruler-line {
+  .scroll-progress-track {
     position: absolute;
-    left: 8px;
-    right: 8px;
-    height: 1px;
-    background: var(--c-line-strong);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    background: transparent;
     pointer-events: none;
   }
 
-  .ruler-fill {
+  .scroll-progress-bar {
     height: 100%;
     width: 0%;
     background: var(--c-accent);
-    transition: width 380ms var(--ease-spring), background-color var(--d-base);
+    transition: width 80ms linear;
   }
 
-  .ruler-nodes {
-    position: relative;
-    z-index: 1;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .nav-inner {
+    max-width: 1180px;
     width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--s-6);
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
+    gap: var(--s-4);
   }
 
-  .ruler-nodes :global(li) {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .ruler-nodes :global(.freq-node) {
-    appearance: none;
-    background: none;
-    border: 0;
-    padding: 5px;
-    cursor: pointer;
-    position: relative;
-    display: grid;
-    place-items: center;
-    border-radius: var(--r-pill);
-  }
-
-  .ruler-nodes :global(.freq-pip) {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--c-bg-raised);
-    border: 1.5px solid var(--c-ink-faint);
-    transition: transform var(--d-fast) var(--ease-spring), background-color var(--d-fast), border-color var(--d-fast), box-shadow var(--d-fast);
-  }
-
-  .ruler-nodes :global(.freq-node[data-node-act="moon"]:hover .freq-pip) { border-color: var(--c-moon); background: var(--c-moon); }
-  .ruler-nodes :global(.freq-node[data-node-act="mars"]:hover .freq-pip) { border-color: var(--c-mars); background: var(--c-mars); }
-  .ruler-nodes :global(.freq-node[data-node-act="deep"]:hover .freq-pip) { border-color: var(--c-deep); background: var(--c-deep); }
-
-  .ruler-nodes :global(.freq-node:hover .freq-pip),
-  .ruler-nodes :global(.freq-node:focus-visible .freq-pip) {
-    transform: scale(1.45);
-  }
-
-  .ruler-nodes :global(.freq-node[aria-current="true"] .freq-pip) {
-    width: 11px;
-    height: 11px;
-    background: var(--c-accent);
-    border-color: var(--c-bg);
-    box-shadow: 0 0 0 2px var(--c-accent), 0 0 12px var(--c-accent);
-  }
-
-  .ruler-nodes :global(.freq-tip) {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-4px);
-    padding: 4px 10px;
-    border-radius: var(--r-pill);
-    background: var(--c-bg-elevated);
-    border: 1px solid var(--c-line-strong);
-    box-shadow: var(--sh-btn);
-    font: 400 0.62rem/1.2 var(--f-record);
-    letter-spacing: 0.08em;
-    color: var(--c-ink);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
-  }
-
-  .ruler-nodes :global(.freq-node:hover .freq-tip),
-  .ruler-nodes :global(.freq-node:focus-visible .freq-tip) {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* Right Controls */
-  .tuner-controls {
-    display: flex;
-    align-items: center;
-    gap: var(--s-2);
-  }
-
-  .capsule-ctrl {
-    appearance: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px;
-    border-radius: var(--r-pill);
-    font: 700 0.66rem/1 var(--f-record);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--c-ink);
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
-    border: 1px solid var(--c-line-strong);
-    box-shadow: var(--sh-btn);
-    cursor: pointer;
-    transition: transform var(--d-fast) var(--ease-spring), border-color var(--d-fast), color var(--d-fast);
-  }
-  .capsule-ctrl:hover,
-  .capsule-ctrl:focus-visible {
-    transform: translateY(-1.5px);
-    border-color: var(--c-accent);
-    color: var(--c-accent);
-  }
-  .capsule-ctrl:active {
-    transform: translateY(1px);
-  }
-
-  .ctrl-icon {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-  }
-
-  .kbd-hint {
-    font: 400 0.58rem/1 var(--f-record);
-    padding: 2px 6px;
-    border-radius: var(--r-pill);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid var(--c-line);
-    color: var(--c-ink-dim);
-  }
-  :global([data-theme="light"]) .kbd-hint {
-    background: rgba(27, 26, 23, 0.06);
-  }
-
-  .mode-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--c-accent);
-  }
-
-  /* ==========================================================
-     2. FLOATING BOTTOM FLIGHT DECK CAPSULE
-     ========================================================== */
-  .flight-deck {
-    position: fixed;
-    bottom: var(--s-4);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--z-nav);
-    width: min(760px, 94vw);
-    pointer-events: none;
-  }
-
-  .deck-capsule {
-    pointer-events: auto;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 6px;
-    padding: 6px;
-    border-radius: var(--r-pill);
-    background: var(--c-bg-glass);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--c-line-strong);
-    box-shadow: var(--sh-btn-hover);
-  }
-
-  .deck-wing {
-    appearance: none;
+  .nav-left {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 16px;
-    border-radius: var(--r-pill);
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
-    border: 1px solid var(--c-line);
+    min-width: 0;
+  }
+
+  .brand-btn {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 4px 0;
+    font: 700 0.82rem/1 var(--f-record);
+    letter-spacing: 0.24em;
     color: var(--c-ink);
     cursor: pointer;
-    min-width: 0;
-    transition:
-      transform var(--d-fast) var(--ease-spring),
-      border-color var(--d-fast) var(--ease-out),
-      box-shadow var(--d-fast) var(--ease-out);
+    transition: color var(--d-fast);
   }
-  .deck-wing.next-wing {
-    justify-content: flex-end;
-    border-color: var(--btn-accent, var(--c-accent));
-  }
-  .deck-wing:hover:not(:disabled),
-  .deck-wing:focus-visible:not(:disabled) {
-    transform: translateY(-1.5px);
-    border-color: var(--btn-accent, var(--c-accent));
-    box-shadow: var(--sh-btn);
-  }
-  .deck-wing:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-  .deck-wing:disabled {
-    opacity: 0.32;
-    cursor: default;
+  .brand-btn:hover {
+    color: var(--c-accent);
   }
 
-  .wing-arrow {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
-    color: var(--btn-accent, var(--c-accent));
-    transition: transform var(--d-fast) var(--ease-spring);
-  }
-  .prev-wing:hover:not(:disabled) .wing-arrow {
-    transform: translateX(-3px);
-  }
-  .next-wing:hover:not(:disabled) .wing-arrow {
-    transform: translateX(3px);
+  .nav-sep {
+    color: var(--c-ink-faint);
+    font-size: 0.75rem;
+    user-select: none;
   }
 
-  .wing-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    text-align: left;
-  }
-  .wing-meta.right {
-    text-align: right;
-  }
-
-  .wing-dir {
-    font: 700 0.56rem/1 var(--f-record);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--btn-accent, var(--c-accent));
-  }
-
-  .wing-target {
-    font: 400 0.74rem/1.15 var(--f-record);
-    color: var(--c-ink);
+  .status-where {
+    font: 400 0.72rem/1 var(--f-record);
+    letter-spacing: 0.04em;
+    color: var(--c-ink-dim);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  /* Center Telemetry Core */
-  .deck-core {
-    appearance: none;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--r-pill);
-    padding: 6px 18px;
+  .nav-right {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 3px;
-    cursor: pointer;
-    transition: border-color var(--d-fast), background-color var(--d-fast);
-  }
-  .deck-core:hover,
-  .deck-core:focus-visible {
-    border-color: var(--c-line-strong);
-    background: rgba(255, 255, 255, 0.03);
+    gap: 8px;
+    flex-shrink: 0;
   }
 
-  .core-top {
+  /* Minimal Pill Buttons */
+  .nav-pill {
+    appearance: none;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font: 700 0.64rem/1 var(--f-record);
-    letter-spacing: 0.1em;
+    justify-content: center;
+    height: 32px;
+    padding: 0 15px;
+    border-radius: var(--r-pill);
+    font: 400 0.68rem/1 var(--f-record);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-ink);
-    white-space: nowrap;
-  }
-  .core-index {
-    color: var(--c-accent);
-  }
-  .core-sep {
-    opacity: 0.4;
+    color: var(--c-ink-body);
+    background: transparent;
+    border: 1px solid var(--c-line-strong);
+    cursor: pointer;
+    transition:
+      border-color var(--d-fast) var(--ease-out),
+      background-color var(--d-fast) var(--ease-out),
+      color var(--d-fast) var(--ease-out);
   }
 
-  .core-telemetry {
+  .nav-pill:hover,
+  .nav-pill:focus-visible {
+    color: var(--c-ink);
+    border-color: var(--c-accent);
+    background: rgba(242, 239, 233, 0.04);
+  }
+
+  .chapters-trigger.is-active {
+    background: #f2efe9;
+    color: #000000;
+    border-color: #f2efe9;
+  }
+
+  /* Minimal Step Pair */
+  .step-pair {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font: 400 0.62rem/1 var(--f-record);
-    letter-spacing: 0.08em;
-    color: var(--c-ink-dim);
-    font-variant-numeric: tabular-nums;
-  }
-  .core-dot {
-    font-size: 0.45rem;
-    color: var(--c-accent);
-  }
-  .core-light {
-    color: var(--c-accent);
-    font-weight: 700;
+    height: 32px;
+    padding: 0 4px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--c-line-strong);
+    background: transparent;
   }
 
-  /* ==========================================================
-     3. INTERACTIVE CELESTIAL POLAR STAR-CHART MODAL
-     ========================================================== */
-  .chart-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 95;
-    background: rgba(5, 6, 8, 0.86);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+  .step-btn {
+    appearance: none;
+    background: none;
+    border: 0;
+    color: var(--c-ink-body);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
     display: grid;
     place-items: center;
-    padding: var(--s-5);
-  }
-  :global([data-theme="light"]) .chart-backdrop {
-    background: rgba(243, 239, 230, 0.90);
-  }
-  .chart-backdrop[hidden] {
-    display: none;
-  }
-
-  .chart-dialog {
-    width: min(1140px, 96vw);
-    max-height: 88vh;
-    overflow-y: auto;
-    background: var(--c-bg-raised);
-    border: 1px solid var(--c-line-strong);
-    border-radius: var(--r-lg);
-    padding: var(--s-6) var(--s-8);
-    box-shadow: var(--sh-card);
-  }
-
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--s-4);
-    padding-bottom: var(--s-4);
-    border-bottom: 1px solid var(--c-line);
-    margin-bottom: var(--s-6);
-  }
-  .chart-eyebrow {
-    font: 400 0.66rem/1 var(--f-record);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--c-ink-dim);
-    display: block;
-    margin-bottom: 6px;
-  }
-  .chart-title {
-    font: 700 var(--t-lg)/1.1 var(--f-voice);
-    margin: 0;
-    color: var(--c-ink);
-  }
-
-  .chart-body {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: var(--s-8);
-    align-items: start;
-  }
-
-  .polar-radar-pane {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--s-3);
-    padding: var(--s-4);
-    border-radius: var(--r-md);
-    background: var(--c-bg);
-    border: 1px solid var(--c-line);
-  }
-
-  .polar-svg {
-    width: 100%;
-    max-width: 340px;
-    height: auto;
-    color: var(--c-ink);
-    overflow: visible;
-  }
-
-  .polar-svg :global(.polar-node) {
+    font: 400 0.74rem/1 var(--f-record);
     cursor: pointer;
-    transition: transform var(--d-fast) var(--ease-spring);
+    transition: color var(--d-fast);
   }
-  .polar-svg :global(.polar-node:hover) {
-    transform: scale(1.25);
-  }
-
-  .polar-caption {
-    margin: 0;
-    font: 400 0.65rem/1.4 var(--f-record);
-    color: var(--c-ink-dim);
-    text-align: center;
-  }
-
-  .chart-sectors {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--s-5);
-  }
-  .chart-sectors :global(.sector-col) {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-2);
-  }
-  .chart-sectors :global(.sector-head) {
-    font: 700 0.66rem/1.3 var(--f-record);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--c-ink-dim);
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--c-line);
-  }
-  .chart-sectors :global(.sector-card) {
-    appearance: none;
-    width: 100%;
-    text-align: left;
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg) 100%);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-sm);
-    padding: 9px 13px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--s-3);
-    color: var(--c-ink);
-    transition: transform var(--d-fast) var(--ease-spring), border-color var(--d-fast);
-  }
-  .chart-sectors :global(.sector-card:hover),
-  .chart-sectors :global(.sector-card[aria-current="true"]) {
-    transform: translateY(-1px);
-    border-color: var(--c-accent);
-  }
-  .chart-sectors :global(.sc-name) {
-    font: 700 0.80rem/1.25 var(--f-voice);
-    display: block;
-  }
-  .chart-sectors :global(.sc-sub) {
-    font: 400 0.58rem/1.2 var(--f-record);
-    color: var(--c-ink-dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .chart-sectors :global(.sc-delay) {
-    font: 400 0.62rem/1 var(--f-record);
+  .step-btn:hover:not(:disabled) {
     color: var(--c-accent);
-    padding: 3px 8px;
-    border-radius: var(--r-pill);
-    border: 1px solid var(--c-line);
-    white-space: nowrap;
+  }
+  .step-btn:disabled {
+    opacity: 0.25;
+    cursor: default;
   }
 
-  @media (max-width: 960px) {
-    .frequency-ruler {
-      display: none;
-    }
-    .tuner-inner {
-      grid-template-columns: auto auto;
-      justify-content: space-between;
-    }
-    .chart-body {
-      grid-template-columns: 1fr;
-    }
-    .chart-sectors {
-      grid-template-columns: 1fr;
-    }
+  .step-readout {
+    font: 400 0.66rem/1 var(--f-record);
+    letter-spacing: 0.08em;
+    color: var(--c-ink-dim);
+    padding-inline: 6px;
+    font-variant-numeric: tabular-nums;
   }
 
-  @media (max-width: 640px) {
-    .kbd-hint {
+  @media (max-width: 680px) {
+    .nav-inner {
+      padding-inline: var(--s-4);
+    }
+    .status-where,
+    .nav-sep {
       display: none;
-    }
-    .deck-capsule {
-      grid-template-columns: auto 1fr auto;
-    }
-    .wing-meta {
-      display: none;
-    }
-    .deck-wing {
-      padding: 10px 12px;
     }
   }
 </style>
@@ -798,29 +252,17 @@
   import { scrollToChapter, stepChapter } from "../scripts/engine";
 
   const chapters = Array.from(document.querySelectorAll<HTMLElement>("[data-chapter]"));
-  const nodesEl = document.querySelector<HTMLOListElement>("[data-traj-nodes]");
-  const progressEl = document.querySelector<HTMLElement>("[data-traj-progress]");
   const counterEl = document.querySelector<HTMLElement>("[data-traj-counter]");
-  const modalEl = document.querySelector<HTMLElement>("[data-traj-modal]");
-  const sectorsEl = document.querySelector<HTMLElement>("[data-traj-sectors]");
-  const polarNodesEl = document.querySelector<SVGGElement>("[data-polar-nodes]");
-  const polarVectorEl = document.querySelector<SVGLineElement>("[data-polar-vector]");
-  const polarEarthEl = document.querySelector<SVGGElement>("[data-polar-earth]");
-
+  const scrollBarEl = document.querySelector<HTMLElement>("[data-scroll-progress]");
+  const chaptersBtn = document.querySelector<HTMLButtonElement>("[data-open-chapters]");
+  const chaptersBtnLabel = document.querySelector<HTMLElement>("[data-chapters-btn-label]");
   const homeBtn = document.querySelector<HTMLButtonElement>("[data-nav-home]");
-  const openMapBtn = document.querySelector<HTMLButtonElement>("[data-traj-open-map]");
-  const openDeckBtn = document.querySelector<HTMLButtonElement>("[data-traj-open-deck]");
-  const closeMapBtn = document.querySelector<HTMLButtonElement>("[data-traj-close]");
   const prevBtn = document.querySelector<HTMLButtonElement>("[data-traj-prev]");
   const nextBtn = document.querySelector<HTMLButtonElement>("[data-traj-next]");
 
-  const prevKicker = document.querySelector<HTMLElement>("[data-prev-kicker]");
-  const prevTitle = document.querySelector<HTMLElement>("[data-prev-title]");
-  const nextKicker = document.querySelector<HTMLElement>("[data-next-kicker]");
-  const nextTitle = document.querySelector<HTMLElement>("[data-next-title]");
-  const zoneIndicators = Array.from(document.querySelectorAll<HTMLElement>("[data-zone-ind]"));
+  let lastStoryId = "prologue";
+  let currentId = "prologue";
 
-  // Theme Toggle wiring
   const themeToggle = document.getElementById("theme-toggle");
   const themeLabel = document.querySelector<HTMLElement>("[data-theme-label]");
   const metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -840,268 +282,81 @@
       localStorage.setItem("still-theme", next);
     } catch (_) {}
     if (metaTheme) {
-      metaTheme.setAttribute("content", next === "light" ? "#f3efe6" : "#07080a");
+      metaTheme.setAttribute("content", next === "light" ? "#f4f0e8" : "#07080a");
     }
     syncThemeUI(next);
   });
 
-  if (chapters.length && sectorsEl && nodesEl) {
-    const rulerBtns: HTMLButtonElement[] = [];
-    const modalBtns: HTMLButtonElement[] = [];
-    const polarCoords: { x: number; y: number }[] = [];
-
-    const fmtDelay = (s: number) => {
-      if (s <= 0) return "0.00 s";
-      if (s < 60) return `${s.toFixed(2)} s`;
-      if (s < 3600) return `${Math.floor(s / 60)}m ${Math.round(s % 60)}s`;
-      return `${Math.floor(s / 3600)}h ${Math.round((s % 3600) / 60)}m`;
-    };
-
-    const shortTitle = (raw: string) => {
-      const parts = raw.split("·");
-      return (parts[parts.length - 1] || raw).trim();
-    };
-
-    const setModalOpen = (open: boolean) => {
-      if (!modalEl) return;
-      modalEl.hidden = !open;
-      openMapBtn?.setAttribute("aria-expanded", String(open));
-    };
-
-    const SECTOR_TITLES: Record<string, string> = {
-      moon: "Act I · The Moon (1.28 s)",
-      mars: "Act II · Mars (12.5 min)",
-      deep: "Act III · Deep Space (Hours)",
-      bookends: "Cover, Epilogue & Archive",
-    };
-    const sectorCols: Record<string, HTMLElement> = {};
-
-    ["moon", "mars", "deep", "bookends"].forEach((key) => {
-      const col = document.createElement("div");
-      col.className = "sector-col";
-      col.innerHTML = `<div class="sector-head">${SECTOR_TITLES[key]}</div>`;
-      sectorsEl.appendChild(col);
-      sectorCols[key] = col;
-    });
-
-    // Track orbital ring counts to distribute angles evenly on the Polar Star-Chart
-    let moonCount = 0;
-    let marsCount = 0;
-    let deepCount = 0;
-
-    chapters.forEach((ch, idx) => {
-      const rawLabel = ch.dataset.label || `Stop ${idx}`;
-      const cleanName = shortTitle(rawLabel);
-      const act = ch.dataset.act || "moon";
-      const isBookend = ch.id === "prologue" || ch.id === "epilogue" || ch.id === "archive";
-      const colKey = isBookend ? "bookends" : act;
-      const lightSec = Number(ch.dataset.light || "0");
-      const padIdx = String(idx).padStart(2, "0");
-
-      // 1. Top Frequency Ruler Node
-      const li = document.createElement("li");
-      const rBtn = document.createElement("button");
-      rBtn.type = "button";
-      rBtn.className = "freq-node";
-      rBtn.dataset.nodeAct = act;
-      rBtn.setAttribute("aria-label", `${cleanName} (${fmtDelay(lightSec)})`);
-      rBtn.innerHTML = `
-        <span class="freq-pip" aria-hidden="true"></span>
-        <span class="freq-tip">${isBookend ? cleanName : `${padIdx} · ${cleanName} · ${fmtDelay(lightSec)}`}</span>
-      `;
-      rBtn.addEventListener("click", () => scrollToChapter(idx));
-      li.appendChild(rBtn);
-      nodesEl.appendChild(li);
-      rulerBtns.push(rBtn);
-
-      // 2. Polar Star-Chart SVG Node
-      let px = 210;
-      let py = 210;
-      if (!isBookend && polarNodesEl) {
-        let radius = 76;
-        let angleDeg = 0;
-        let strokeColor = "var(--c-moon)";
-
-        if (act === "moon") {
-          radius = 76;
-          angleDeg = -60 + moonCount * 85;
-          moonCount++;
-          strokeColor = "var(--c-moon)";
-        } else if (act === "mars") {
-          radius = 132;
-          angleDeg = -75 + marsCount * 72;
-          marsCount++;
-          strokeColor = "var(--c-mars)";
-        } else {
-          radius = 186;
-          angleDeg = -45 + deepCount * 90;
-          deepCount++;
-          strokeColor = "var(--c-deep)";
-        }
-
-        const rad = (angleDeg * Math.PI) / 180;
-        px = 210 + Math.cos(rad) * radius;
-        py = 210 + Math.sin(rad) * radius;
-
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("class", "polar-node");
-        g.setAttribute("transform", `translate(${px.toFixed(1)}, ${py.toFixed(1)})`);
-        g.innerHTML = `
-          <circle r="9" fill="var(--c-bg-raised)" stroke="${strokeColor}" stroke-width="1.2" />
-          <circle r="3" fill="${strokeColor}" />
-          <text y="18" fill="currentColor" font-size="7.5" font-family="var(--f-record)" text-anchor="middle">${padIdx}</text>
-        `;
-        g.addEventListener("click", () => {
-          scrollToChapter(idx);
-          setModalOpen(false);
-        });
-        polarNodesEl.appendChild(g);
-      }
-      polarCoords.push({ x: px, y: py });
-
-      // 3. Star-Chart Manifest Card
-      const subLabel =
-        ch.id === "prologue"
-          ? "00 · ORIGIN"
-          : ch.id === "epilogue"
-            ? "EPILOGUE"
-            : ch.id === "archive"
-              ? "REGISTRY"
-              : `CHAPTER ${padIdx}`;
-
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "sector-card";
-      card.innerHTML = `
-        <div>
-          <span class="sc-sub">${subLabel}</span>
-          <span class="sc-name">${cleanName}</span>
-        </div>
-        <span class="sc-delay">${isBookend ? "View" : fmtDelay(lightSec)}</span>
-      `;
-      card.addEventListener("click", () => {
-        scrollToChapter(idx);
-        setModalOpen(false);
-      });
-      sectorCols[colKey].appendChild(card);
-      modalBtns.push(card);
-    });
-
-    polarEarthEl?.addEventListener("click", () => {
-      scrollToChapter("prologue");
-      setModalOpen(false);
-    });
-
-    const syncNavigationState = (index: number, id: string, act: string) => {
-      rulerBtns.forEach((b, i) => b.setAttribute("aria-current", i === index ? "true" : "false"));
-      modalBtns.forEach((b, i) => b.setAttribute("aria-current", i === index ? "true" : "false"));
-
-      const pct = chapters.length > 1 ? (index / (chapters.length - 1)) * 100 : 0;
-      if (progressEl) progressEl.style.width = `${pct}%`;
-
-      const pad = (n: number) => String(n).padStart(2, "0");
-      if (counterEl) {
-        if (id === "prologue") counterEl.textContent = "COVER";
-        else if (id === "epilogue") counterEl.textContent = "EPILOGUE";
-        else if (id === "archive") counterEl.textContent = "ARCHIVE";
-        else counterEl.textContent = `CH ${pad(index)} / 13`;
-      }
-
-      // Highlight active zone on the Top Frequency Ruler
-      const activeZone = id === "prologue" ? "origin" : act;
-      zoneIndicators.forEach((z) => {
-        z.classList.toggle("is-active", z.dataset.zoneInd === activeZone);
-      });
-
-      // Update Polar Radar active vector line
-      const coord = polarCoords[index] || { x: 210, y: 210 };
-      if (polarVectorEl) {
-        polarVectorEl.setAttribute("x2", String(coord.x));
-        polarVectorEl.setAttribute("y2", String(coord.y));
-      }
-
-      // Update Navigation-Dependent Bottom Flight Deck Wings
-      if (prevBtn) {
-        const hasPrev = index > 0;
-        prevBtn.disabled = !hasPrev;
-        if (hasPrev) {
-          const prevCh = chapters[index - 1];
-          const pAct = prevCh.dataset.act || "moon";
-          prevBtn.dataset.targetAct = pAct;
-          if (prevKicker) {
-            prevKicker.textContent =
-              prevCh.id === "prologue"
-                ? "ORIGIN · EARTH"
-                : `PREV · ${pAct.toUpperCase()}`;
-          }
-          if (prevTitle) {
-            prevTitle.textContent = shortTitle(prevCh.dataset.label || "");
-          }
-        } else {
-          if (prevKicker) prevKicker.textContent = "AT ORIGIN";
-          if (prevTitle) prevTitle.textContent = "Earth · 0.00s";
-        }
-      }
-
-      if (nextBtn) {
-        const hasNext = index < chapters.length - 1;
-        nextBtn.disabled = !hasNext;
-        if (hasNext) {
-          const nextCh = chapters[index + 1];
-          const nAct = nextCh.dataset.act || "moon";
-          nextBtn.dataset.targetAct = nAct;
-          if (nextKicker) {
-            nextKicker.textContent =
-              nextCh.id === "epilogue"
-                ? "REFLECTION"
-                : nextCh.id === "archive"
-                  ? "MASTER INDEX"
-                  : `NEXT · ${nAct.toUpperCase()}`;
-          }
-          if (nextTitle) {
-            nextTitle.textContent = shortTitle(nextCh.dataset.label || "");
-          }
-        } else {
-          if (nextKicker) nextKicker.textContent = "END OF DECK";
-          if (nextTitle) nextTitle.textContent = "Archive";
-        }
-      }
-    };
-
-    window.addEventListener("still:chapterchange", (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail) {
-        syncNavigationState(detail.index, detail.id, detail.act);
-      }
-    });
-
-    // Initial sync
-    syncNavigationState(0, chapters[0].id, chapters[0].dataset.act || "moon");
-
-    homeBtn?.addEventListener("click", () => scrollToChapter("prologue"));
-    prevBtn?.addEventListener("click", () => stepChapter(-1));
-    nextBtn?.addEventListener("click", () => stepChapter(1));
-
-    openMapBtn?.addEventListener("click", () => setModalOpen(Boolean(modalEl?.hidden)));
-    openDeckBtn?.addEventListener("click", () => setModalOpen(Boolean(modalEl?.hidden)));
-    closeMapBtn?.addEventListener("click", () => setModalOpen(false));
-    modalEl?.addEventListener("click", (e) => {
-      if (e.target === modalEl) setModalOpen(false);
-    });
-
-    document.addEventListener("keydown", (e) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-      if (e.key === "Escape" && modalEl && !modalEl.hidden) {
-        setModalOpen(false);
-      } else if ((e.key === "m" || e.key === "M") && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        e.preventDefault();
-        setModalOpen(Boolean(modalEl?.hidden));
-      } else if (e.key === "ArrowRight" && modalEl?.hidden) {
-        stepChapter(1);
-      } else if (e.key === "ArrowLeft" && modalEl?.hidden) {
-        stepChapter(-1);
-      }
-    });
+  function updateScrollProgress() {
+    if (!scrollBarEl) return;
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const pct = Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100));
+    scrollBarEl.style.width = `${pct.toFixed(1)}%`;
   }
+  window.addEventListener("scroll", updateScrollProgress, { passive: true });
+
+  window.addEventListener("still:chapterchange", (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    if (!detail) return;
+    const { index, id } = detail;
+    currentId = id;
+
+    if (id !== "chapters") {
+      lastStoryId = id;
+    }
+
+    document.body.dataset.view = id === "chapters" ? "chapters" : "story";
+
+    const isChaptersView = id === "chapters";
+    chaptersBtn?.classList.toggle("is-active", isChaptersView);
+    if (chaptersBtnLabel) {
+      chaptersBtnLabel.textContent = isChaptersView ? "Resume" : "Chapters";
+    }
+
+    const missionChapters = chapters.filter(
+      (c) => !["prologue", "chapters", "epilogue", "archive"].includes(c.id)
+    );
+    const missionIdx = missionChapters.findIndex((c) => c.id === id);
+
+    if (counterEl) {
+      if (id === "prologue") counterEl.textContent = "00";
+      else if (id === "chapters") counterEl.textContent = "13";
+      else if (id === "epilogue") counterEl.textContent = "END";
+      else if (id === "archive") counterEl.textContent = "ARC";
+      else if (missionIdx !== -1) {
+        counterEl.textContent = `${String(missionIdx + 1).padStart(2, "0")}/13`;
+      }
+    }
+
+    if (prevBtn) prevBtn.disabled = index <= 0;
+    if (nextBtn) nextBtn.disabled = index >= chapters.length - 1;
+    updateScrollProgress();
+  });
+
+  homeBtn?.addEventListener("click", () => scrollToChapter("prologue"));
+  chaptersBtn?.addEventListener("click", () => {
+    if (currentId === "chapters") {
+      scrollToChapter(lastStoryId || "prologue");
+    } else {
+      scrollToChapter("chapters");
+    }
+  });
+
+  prevBtn?.addEventListener("click", () => stepChapter(-1));
+  nextBtn?.addEventListener("click", () => stepChapter(1));
+
+  document.addEventListener("keydown", (e) => {
+    const tag = (e.target as HTMLElement)?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key === "Escape" && currentId === "chapters") {
+      scrollToChapter(lastStoryId || "prologue");
+    } else if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      scrollToChapter(currentId === "chapters" ? lastStoryId : "chapters");
+    } else if (e.key === "ArrowRight") {
+      stepChapter(1);
+    } else if (e.key === "ArrowLeft") {
+      stepChapter(-1);
+    }
+  });
 </script>

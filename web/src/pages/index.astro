@@ -1,9 +1,11 @@
 ---
 /**
- * index.astro — Primary Exhibition Deck for STILL.
- * Structured as a focused, chapter-by-chapter reading experience:
- * Cover (Prologue) → 13 Mission Chapters (Moon, Mars, Deep Space) → Epilogue → Archival Registry.
- * Features navigation-dependent aerospace capsule controls that adapt to target sector & direction.
+ * index.astro — Primary Storytelling Deck for STILL.
+ * Designed around uncluttered literary minimalism and scientific Space Mono typography:
+ * 1. Opening Cover (#prologue)
+ * 2. Pure-Black (#000000) Uncluttered Chapters Index (#chapters)
+ * 3. 13 Long-Form Mission Stories with generous breathing space
+ * 4. Epilogue (#epilogue) & Archival Registry (#archive)
  */
 import Base from "../layouts/Base.astro";
 import { getCollection, getEntry, render } from "astro:content";
@@ -19,7 +21,24 @@ import SendAMessage from "../interactions/SendAMessage.astro";
 
 const ACT_ORDER = { moon: 0, mars: 1, deep: 2 } as const;
 const ACT_LABEL = { moon: "The Moon", mars: "Mars", deep: "Deep Space" } as const;
-const ACT_ROMAN = { moon: "Act I · The Moon", mars: "Act II · Mars", deep: "Act III · Deep Space" } as const;
+
+const ACT_META = [
+  {
+    key: "moon" as const,
+    title: "I · The Moon",
+    delay: "1.28 s light delay",
+  },
+  {
+    key: "mars" as const,
+    title: "II · Mars",
+    delay: "12.5 min light delay",
+  },
+  {
+    key: "deep" as const,
+    title: "III · Deep Space",
+    delay: "Hours across the dark",
+  },
+];
 
 // Fetch and sort artifacts: Moon → Mars → Deep Space
 const rawArtifacts = await getCollection("artifacts");
@@ -53,86 +72,46 @@ const epilogueEntry = await getEntry("story", "epilogue");
 const EpilogueBody = epilogueEntry ? (await render(epilogueEntry)).Content : null;
 const epilogue = epilogueEntry?.data;
 
-// Group chapters by Act for the Cover Directory
-const moonChapters = chapters.filter((c) => c.a.act === "moon");
-const marsChapters = chapters.filter((c) => c.a.act === "mars");
-const deepChapters = chapters.filter((c) => c.a.act === "deep");
-
-// Helper to sanitize image paths for public asset serving
 function resolveImgSrc(pathStr?: string): string {
   if (!pathStr) return "";
   if (pathStr.startsWith("/")) return pathStr;
   return pathStr.replace("../data/images/", "/images/").replace("../data/", "/");
 }
-
-function fmtLightShort(sec: number): string {
-  if (sec < 60) return `${sec.toFixed(2)}s`;
-  if (sec < 3600) return `${Math.floor(sec / 60)}m`;
-  return `${(sec / 3600).toFixed(1)}h`;
-}
 ---
 <Base>
-  <!-- COVER / PROLOGUE -->
+  <!-- 00 · OPENING COVER / PROLOGUE -->
   {prologue && (
     <section
       class="chapter prologue is-active"
       id="prologue"
       data-chapter
-      data-label="Earth · Origin"
+      data-label="Origin"
       data-act="moon"
       data-distance="0"
       data-light="0"
     >
       <div class="prologue-inner">
-        <div class="cover-eyebrow" data-reveal>
-          <span>Exhibition &amp; Historical Archive</span>
-          <span class="sep" aria-hidden="true">·</span>
-          <span>13 Silent Spacecraft</span>
-        </div>
+        <p class="cover-eyebrow" data-reveal>Thirteen Silent Spacecraft Across the Solar System</p>
 
         <div class="cover-title-lockup" data-reveal>
           <h1 class="cover-title">STILL</h1>
-          <p class="cover-subtitle">
-            Abandoned, Not Forgotten — Humanity’s Silent Fleet on the Moon, Mars, and in Deep Space
-          </p>
+          <p class="cover-subtitle">Abandoned, Not Forgotten</p>
         </div>
 
-        <!-- Micro-SVG Solar System Signal Scale -->
-        <div class="scale-filament" data-reveal aria-hidden="true">
-          <svg class="scale-svg" viewBox="0 0 760 44" fill="none">
-            <line x1="24" y1="22" x2="736" y2="22" stroke="currentColor" stroke-opacity="0.22" stroke-width="1" />
-            <!-- Earth -->
-            <circle cx="24" cy="22" r="3.5" fill="var(--c-bg)" stroke="currentColor" stroke-width="1.2" />
-            <text x="24" y="39" fill="currentColor" opacity="0.65" font-size="9" font-family="var(--f-record)" letter-spacing="1.2">EARTH (0s)</text>
-            <!-- Moon -->
-            <circle cx="190" cy="22" r="3.5" fill="var(--c-moon)" />
-            <text x="190" y="39" fill="currentColor" opacity="0.75" font-size="9" font-family="var(--f-record)" text-anchor="middle" letter-spacing="1.2">THE MOON (1.28s)</text>
-            <!-- Mars -->
-            <circle cx="430" cy="22" r="3.5" fill="var(--c-mars)" />
-            <text x="430" y="39" fill="currentColor" opacity="0.75" font-size="9" font-family="var(--f-record)" text-anchor="middle" letter-spacing="1.2">MARS (12.5m)</text>
-            <!-- Deep Space -->
-            <circle cx="736" cy="22" r="3.5" fill="var(--c-deep)" />
-            <text x="736" y="39" fill="currentColor" opacity="0.75" font-size="9" font-family="var(--f-record)" text-anchor="end" letter-spacing="1.2">DEEP SPACE (18.5h)</text>
-            <!-- Traveling signal photon -->
-            <circle class="scale-photon" cx="24" cy="22" r="2.5" fill="var(--c-ink)" />
-          </svg>
-        </div>
-
-        <!-- Poetic Opening Voice -->
         <blockquote class="prologue-voice" data-split>
           {prologue.voice.map((line) => (
             <p>{line}</p>
           ))}
         </blockquote>
 
-        <!-- Prologue Narrative Body -->
         {PrologueBody && (
-          <div class="prologue-prose" data-reveal>
-            <PrologueBody />
+          <div class="story-prose prologue-prose" data-reveal>
+            <div class="narration">
+              <PrologueBody />
+            </div>
           </div>
         )}
 
-        <!-- Navigation-Aware Primary & Secondary Capsule Controls -->
         <div class="prologue-actions" data-reveal>
           <button
             type="button"
@@ -142,9 +121,8 @@ function fmtLightShort(sec: number): string {
             data-scroll-target="apollo-lunar-modules"
           >
             <span>{prologue.legacyLine}</span>
-            <span class="btn-badge">1.28s DELAY</span>
             <svg class="btn-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
 
@@ -153,101 +131,90 @@ function fmtLightShort(sec: number): string {
             class="btn-orbital"
             data-nav-dir="next"
             data-target-act="deep"
-            data-scroll-target="archive"
+            data-scroll-target="chapters"
           >
-            <span>Archival Registry</span>
-            <span class="btn-badge">13 RECORDS</span>
+            <span>Chapters</span>
           </button>
-        </div>
-
-        <!-- Clean 3-Column Interactive Chapter Directory -->
-        <div class="cover-directory" data-reveal aria-label="Chapter directory by sector">
-          <div class="dir-col" data-target-act="moon">
-            <div class="dir-head">
-              <span class="dir-act">Act I · The Moon</span>
-              <span class="dir-delay">1.28 s</span>
-            </div>
-            <ol class="dir-list">
-              {moonChapters.map(({ a }, i) => (
-                <li>
-                  <button
-                    type="button"
-                    class="dir-capsule"
-                    data-target-act="moon"
-                    data-scroll-target={a.slug}
-                  >
-                    <span class="dir-num">{String(i + 1).padStart(2, "0")}</span>
-                    <span class="dir-name">{a.nickname ?? a.name}</span>
-                    <span class="dir-arrow" aria-hidden="true">→</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div class="dir-col" data-target-act="mars">
-            <div class="dir-head">
-              <span class="dir-act">Act II · Mars</span>
-              <span class="dir-delay">12.5 min</span>
-            </div>
-            <ol class="dir-list" start="5">
-              {marsChapters.map(({ a }, i) => (
-                <li>
-                  <button
-                    type="button"
-                    class="dir-capsule"
-                    data-target-act="mars"
-                    data-scroll-target={a.slug}
-                  >
-                    <span class="dir-num">{String(i + 5).padStart(2, "0")}</span>
-                    <span class="dir-name">{a.nickname ?? a.name}</span>
-                    <span class="dir-arrow" aria-hidden="true">→</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div class="dir-col" data-target-act="deep">
-            <div class="dir-head">
-              <span class="dir-act">Act III · Deep Space</span>
-              <span class="dir-delay">Hours</span>
-            </div>
-            <ol class="dir-list" start="10">
-              {deepChapters.map(({ a }, i) => (
-                <li>
-                  <button
-                    type="button"
-                    class="dir-capsule"
-                    data-target-act="deep"
-                    data-scroll-target={a.slug}
-                  >
-                    <span class="dir-num">{String(i + 10).padStart(2, "0")}</span>
-                    <span class="dir-name">{a.nickname ?? a.name}</span>
-                    <span class="dir-arrow" aria-hidden="true">→</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
         </div>
       </div>
     </section>
   )}
 
-  <!-- 13 MISSION CHAPTERS -->
+  <!-- PURE-BLACK (#000000) MINIMAL CHAPTERS INDEX -->
+  <section
+    class="chapter chapters-page"
+    id="chapters"
+    data-chapter
+    data-label="Chapters"
+    data-act="moon"
+    data-distance="0"
+    data-light="0"
+  >
+    <div class="obsidian-wrap">
+      <header class="obsidian-head" data-reveal>
+        <h1 class="obs-title">Chapters</h1>
+        <p class="obs-sub">Thirteen silent machines from the Moon to interstellar space</p>
+      </header>
+
+      <div class="obs-ledger">
+        {ACT_META.map((sector) => {
+          const sectorItems = chapters
+            .map((item, globalIdx) => ({ ...item, chNumber: globalIdx + 1 }))
+            .filter((item) => item.a.act === sector.key);
+
+          return (
+            <section class="obs-sector">
+              <div class="obs-sector-bar" data-target-act={sector.key}>
+                <span class="sector-name">{sector.title}</span>
+                <span class="sector-delay">{sector.delay}</span>
+              </div>
+
+              <ol class="obs-list">
+                {sectorItems.map(({ a, story, chNumber }) => {
+                  const padNum = String(chNumber).padStart(2, "0");
+                  return (
+                    <li class="obs-item" data-target-act={a.act}>
+                      <button
+                        type="button"
+                        class="obs-row"
+                        data-scroll-target={a.slug}
+                      >
+                        <span class="obs-num">{padNum}</span>
+                        <span class="obs-name">{a.nickname ?? a.name}</span>
+                        {story?.hook && <span class="obs-hook">“{story.hook}”</span>}
+                        <span class="obs-arrow" aria-hidden="true">→</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          );
+        })}
+      </div>
+
+      <footer class="obs-foot" data-reveal>
+        <button type="button" class="obs-foot-link" data-scroll-target="prologue">← Opening Cover</button>
+        <div class="obs-foot-right">
+          <button type="button" class="obs-foot-link" data-scroll-target="epilogue">Epilogue</button>
+          <button type="button" class="obs-foot-link" data-scroll-target="archive">NSSDCA Archive</button>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- 01..13 · MISSION STORY CHAPTERS -->
   {chapters.map(({ a, story, Body }, idx) => {
     const hasBothImages = Boolean(a.images.then && a.images.now);
-    const prevChapter = idx > 0 ? chapters[idx - 1].a : null;
-    const nextChapter = idx < chapters.length - 1 ? chapters[idx + 1].a : null;
-    const isNextNewAct = nextChapter && nextChapter.act !== a.act;
+    const prevItem = idx > 0 ? chapters[idx - 1] : null;
+    const nextItem = idx < chapters.length - 1 ? chapters[idx + 1] : null;
 
     return (
       <section
         class="chapter"
         id={a.slug}
         data-chapter
-        data-label={`${ACT_LABEL[a.act]} · ${a.nickname ?? a.name}`}
+        data-label={a.nickname ?? a.name}
         data-act={a.act}
         data-distance={a.distanceKm}
         data-light={a.lightTimeSec}
@@ -265,6 +232,7 @@ function fmtLightShort(sec: number): string {
           lightTimeSec={a.lightTimeSec}
         />
 
+        <!-- 1. The Spacecraft's First-Person Voice -->
         {story && (
           <VoiceBlock
             lines={story.voice}
@@ -272,13 +240,42 @@ function fmtLightShort(sec: number): string {
           />
         )}
 
+        <!-- 2. Long-Form Narrative Story -->
         {Body && (
-          <div class="narration" data-reveal>
-            <Body />
-          </div>
+          <article class="story-prose" data-reveal>
+            <div class="narration">
+              <Body />
+            </div>
+          </article>
         )}
 
-        {/* Signature Interactive Moments */}
+        <!-- 3. NASA Archival Photograph / Then & Now Comparison -->
+        {hasBothImages ? (
+          <ThenNowSlider
+            thenImg={{ ...a.images.then!, src: resolveImgSrc(a.images.then!.src) }}
+            nowImg={{ ...a.images.now!, src: resolveImgSrc(a.images.now!.src) }}
+            title={a.nickname ?? a.name}
+          />
+        ) : a.images.then ? (
+          <div class="chapter-imagery" data-reveal>
+            <figure class="single-image-card">
+              <div class="image-wrapper">
+                <img
+                  src={resolveImgSrc(a.images.then.src)}
+                  alt={a.images.then.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="image-caption">
+                <span class="caption-text">{a.images.then.alt}</span>
+                <span class="caption-credit">{a.images.then.credit}</span>
+              </figcaption>
+            </figure>
+          </div>
+        ) : null}
+
+        <!-- 4. Interactive Experiment Moment (where applicable) -->
         {a.slug === "alsep" && (
           <PingTheMoon lightTimeSec={a.lightTimeSec} />
         )}
@@ -305,32 +302,14 @@ function fmtLightShort(sec: number): string {
           />
         )}
 
-        {/* NASA Archival Photography (Then vs Now Slider or Single Plate) */}
-        {hasBothImages ? (
-          <ThenNowSlider
-            thenImg={{ ...a.images.then!, src: resolveImgSrc(a.images.then!.src) }}
-            nowImg={{ ...a.images.now!, src: resolveImgSrc(a.images.now!.src) }}
-            title={a.nickname ?? a.name}
-          />
-        ) : a.images.then ? (
-          <div class="chapter-imagery" data-reveal>
-            <figure class="single-image-card">
-              <div class="image-wrapper">
-                <img
-                  src={resolveImgSrc(a.images.then.src)}
-                  alt={a.images.then.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <figcaption class="image-caption">
-                <p class="caption-text">{a.images.then.alt}</p>
-                <span class="caption-credit">Photograph: {a.images.then.credit}</span>
-              </figcaption>
-            </figure>
-          </div>
-        ) : null}
+        <!-- 5. Legacy Takeaway -->
+        {story?.legacyLine && (
+          <p class="chapter-legacy" data-reveal>
+            “{story.legacyLine}”
+          </p>
+        )}
 
+        <!-- 6. Quiet Archival Colophon -->
         <RecordCard
           stats={a.stats}
           lastContact={a.lastContact}
@@ -340,81 +319,53 @@ function fmtLightShort(sec: number): string {
           legacy={a.legacy}
         />
 
-        <!-- Navigation-Dependent Chapter Pagination Pods -->
+        <!-- 7. Minimal Chapter Turn -->
         <nav class="chapter-pager" aria-label="Chapter pagination">
-          {prevChapter ? (
+          {prevItem ? (
             <button
               type="button"
-              class="pager-capsule prev"
+              class="pager-link prev"
               data-nav-dir="prev"
-              data-target-act={prevChapter.act}
-              data-scroll-target={prevChapter.slug}
+              data-target-act={prevItem.a.act}
+              data-scroll-target={prevItem.a.slug}
             >
-              <div class="pager-top">
-                <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M13 8H3M3 8L7.5 3.5M3 8L7.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span class="pager-dir">Chapter {String(idx).padStart(2, "0")} · {ACT_LABEL[prevChapter.act]}</span>
-                <span class="pager-pill">{fmtLightShort(prevChapter.lightTimeSec)}</span>
-              </div>
-              <span class="pager-name">{prevChapter.nickname ?? prevChapter.name}</span>
+              <span class="pager-dir">← Chapter {String(idx).padStart(2, "0")}</span>
+              <span class="pager-name">{prevItem.a.nickname ?? prevItem.a.name}</span>
             </button>
           ) : (
             <button
               type="button"
-              class="pager-capsule prev"
+              class="pager-link prev"
               data-nav-dir="prev"
               data-target-act="moon"
               data-scroll-target="prologue"
             >
-              <div class="pager-top">
-                <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M13 8H3M3 8L7.5 3.5M3 8L7.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span class="pager-dir">Return to Origin</span>
-                <span class="pager-pill">0.00s</span>
-              </div>
-              <span class="pager-name">Opening Cover · Earth</span>
+              <span class="pager-dir">← Cover</span>
+              <span class="pager-name">Opening Prologue</span>
             </button>
           )}
 
-          {nextChapter ? (
+          {nextItem ? (
             <button
               type="button"
-              class={`pager-capsule next ${isNextNewAct ? "is-sector-jump" : ""}`}
+              class="pager-link next"
               data-nav-dir="next"
-              data-target-act={nextChapter.act}
-              data-scroll-target={nextChapter.slug}
+              data-target-act={nextItem.a.act}
+              data-scroll-target={nextItem.a.slug}
             >
-              <div class="pager-top">
-                <span class="pager-pill">{fmtLightShort(nextChapter.lightTimeSec)}</span>
-                <span class="pager-dir">
-                  {isNextNewAct
-                    ? `Enter ${ACT_ROMAN[nextChapter.act]}`
-                    : `Chapter ${String(idx + 2).padStart(2, "0")} · ${ACT_LABEL[nextChapter.act]}`}
-                </span>
-                <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </div>
-              <span class="pager-name">{nextChapter.nickname ?? nextChapter.name}</span>
+              <span class="pager-dir">Chapter {String(idx + 2).padStart(2, "0")} →</span>
+              <span class="pager-name">{nextItem.a.nickname ?? nextItem.a.name}</span>
             </button>
           ) : (
             <button
               type="button"
-              class="pager-capsule next is-sector-jump"
+              class="pager-link next"
               data-nav-dir="next"
               data-target-act="deep"
               data-scroll-target="epilogue"
             >
-              <div class="pager-top">
-                <span class="pager-pill">22.2h</span>
-                <span class="pager-dir">Closing Reflection</span>
-                <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </div>
-              <span class="pager-name">Epilogue · What Remains</span>
+              <span class="pager-dir">Closing →</span>
+              <span class="pager-name">Epilogue</span>
             </button>
           )}
         </nav>
@@ -422,99 +373,57 @@ function fmtLightShort(sec: number): string {
     );
   })}
 
-  <!-- EPILOGUE -->
+  <!-- 14 · EPILOGUE -->
   {epilogue && (
     <section
       class="chapter epilogue"
       id="epilogue"
       data-chapter
-      data-label="Epilogue · The Silent Fleet"
+      data-label="Epilogue"
       data-act="deep"
       data-distance="24000000000"
       data-light="80000"
     >
       <div class="epilogue-container">
         <header class="epilogue-header" data-reveal>
-          <span class="epilogue-kicker">Epilogue · Across the Solar System</span>
+          <span class="epilogue-kicker">Epilogue</span>
           <h1 class="epilogue-title">{epilogue.hook}</h1>
         </header>
 
-        <blockquote class="epilogue-voice" data-split>
-          {epilogue.voice.map((line) => (
-            <p class="epilogue-line">{line}</p>
-          ))}
-        </blockquote>
+        <VoiceBlock lines={epilogue.voice} />
 
         {EpilogueBody && (
-          <div class="narration epilogue-prose" data-reveal>
-            <EpilogueBody />
-          </div>
-        )}
-
-        {epilogue.keepsake && (
-          <aside class="keepsake-card" data-reveal>
-            <span class="keepsake-title">Reflection &amp; Light-Time Simulator</span>
-            <p class="keepsake-body">{epilogue.keepsake}</p>
-
-            <div class="simulator-box" id="echo-sim">
-              <span class="sim-label">Select a spacecraft to compare round-trip light delay from Earth:</span>
-              <div class="sim-targets" role="group" aria-label="Select target spacecraft">
-                {artifacts.filter((x) => ["apollo-lunar-modules", "spirit-opportunity", "dawn", "pioneer"].includes(x.slug)).map((x, i) => (
-                  <button
-                    type="button"
-                    class={`sim-btn ${i === 0 ? "active" : ""}`}
-                    data-target-act={x.act}
-                    data-dist={x.distanceKm}
-                    data-light={x.lightTimeSec}
-                    data-name={x.nickname ?? x.name}
-                  >
-                    {x.nickname ?? x.name}
-                  </button>
-                ))}
-              </div>
-              <div class="sim-readout">
-                <span class="sim-where" data-sim-target>Eagle (Apollo 11)</span>
-                <span class="sim-dist" data-sim-dist>384,400 km</span>
-                <span class="sim-time" data-sim-delay>2.56 s round-trip light delay</span>
-              </div>
+          <article class="story-prose" data-reveal>
+            <div class="narration">
+              <EpilogueBody />
             </div>
-          </aside>
+          </article>
         )}
 
-        <div class="epilogue-legacy-box" data-reveal>
-          <p class="legacy-final-line">“{epilogue.legacyLine}”</p>
-        </div>
+        <p class="chapter-legacy" data-reveal>
+          “{epilogue.legacyLine}”
+        </p>
 
         <nav class="chapter-pager" aria-label="Chapter pagination">
           <button
             type="button"
-            class="pager-capsule prev"
+            class="pager-link prev"
             data-nav-dir="prev"
             data-target-act="deep"
             data-scroll-target="kepler"
           >
-            <div class="pager-top">
-              <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M13 8H3M3 8L7.5 3.5M3 8L7.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <span class="pager-dir">Chapter 13 · Deep Space</span>
-            </div>
+            <span class="pager-dir">← Chapter 13</span>
             <span class="pager-name">Kepler Space Telescope</span>
           </button>
 
           <button
             type="button"
-            class="pager-capsule next"
+            class="pager-link next"
             data-nav-dir="next"
             data-target-act="deep"
             data-scroll-target="archive"
           >
-            <div class="pager-top">
-              <span class="pager-dir">Master Registry</span>
-              <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </div>
+            <span class="pager-dir">Registry →</span>
             <span class="pager-name">The Silent Fleet Archive</span>
           </button>
         </nav>
@@ -522,30 +431,23 @@ function fmtLightShort(sec: number): string {
     </section>
   )}
 
-  <!-- ARCHIVE: Master Historical Index -->
+  <!-- 15 · ARCHIVE -->
   <section
     id="archive"
     class="chapter archive"
     data-chapter
-    data-label="Archive · Master Registry"
+    data-label="Archive"
     data-act="deep"
     data-distance="0"
     data-light="0"
   >
     <div class="archive-inner">
       <div class="archive-header" data-reveal>
-        <span class="archive-kicker">Master Historical Index</span>
+        <span class="archive-kicker">Master Index</span>
         <h1>The Silent Fleet Archive</h1>
         <p class="archive-sub">
-          Complete verifiable registry of the 13 missions featured in STILL. Select any spacecraft to open its chapter.
+          Verified NSSDCA historical registry of the thirteen missions featured in STILL.
         </p>
-
-        <div class="archive-filters" role="group" aria-label="Filter artifacts by sector">
-          <button type="button" class="filter-btn active" data-filter="all">All (13)</button>
-          <button type="button" class="filter-btn" data-target-act="moon" data-filter="moon">The Moon (4)</button>
-          <button type="button" class="filter-btn" data-target-act="mars" data-filter="mars">Mars (5)</button>
-          <button type="button" class="filter-btn" data-target-act="deep" data-filter="deep">Deep Space (4)</button>
-        </div>
       </div>
 
       <div class="archive-table-wrapper" data-reveal>
@@ -556,8 +458,7 @@ function fmtLightShort(sec: number): string {
               <th>Body</th>
               <th>Mission</th>
               <th>Last Contact</th>
-              <th>Light Delay</th>
-              <th>NSSDCA Record</th>
+              <th>Record</th>
             </tr>
           </thead>
           <tbody>
@@ -569,7 +470,6 @@ function fmtLightShort(sec: number): string {
                 <td><span class={`body-tag tag-${a.act}`}>{a.location.body}</span></td>
                 <td class="mission-col">{a.mission}</td>
                 <td class="contact-col">{a.lastContact}</td>
-                <td class="delay-col">{a.lightTimeSec < 60 ? `${a.lightTimeSec}s` : `${Math.floor(a.lightTimeSec / 60)}m`}</td>
                 <td class="chip-col">
                   <CitationChip href={a.nssdcaUrl} label={`NSSDCA ${a.nssdcaId}`} />
                 </td>
@@ -579,43 +479,9 @@ function fmtLightShort(sec: number): string {
         </table>
       </div>
 
-      <nav class="chapter-pager" aria-label="Chapter pagination">
-        <button
-          type="button"
-          class="pager-capsule prev"
-          data-nav-dir="prev"
-          data-target-act="deep"
-          data-scroll-target="epilogue"
-        >
-          <div class="pager-top">
-            <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M13 8H3M3 8L7.5 3.5M3 8L7.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="pager-dir">Previous</span>
-          </div>
-          <span class="pager-name">Epilogue · What Remains</span>
-        </button>
-
-        <button
-          type="button"
-          class="pager-capsule next"
-          data-nav-dir="next"
-          data-target-act="moon"
-          data-scroll-target="prologue"
-        >
-          <div class="pager-top">
-            <span class="pager-dir">Return to Start</span>
-            <svg class="pager-vec" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-          <span class="pager-name">Opening Cover · STILL</span>
-        </button>
-      </nav>
-
       <footer class="archive-footer">
         <p class="credit">
-          Imagery, coordinates, and historical records courtesy of NASA / JPL-Caltech / Arizona State University / Goddard Space Flight Center (NSSDCA). Created for the 2026 NASA Space Apps Challenge.
+          Imagery, coordinates, and historical records courtesy of NASA / JPL-Caltech / Arizona State University / Goddard Space Flight Center (NSSDCA).
         </p>
       </footer>
     </div>
@@ -625,39 +491,10 @@ function fmtLightShort(sec: number): string {
 <script>
   import { scrollToChapter } from "../scripts/engine";
 
-  // 1. All chapter navigation buttons ([data-scroll-target]) + cursor-tracked specular radial highlight
-  document.querySelectorAll<HTMLElement>("[data-scroll-target], .btn-orbital, .pager-capsule").forEach((btn) => {
-    btn.addEventListener("pointermove", (e) => {
-      const rect = btn.getBoundingClientRect();
-      const xPct = ((e.clientX - rect.left) / Math.max(1, rect.width)) * 100;
-      btn.style.setProperty("--btn-origin-x", `${xPct.toFixed(1)}%`);
-    });
-  });
-
   document.querySelectorAll<HTMLElement>("[data-scroll-target]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const target = btn.dataset.scrollTarget;
       if (target) scrollToChapter(target);
-    });
-  });
-
-  // 2. Interactive Archive Filtering & Row Jumps
-  const filterBtns = document.querySelectorAll<HTMLButtonElement>(".filter-btn");
-  const tableRows = document.querySelectorAll<HTMLElement>(".archive-row");
-
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      const act = btn.dataset.filter;
-      tableRows.forEach((row) => {
-        if (act === "all" || row.dataset.act === act) {
-          row.style.display = "";
-        } else {
-          row.style.display = "none";
-        }
-      });
     });
   });
 
@@ -668,68 +505,32 @@ function fmtLightShort(sec: number): string {
       if (slug) scrollToChapter(slug);
     });
   });
-
-  // 3. Epilogue Radio Simulator
-  const simBtns = document.querySelectorAll<HTMLButtonElement>(".sim-btn");
-  const simTarget = document.querySelector<HTMLElement>("[data-sim-target]");
-  const simDist = document.querySelector<HTMLElement>("[data-sim-dist]");
-  const simDelay = document.querySelector<HTMLElement>("[data-sim-delay]");
-
-  const fmtDist = (km: number) =>
-    km >= 1e9 ? `${(km / 1e9).toFixed(2)} billion km`
-    : km >= 1e6 ? `${(km / 1e6).toFixed(1)} million km`
-    : `${Math.round(km).toLocaleString("en-US")} km`;
-
-  const fmtDelay = (sec: number) => {
-    const roundTrip = sec * 2;
-    if (roundTrip < 60) return `${roundTrip.toFixed(2)} s round-trip light delay`;
-    if (roundTrip < 3600) return `${Math.floor(roundTrip / 60)}m ${Math.round(roundTrip % 60)}s round-trip delay`;
-    return `${Math.floor(roundTrip / 3600)}h ${Math.round((roundTrip % 3600) / 60)}m round-trip delay`;
-  };
-
-  simBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      simBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      const name = btn.dataset.name ?? "";
-      const dist = Number(btn.dataset.dist ?? 0);
-      const light = Number(btn.dataset.light ?? 0);
-
-      if (simTarget) simTarget.textContent = name;
-      if (simDist) simDist.textContent = fmtDist(dist);
-      if (simDelay) simDelay.textContent = fmtDelay(light);
-    });
-  });
 </script>
 
 <style>
-  /* OPENING COVER / PROLOGUE */
+  /* ==========================================================
+     00 · OPENING COVER / PROLOGUE
+     ========================================================== */
   .prologue {
-    padding: var(--s-12) var(--s-6) var(--s-16);
+    padding: var(--s-20) var(--s-6) var(--s-24);
   }
 
   .prologue-inner {
-    max-width: 920px;
+    max-width: var(--measure);
     margin-inline: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: var(--s-8);
+    gap: var(--s-10);
   }
 
   .cover-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    font: 400 var(--t-xs)/1 var(--f-record);
+    margin: 0;
+    font: 400 var(--t-xs)/1.4 var(--f-record);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
-  }
-  .sep {
-    opacity: 0.4;
   }
 
   .cover-title-lockup {
@@ -740,7 +541,7 @@ function fmtLightShort(sec: number): string {
   }
 
   .cover-title {
-    font: 700 clamp(3.2rem, 2.2rem + 5.5vw, 6.4rem)/0.98 var(--f-voice);
+    font: 700 clamp(3.4rem, 2.4rem + 5vw, 6.2rem)/1 var(--f-voice);
     letter-spacing: 0.28em;
     text-indent: 0.28em;
     margin: 0;
@@ -748,66 +549,35 @@ function fmtLightShort(sec: number): string {
   }
 
   .cover-subtitle {
-    font: 400 var(--t-xs)/1.6 var(--f-record);
-    letter-spacing: 0.12em;
+    font: 400 var(--t-xs)/1.5 var(--f-record);
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
     margin: 0;
-    max-width: 58ch;
-  }
-
-  .scale-filament {
-    width: 100%;
-    max-width: 720px;
-    color: var(--c-ink-dim);
-    margin-block: var(--s-2);
-  }
-  .scale-svg {
-    width: 100%;
-    height: auto;
-    display: block;
-    overflow: visible;
-  }
-  .scale-photon {
-    animation: scale-pulse 9s cubic-bezier(0.35, 0, 0.25, 1) infinite;
-  }
-  @keyframes scale-pulse {
-    0% { transform: translateX(0); opacity: 0; }
-    8% { opacity: 0.9; }
-    90% { opacity: 0.9; }
-    100% { transform: translateX(712px); opacity: 0; }
   }
 
   .prologue-voice {
-    max-width: 52ch;
+    max-width: 48ch;
     margin: 0;
-    padding: var(--s-5) 0;
+    padding: var(--s-8) 0;
     border-top: 1px solid var(--c-line);
     border-bottom: 1px solid var(--c-line);
   }
   .prologue-voice p {
     font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
-    margin: 0 0 var(--s-3);
+    margin: 0 0 var(--s-4);
     color: var(--c-ink);
   }
   .prologue-voice p:last-child {
     margin-bottom: 0;
     font-style: normal;
-    font-weight: 700;
     color: var(--c-accent);
   }
 
   .prologue-prose {
-    max-width: 58ch;
+    margin-block: 0;
+    padding-inline: 0;
     text-align: left;
-    color: var(--c-ink-dim);
-    font: 400 var(--t-md)/var(--lh-body) var(--f-ui);
-  }
-  .prologue-prose :global(p) {
-    margin: 0 0 var(--s-4);
-  }
-  .prologue-prose :global(p:last-child) {
-    margin-bottom: 0;
   }
 
   .prologue-actions {
@@ -816,277 +586,281 @@ function fmtLightShort(sec: number): string {
     justify-content: center;
     align-items: center;
     gap: var(--s-4);
+    padding-top: var(--s-2);
   }
 
-  /* Cover 3-Column Directory with Capsule Buttons */
-  .cover-directory {
-    width: 100%;
-    margin-top: var(--s-6);
-    padding-top: var(--s-8);
-    border-top: 1px solid var(--c-line-strong);
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--s-6);
-    text-align: left;
+  /* ==========================================================
+     PURE-BLACK (#000000) MINIMAL CHAPTERS INDEX PAGE
+     ========================================================== */
+  .chapters-page {
+    background-color: #000000;
+    color: #f2efe9;
+    min-height: calc(100vh - 56px);
+    padding: var(--s-20) var(--s-6) var(--s-24);
   }
 
-  .dir-col {
+  .obsidian-wrap {
+    max-width: 780px;
+    margin-inline: auto;
     display: flex;
     flex-direction: column;
-    gap: var(--s-3);
+    gap: var(--s-16);
   }
 
-  .dir-head {
+  .obsidian-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+
+  .obs-title {
+    font: 700 var(--t-xl)/1.15 var(--f-voice);
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: #f2efe9;
+  }
+
+  .obs-sub {
+    margin: 0;
+    font: 400 var(--t-xs)/1.5 var(--f-record);
+    letter-spacing: 0.06em;
+    color: #7c776e;
+  }
+
+  .obs-ledger {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-12);
+  }
+
+  .obs-sector {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .obs-sector-bar {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding-bottom: var(--s-2);
-    border-bottom: 1px solid var(--c-line);
-  }
-
-  .dir-act {
-    font: 700 0.68rem/1 var(--f-record);
-    letter-spacing: 0.12em;
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    font: 400 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--btn-accent, var(--c-ink));
+  }
+  .sector-name {
+    color: var(--btn-accent, #d4c6ab);
+  }
+  .sector-delay {
+    color: #6a655d;
   }
 
-  .dir-delay {
-    font: 400 0.62rem/1 var(--f-record);
-    letter-spacing: 0.08em;
-    color: var(--c-ink-dim);
-  }
-
-  .dir-list {
+  .obs-list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
   }
 
-  .dir-capsule {
+  .obs-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .obs-row {
     appearance: none;
     width: 100%;
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-pill);
-    padding: 10px 16px;
+    background: transparent;
+    border: 0;
+    padding: 20px 0;
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--s-3);
+    grid-template-columns: 36px minmax(180px, 1.1fr) 1.4fr 20px;
+    align-items: baseline;
+    gap: var(--s-4);
     text-align: left;
-    color: var(--c-ink);
-    box-shadow: var(--sh-btn);
+    color: inherit;
     cursor: pointer;
-    transition:
-      transform var(--d-fast) var(--ease-spring),
-      border-color var(--d-fast) var(--ease-out),
-      box-shadow var(--d-fast) var(--ease-out);
-  }
-  .dir-capsule:hover,
-  .dir-capsule:focus-visible {
-    transform: translateY(-2px);
-    border-color: var(--btn-accent, var(--c-accent));
-    box-shadow: var(--sh-btn-hover);
-  }
-  .dir-capsule:active {
-    transform: translateY(1px);
+    transition: opacity var(--d-fast);
   }
 
-  .dir-num {
-    font: 700 0.64rem/1 var(--f-record);
+  .obs-num {
+    font: 400 var(--t-xs)/1 var(--f-record);
     letter-spacing: 0.08em;
-    color: var(--btn-accent, var(--c-accent));
+    color: #6a655d;
     font-variant-numeric: tabular-nums;
+    transition: color var(--d-fast);
+  }
+  .obs-row:hover .obs-num {
+    color: var(--btn-accent, #d4c6ab);
   }
 
-  .dir-name {
-    font: 400 0.78rem/1.25 var(--f-voice);
-    color: var(--c-ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .obs-name {
+    font: 700 var(--t-sm)/1.35 var(--f-voice);
+    color: #f2efe9;
+    transition: color var(--d-fast);
+  }
+  .obs-row:hover .obs-name {
+    color: var(--btn-accent, #d4c6ab);
   }
 
-  .dir-arrow {
-    font: 400 0.75rem/1 var(--f-record);
-    color: var(--c-ink-dim);
+  .obs-hook {
+    font: italic 400 var(--t-xs)/1.5 var(--f-voice);
+    color: #8c877d;
+  }
+
+  .obs-arrow {
+    text-align: right;
+    color: #6a655d;
     transition: transform var(--d-fast) var(--ease-spring), color var(--d-fast);
   }
-  .dir-capsule:hover .dir-arrow {
-    transform: translateX(3px);
-    color: var(--btn-accent, var(--c-accent));
+  .obs-row:hover .obs-arrow {
+    transform: translateX(4px);
+    color: #f2efe9;
   }
 
-  /* Chapter Archival Single Image Plate */
+  .obs-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--s-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .obs-foot-right {
+    display: inline-flex;
+    gap: var(--s-6);
+  }
+  .obs-foot-link {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: 400 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7c776e;
+    cursor: pointer;
+    transition: color var(--d-fast);
+  }
+  .obs-foot-link:hover {
+    color: #f2efe9;
+  }
+
+  /* ==========================================================
+     CHAPTER IMAGERY, LEGACY LINE & MINIMAL PAGINATION
+     ========================================================== */
   .chapter-imagery {
-    max-width: 780px;
-    margin: var(--s-10) auto;
+    max-width: var(--measure);
+    margin: var(--s-12) auto var(--s-16);
     padding-inline: var(--s-6);
   }
   .single-image-card {
     margin: 0;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-md);
-    background: var(--c-bg-raised);
-    box-shadow: var(--sh-card);
-    overflow: hidden;
+    gap: var(--s-3);
   }
   .image-wrapper {
     position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--c-line);
     background: #050507;
   }
   .image-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(0.35) contrast(1.04);
+    filter: saturate(0.55) contrast(1.02);
     transition: filter var(--d-base) var(--ease-out);
   }
   .single-image-card:hover .image-wrapper img {
-    filter: saturate(0.95) contrast(1);
+    filter: saturate(1) contrast(1);
   }
   .image-caption {
-    padding: var(--s-4) var(--s-5);
-    border-top: 1px solid var(--c-line);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--s-2) var(--s-4);
-  }
-  .caption-text {
-    font: 400 var(--t-xs)/1.5 var(--f-ui);
-    color: var(--c-ink);
-    margin: 0;
-  }
-  .caption-credit {
-    font: 400 0.64rem/1 var(--f-record);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font: 400 var(--t-xs)/1.5 var(--f-record);
     color: var(--c-ink-dim);
   }
-
-  /* ==========================================================
-     NAVIGATION-DEPENDENT CHAPTER PAGINATION CAPSULES
-     ========================================================== */
-  .chapter-pager {
-    max-width: 780px;
-    margin: var(--s-12) auto var(--s-16);
-    padding-inline: var(--s-6);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--s-4);
+  .caption-credit {
+    opacity: 0.7;
   }
 
-  .pager-capsule {
-    position: relative;
+  .chapter-legacy {
+    max-width: var(--measure);
+    margin: var(--s-16) auto;
+    padding: 0 var(--s-6);
+    text-align: center;
+    font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
+    color: var(--c-accent);
+  }
+
+  .chapter-pager {
+    max-width: var(--measure);
+    margin: var(--s-16) auto var(--s-20);
+    padding: var(--s-8) var(--s-6) 0;
+    border-top: 1px solid var(--c-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--s-6);
+  }
+
+  .pager-link {
     appearance: none;
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
+    background: transparent;
     border: 1px solid var(--c-line-strong);
-    border-radius: var(--r-lg);
-    padding: var(--s-5) var(--s-6);
+    border-radius: var(--r-md);
+    padding: var(--s-4) var(--s-5);
     display: flex;
     flex-direction: column;
-    gap: var(--s-2);
+    gap: 6px;
     cursor: pointer;
     text-align: left;
-    box-shadow: var(--sh-btn);
-    overflow: hidden;
     transition:
-      transform var(--d-fast) var(--ease-spring),
       border-color var(--d-fast) var(--ease-out),
-      box-shadow var(--d-fast) var(--ease-out);
+      background-color var(--d-fast) var(--ease-out),
+      transform var(--d-fast) var(--ease-spring);
   }
-  .pager-capsule::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--btn-origin-x, 50%) 50%, var(--btn-accent, var(--c-accent)), transparent 75%);
-    opacity: 0.08;
-    transition: opacity var(--d-base) var(--ease-out);
-    pointer-events: none;
-  }
-  .pager-capsule.next {
+  .pager-link.next {
     text-align: right;
     align-items: flex-end;
+    margin-left: auto;
+  }
+  .pager-link:hover,
+  .pager-link:focus-visible {
     border-color: var(--btn-accent, var(--c-accent));
-  }
-  .pager-capsule.is-sector-jump {
-    box-shadow: var(--sh-btn-hover);
-  }
-  .pager-capsule:hover,
-  .pager-capsule:focus-visible {
-    transform: translateY(-2.5px);
-    border-color: var(--btn-accent, var(--c-accent));
-    box-shadow: var(--sh-btn-hover);
-  }
-  .pager-capsule:hover::before {
-    opacity: 0.2;
-  }
-  .pager-capsule:active {
-    transform: translateY(1px);
-  }
-
-  .pager-top {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .pager-vec {
-    width: 15px;
-    height: 15px;
-    color: var(--btn-accent, var(--c-accent));
-    transition: transform var(--d-fast) var(--ease-spring);
-  }
-  .pager-capsule.prev:hover .pager-vec {
-    transform: translateX(-4px);
-  }
-  .pager-capsule.next:hover .pager-vec {
-    transform: translateX(4px);
+    background: rgba(242, 239, 233, 0.03);
+    transform: translateY(-1px);
   }
 
   .pager-dir {
-    font: 700 0.64rem/1 var(--f-record);
+    font: 400 0.68rem/1 var(--f-record);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--btn-accent, var(--c-accent));
   }
 
-  .pager-pill {
-    font: 400 0.58rem/1 var(--f-record);
-    padding: 3px 8px;
-    border-radius: var(--r-pill);
-    border: 1px solid var(--c-line);
-    color: var(--c-ink-dim);
-  }
-
   .pager-name {
-    font: 700 var(--t-md)/1.25 var(--f-voice);
+    font: 700 var(--t-sm)/1.35 var(--f-voice);
     color: var(--c-ink);
   }
 
   /* Epilogue */
   .epilogue {
-    padding: var(--s-12) var(--s-6) var(--s-16);
+    padding: var(--s-20) var(--s-6) var(--s-24);
   }
   .epilogue-container {
-    max-width: 780px;
+    max-width: var(--measure);
     margin-inline: auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-8);
   }
   .epilogue-header {
     text-align: center;
+    margin-bottom: var(--s-12);
+    padding-bottom: var(--s-8);
+    border-bottom: 1px solid var(--c-line);
   }
   .epilogue-kicker {
     font: 400 var(--t-xs)/1 var(--f-record);
@@ -1097,128 +871,23 @@ function fmtLightShort(sec: number): string {
     margin-bottom: var(--s-3);
   }
   .epilogue-title {
-    font: 700 var(--t-hero)/1.12 var(--f-voice);
+    font: 700 var(--t-hero)/var(--lh-tight) var(--f-voice);
+    letter-spacing: -0.015em;
     color: var(--c-ink);
-    margin: 0;
-  }
-  .epilogue-voice {
-    max-width: var(--measure);
-    margin: 0 auto;
-    text-align: center;
-    padding: var(--s-4) 0;
-    border-top: 1px solid var(--c-line);
-    border-bottom: 1px solid var(--c-line);
-  }
-  .epilogue-line {
-    font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice);
-    color: var(--c-ink);
-    margin: 0 0 var(--s-3);
-  }
-  .epilogue-line:last-child {
-    margin-bottom: 0;
-  }
-
-  .keepsake-card {
-    background: var(--c-bg-raised);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-md);
-    box-shadow: var(--sh-card);
-    padding: var(--s-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-4);
-  }
-  .keepsake-title {
-    font: 700 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--c-accent);
-  }
-  .keepsake-body {
-    font: 400 var(--t-sm)/1.6 var(--f-ui);
-    color: var(--c-ink-dim);
-    margin: 0;
-  }
-
-  .simulator-box {
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--c-line);
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-3);
-  }
-  .sim-label {
-    font: 400 var(--t-xs)/1.4 var(--f-record);
-    letter-spacing: 0.08em;
-    color: var(--c-ink-dim);
-  }
-  .sim-targets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-  }
-  .sim-btn {
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg) 100%);
-    border: 1px solid var(--c-line-strong);
-    border-radius: var(--r-pill);
-    color: var(--c-ink-dim);
-    font: 700 0.66rem/1 var(--f-record);
-    letter-spacing: 0.08em;
-    padding: 9px 16px;
-    box-shadow: var(--sh-btn);
-    cursor: pointer;
-    transition: transform var(--d-fast) var(--ease-spring), border-color var(--d-fast), color var(--d-fast);
-  }
-  .sim-btn:hover {
-    transform: translateY(-1.5px);
-    color: var(--c-ink);
-    border-color: var(--btn-accent, var(--c-accent));
-  }
-  .sim-btn.active {
-    background: var(--btn-accent, var(--c-accent));
-    color: var(--c-bg);
-    border-color: var(--btn-accent, var(--c-accent));
-  }
-  .sim-readout {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-4);
-    align-items: center;
-    padding-top: var(--s-2);
-    font: 400 var(--t-xs)/1.4 var(--f-record);
-  }
-  .sim-where {
-    color: var(--c-accent);
-    font-weight: 700;
-  }
-  .sim-dist, .sim-time {
-    color: var(--c-ink);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .epilogue-legacy-box {
-    text-align: center;
-    padding: var(--s-6) 0;
-    border-top: 1px solid var(--c-line);
-    border-bottom: 1px solid var(--c-line);
-  }
-  .legacy-final-line {
-    font: italic 400 var(--t-lg)/1.4 var(--f-voice);
-    color: var(--c-accent);
     margin: 0;
   }
 
   /* Archive */
   .archive {
-    padding: var(--s-12) var(--s-6) var(--s-16);
+    padding: var(--s-20) var(--s-6) var(--s-24);
   }
   .archive-inner {
-    max-width: 940px;
+    max-width: 820px;
     margin-inline: auto;
   }
   .archive-header {
     text-align: center;
-    margin-bottom: var(--s-8);
+    margin-bottom: var(--s-12);
   }
   .archive-kicker {
     font: 400 var(--t-xs)/1 var(--f-record);
@@ -1229,66 +898,38 @@ function fmtLightShort(sec: number): string {
     margin-bottom: var(--s-2);
   }
   .archive-header h1 {
-    font: 700 var(--t-hero)/1.12 var(--f-voice);
+    font: 700 var(--t-hero)/var(--lh-tight) var(--f-voice);
+    letter-spacing: -0.015em;
     color: var(--c-ink);
     margin: 0 0 var(--s-3);
   }
   .archive-sub {
-    font: 400 var(--t-sm)/1.5 var(--f-ui);
+    font: 400 var(--t-sm)/1.65 var(--f-ui);
     color: var(--c-ink-dim);
-    max-width: 54ch;
-    margin: 0 auto var(--s-6);
-  }
-  .archive-filters {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-    justify-content: center;
-  }
-  .filter-btn {
-    background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
-    border: 1px solid var(--c-line-strong);
-    font: 700 0.66rem/1 var(--f-record);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--c-ink-dim);
-    padding: 9px 18px;
-    border-radius: var(--r-pill);
-    box-shadow: var(--sh-btn);
-    cursor: pointer;
-    transition: transform var(--d-fast) var(--ease-spring), border-color var(--d-fast), color var(--d-fast);
-  }
-  .filter-btn:hover {
-    transform: translateY(-1.5px);
-    color: var(--c-ink);
-  }
-  .filter-btn.active {
-    border-color: var(--btn-accent, var(--c-accent));
-    color: var(--btn-accent, var(--c-accent));
+    max-width: 52ch;
+    margin: 0 auto;
   }
   .archive-table-wrapper {
     overflow-x: auto;
-    background: var(--c-bg-raised);
-    border: 1px solid var(--c-line);
-    border-radius: var(--r-md);
-    box-shadow: var(--sh-card);
+    border-top: 1px solid var(--c-line-strong);
+    border-bottom: 1px solid var(--c-line);
   }
   .archive-table {
     width: 100%;
     border-collapse: collapse;
-    font: 400 var(--t-xs)/1.4 var(--f-record);
+    font: 400 var(--t-xs)/1.5 var(--f-record);
     text-align: left;
   }
   .archive-table th {
-    padding: var(--s-4);
-    font-weight: 700;
+    padding: var(--s-4) var(--s-3);
+    font-weight: 400;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
     border-bottom: 1px solid var(--c-line-strong);
   }
   .archive-table td {
-    padding: var(--s-4);
+    padding: var(--s-4) var(--s-3);
     border-bottom: 1px solid var(--c-line);
     vertical-align: middle;
   }
@@ -1298,52 +939,49 @@ function fmtLightShort(sec: number): string {
   .archive-link {
     color: var(--c-ink);
     text-decoration: none;
-    font: 700 0.86rem/1.2 var(--f-voice);
+    font: 700 var(--t-sm)/1.3 var(--f-voice);
   }
   .archive-link:hover {
     color: var(--c-accent);
   }
   .body-tag {
-    font-size: 0.66rem;
+    font-size: 0.68rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
   .tag-moon { color: var(--c-moon); }
   .tag-mars { color: var(--c-mars); }
   .tag-deep { color: var(--c-deep); }
-  .contact-col, .delay-col {
+  .contact-col {
     font-variant-numeric: tabular-nums;
     color: var(--c-ink-dim);
   }
   .archive-footer {
-    margin-top: var(--s-8);
+    margin-top: var(--s-12);
     text-align: center;
   }
   .credit {
-    font: 400 var(--t-xs)/1.6 var(--f-record);
+    font: 400 var(--t-xs)/1.7 var(--f-record);
     color: var(--c-ink-dim);
-    max-width: 64ch;
+    max-width: 60ch;
     margin: 0 auto;
   }
 
-  @media (max-width: 760px) {
-    .cover-directory {
-      grid-template-columns: 1fr;
-      gap: var(--s-6);
+  @media (max-width: 680px) {
+    .obs-row {
+      grid-template-columns: 32px 1fr 16px;
+    }
+    .obs-hook {
+      grid-column: 2 / 4;
     }
     .chapter-pager {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .pager-capsule.next {
+    .pager-link.next {
       text-align: left;
       align-items: flex-start;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .scale-photon {
-      animation: none;
-      opacity: 0;
+      margin-left: 0;
     }
   }
 </style>

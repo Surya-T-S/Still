@@ -8,6 +8,9 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, "..");
 
 export default defineConfig({
+  devToolbar: {
+    enabled: false,
+  },
   integrations: [mdx()],
   vite: {
     resolve: {

@@ -1,102 +1,96 @@
 /* ==========================================================
    STILL — Design Tokens
    Typography: Space Mono (400, 700, 400i, 700i)
-   Modes:
-   - "Vacuum" (Dark): Zero-G deep-space slate, weathered foil,
-     oxidized Martian dust, and cold interstellar steel.
-   - "Paper" (Light): 1969 NASA archival cotton-rag technical
-     report stock, sepia-slate ink, and letterpress surfaces.
+   Calibrated to human vision science & editorial typography:
+   - 60ch optimal line length (55–65 characters per saccade sweep)
+   - 1.04rem–1.14rem (16.6px–18.2px) body size for effortless x-height recognition
+   - +0.005em letter-spacing & +0.03em word-spacing for clean monospace word shapes
+   - 1.90 line-height & 1.85em paragraph spacing for calm vertical rhythm
    ========================================================== */
 
 :root,
 [data-theme="dark"] {
   /* Canvas & surfaces (Vacuum Slate) */
   --c-bg: #07080a;
-  --c-bg-raised: #0e1014;
-  --c-bg-elevated: #14171d;
-  --c-bg-glass: rgba(11, 13, 17, 0.84);
+  --c-bg-reading: rgba(7, 8, 10, 0.78);
+  --c-bg-raised: #0c0e12;
+  --c-bg-elevated: #12151b;
+  --c-bg-glass: rgba(7, 8, 10, 0.86);
 
-  /* Ink (sun-bleached bone & lunar regolith ash) */
-  --c-ink: #e6e1d6;
-  --c-ink-dim: #928d82;
-  --c-ink-faint: #56534c;
+  /* High-contrast, warm archival bone ink for zero eye strain */
+  --c-ink: #f2efe9;
+  --c-ink-body: #e2ddd3;
+  --c-ink-dim: #948f84;
+  --c-ink-faint: #58544c;
 
-  /* Hairlines & specular rims */
-  --c-line: rgba(230, 225, 214, 0.11);
-  --c-line-strong: rgba(230, 225, 214, 0.24);
-  --c-rim: rgba(255, 255, 255, 0.12);
+  /* Hairlines */
+  --c-line: rgba(242, 239, 233, 0.08);
+  --c-line-strong: rgba(242, 239, 233, 0.18);
 
   /* Muted historical status tones */
-  --c-status-brass: #c2a36b;
-  --c-status-sage: #72a389;
+  --c-status-brass: #c4a66e;
+  --c-status-sage: #6fa086;
 
   /* Sector accents: weathered physical materials */
-  --c-moon: #cbbda2;   /* sun-bleached Apollo Kapton & lunar regolith */
-  --c-mars: #c4684b;   /* oxidized Martian iron-oxide dust */
-  --c-deep: #7d97b2;   /* cold heliocentric & interstellar steel */
+  --c-moon: #d4c6ab;   /* sun-bleached Apollo Kapton & lunar regolith */
+  --c-mars: #cc7154;   /* oxidized Martian iron-oxide dust */
+  --c-deep: #87a2be;   /* cold heliocentric & interstellar steel */
   --c-accent: var(--c-moon);
-  --c-glow: rgba(203, 189, 162, 0.07);
-
-  /* Tactile button shadows (Vacuum specular depth) */
-  --sh-btn: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --sh-btn-hover: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  --sh-card: 0 14px 40px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --c-glow: rgba(212, 198, 171, 0.045);
 }
 
 [data-theme="light"] {
   /* Canvas & surfaces (Archival Cotton-Rag Paper) */
-  --c-bg: #f3efe6;
-  --c-bg-raised: #eae4d7;
-  --c-bg-elevated: #e1d9c8;
-  --c-bg-glass: rgba(243, 239, 230, 0.90);
+  --c-bg: #f4f0e8;
+  --c-bg-reading: rgba(244, 240, 232, 0.85);
+  --c-bg-raised: #ebe5d8;
+  --c-bg-elevated: #e2dac9;
+  --c-bg-glass: rgba(244, 240, 232, 0.90);
 
-  /* Ink (archival carbon & graphite) */
-  --c-ink: #1b1a17;
+  /* Ink (deep archival carbon & warm graphite) */
+  --c-ink: #151412;
+  --c-ink-body: #22201d;
   --c-ink-dim: #5c574f;
-  --c-ink-faint: #8c857a;
+  --c-ink-faint: #8a8378;
 
-  /* Hairlines & letterpress rims */
-  --c-line: rgba(27, 26, 23, 0.13);
-  --c-line-strong: rgba(27, 26, 23, 0.28);
-  --c-rim: rgba(255, 255, 255, 0.75);
+  /* Hairlines */
+  --c-line: rgba(21, 20, 18, 0.09);
+  --c-line-strong: rgba(21, 20, 18, 0.20);
 
   /* Muted historical status tones */
   --c-status-brass: #876730;
   --c-status-sage: #2f684b;
 
-  /* Sector accents: archival drafting inks */
+  /* Sector accents */
   --c-moon: #5e5340;
   --c-mars: #9e4127;
   --c-deep: #325270;
   --c-accent: var(--c-moon);
-  --c-glow: rgba(94, 83, 64, 0.05);
-
-  /* Tactile button shadows (Paper letterpress & card stock) */
-  --sh-btn: 0 2px 6px rgba(27, 26, 23, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --sh-btn-hover: 0 5px 14px rgba(27, 26, 23, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  --sh-card: 0 4px 18px rgba(27, 26, 23, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  --c-glow: rgba(94, 83, 64, 0.035);
 }
 
 :root {
-  /* Unified Space Mono Typography */
+  /* Space Mono Typography */
   --f-voice: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --f-ui: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --f-record: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Tuned scale for Space Mono advance widths */
-  --t-xs: clamp(0.68rem, 0.65rem + 0.08vw, 0.74rem);
-  --t-sm: clamp(0.80rem, 0.77rem + 0.12vw, 0.88rem);
-  --t-md: clamp(0.92rem, 0.88rem + 0.18vw, 1.02rem);
-  --t-lg: clamp(1.14rem, 1.02rem + 0.55vw, 1.48rem);
-  --t-xl: clamp(1.55rem, 1.25rem + 1.4vw, 2.35rem);
-  --t-hero: clamp(2.05rem, 1.55rem + 2.8vw, 3.75rem);
+  /* Scientifically proportioned reading scale */
+  --t-xs: clamp(0.72rem, 0.70rem + 0.08vw, 0.78rem);
+  --t-sm: clamp(0.86rem, 0.83rem + 0.12vw, 0.94rem);
+  --t-md: clamp(1.04rem, 0.98rem + 0.24vw, 1.14rem);
+  --t-lg: clamp(1.18rem, 1.08rem + 0.42vw, 1.38rem);
+  --t-xl: clamp(1.50rem, 1.28rem + 1.0vw, 2.10rem);
+  --t-hero: clamp(2.10rem, 1.60rem + 2.3vw, 3.35rem);
 
-  --lh-tight: 1.15;
-  --lh-voice: 1.55;
-  --lh-body: 1.82;
+  /* Optimal reading rhythm & measure */
+  --t-prose: var(--t-md);
+  --lh-tight: 1.24;
+  --lh-voice: 1.82;
+  --lh-body: 1.90;
   --measure: 60ch;
 
-  /* Space */
+  /* Space scale */
   --s-1: 0.25rem;
   --s-2: 0.5rem;
   --s-3: 0.75rem;
@@ -107,13 +101,14 @@
   --s-10: 2.5rem;
   --s-12: 3rem;
   --s-16: 4rem;
+  --s-20: 5rem;
   --s-24: 6rem;
   --s-32: 8rem;
 
-  /* Sculpted Capsule & Squircle Geometry (no cheap sharp corners) */
-  --r-sm: 10px;
-  --r-md: 16px;
-  --r-lg: 22px;
+  /* Shape */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
   --r-pill: 999px;
   --stroke: 1px;
 
@@ -121,9 +116,9 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --d-fast: 200ms;
-  --d-base: 420ms;
-  --d-slow: 800ms;
+  --d-fast: 180ms;
+  --d-base: 380ms;
+  --d-slow: 760ms;
 
   /* Layers */
   --z-stars: 0;
@@ -136,15 +131,15 @@
 
 body[data-act="moon"] {
   --c-accent: var(--c-moon);
-  --c-glow: rgba(203, 189, 162, 0.07);
+  --c-glow: rgba(212, 198, 171, 0.045);
 }
 body[data-act="mars"] {
   --c-accent: var(--c-mars);
-  --c-glow: rgba(196, 104, 75, 0.08);
+  --c-glow: rgba(204, 113, 84, 0.05);
 }
 body[data-act="deep"] {
   --c-accent: var(--c-deep);
-  --c-glow: rgba(125, 151, 178, 0.08);
+  --c-glow: rgba(135, 162, 190, 0.05);
 }
 
 @media (prefers-reduced-motion: reduce) {

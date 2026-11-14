@@ -1,9 +1,8 @@
 ---
 /**
  * VoiceBlock — owned by Surya.
- * Literary epigraph presenting the imagined voice of the spacecraft,
- * anchored by a delicate micro-SVG vertical reading filament.
- * Clean, quiet distinction between poetic voice and historical fact.
+ * Minimal, literary epigraph for the spacecraft's first-person voice.
+ * Clean left hairline, generous leading, zero decorative clutter.
  */
 interface Props {
   lines: string[];
@@ -12,113 +11,63 @@ interface Props {
 const { lines, truthNote } = Astro.props;
 ---
 <section class="voice-stage" aria-label="Imagined voice of the spacecraft">
-  <div class="voice-layout">
-    <!-- Micro-SVG Reading Thread Filament -->
-    <div class="voice-filament" aria-hidden="true">
-      <svg class="thread-svg" viewBox="0 0 16 120" preserveAspectRatio="none" fill="none">
-        <path d="M8 2 L10 6 L14 8 L10 10 L8 14 L6 10 L2 8 L6 6 Z" fill="var(--c-accent)" opacity="0.8" />
-        <line x1="8" y1="20" x2="8" y2="116" stroke="var(--c-accent)" stroke-opacity="0.35" stroke-width="1" />
-        <circle cx="8" cy="116" r="2" fill="var(--c-accent)" opacity="0.6" />
-      </svg>
-    </div>
-
-    <div class="voice-body">
-      <span class="voice-caption" data-reveal>Imagined voice</span>
-      <blockquote class="transmissions" data-split>
-        {lines.map((l) => (
-          <p class="voice-line">{l}</p>
-        ))}
-      </blockquote>
-    </div>
-  </div>
+  <blockquote class="transmissions" data-split>
+    {lines.map((l) => (
+      <p class="voice-line">{l}</p>
+    ))}
+  </blockquote>
 
   {truthNote && (
-    <aside class="truth-note" data-reveal aria-label="Historical note">
-      <span class="truth-label">Historical Note</span>
-      <p class="truth-text">{truthNote}</p>
-    </aside>
+    <p class="truth-note" data-reveal>
+      <span>Note — </span>{truthNote}
+    </p>
   )}
 </section>
 
 <style>
   .voice-stage {
     max-width: var(--measure);
-    margin-inline: auto;
-    padding: var(--s-4) var(--s-6) var(--s-10);
-  }
-
-  .voice-layout {
-    display: grid;
-    grid-template-columns: 20px 1fr;
-    gap: var(--s-5);
-    align-items: stretch;
-  }
-
-  .voice-filament {
-    display: flex;
-    justify-content: center;
-    padding-top: 4px;
-  }
-
-  .thread-svg {
-    width: 14px;
-    height: 100%;
-    min-height: 84px;
-    display: block;
-  }
-
-  .voice-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-3);
-  }
-
-  .voice-caption {
-    font: 400 0.68rem/1 var(--f-record);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--c-ink-dim);
+    margin: var(--s-12) auto var(--s-12);
+    padding: 0 var(--s-6);
   }
 
   .transmissions {
     margin: 0;
+    padding: var(--s-2) 0 var(--s-2) var(--s-6);
+    border-left: 1px solid var(--c-accent);
     display: flex;
     flex-direction: column;
-    gap: var(--s-4);
+    gap: var(--s-5);
   }
 
   .voice-line {
-    font: italic 400 clamp(1.25rem, 1.08rem + 0.75vw, 1.68rem)/1.44 var(--f-voice);
+    font: italic 400 var(--t-md)/var(--lh-voice) var(--f-voice);
+    letter-spacing: 0.004em;
+    word-spacing: 0.03em;
     margin: 0;
     color: var(--c-ink);
   }
 
   .truth-note {
-    margin-top: var(--s-8);
-    padding: var(--s-4) 0 var(--s-2) var(--s-5);
-    border-left: 1px solid var(--c-status-brass);
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-1);
-  }
-
-  .truth-label {
-    font: 500 0.66rem/1.2 var(--f-record);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--c-status-brass);
-  }
-
-  .truth-text {
-    margin: 0;
-    font: 400 var(--t-sm)/1.6 var(--f-ui);
+    margin: var(--s-5) 0 0;
+    padding-left: var(--s-6);
+    font: 400 var(--t-xs)/1.75 var(--f-ui);
+    letter-spacing: 0.005em;
     color: var(--c-ink-dim);
   }
+  .truth-note span {
+    color: var(--c-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
 
-  @media (max-width: 600px) {
-    .voice-layout {
-      grid-template-columns: 14px 1fr;
-      gap: var(--s-3);
+  @media (max-width: 680px) {
+    .voice-stage {
+      padding: 0 var(--s-5);
+    }
+    .transmissions,
+    .truth-note {
+      padding-left: var(--s-4);
     }
   }
 </style>

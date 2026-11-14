@@ -1,9 +1,7 @@
 ---
 /**
  * RecordCard — owned by Vrindha (Platform & Structure).
- * Clean museum-grade archival specification sheet.
- * Presents verified NSSDCA figures, resting site, and historical legacy
- * with crisp 1px hairlines and zero artificial sci-fi clutter.
+ * Quiet, minimal archival colophon at the foot of the story.
  */
 import CitationChip from "./CitationChip.astro";
 
@@ -16,99 +14,43 @@ interface Stat {
 
 interface Props {
   stats: Stat[];
-  lastContact: string;   // ISO string e.g. "1969-07-22"
+  lastContact: string;
   site?: string;
   nssdcaId: string;
   nssdcaUrl: string;
-  legacy: string;
+  legacy?: string;
 }
 
-const { stats, lastContact, site, nssdcaId, nssdcaUrl, legacy } = Astro.props;
+const { stats, lastContact, nssdcaId, nssdcaUrl } = Astro.props;
 ---
-<section class="record-sheet" aria-label="Archival record and specifications">
-  <header class="sheet-head" data-reveal>
-    <span class="sheet-title">Archival Record</span>
-    <div class="sheet-meta">
-      <span>Last contact: <strong>{lastContact}</strong></span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span>Silent for <strong data-silent-since={lastContact}>—</strong> days</span>
-      {site && (
-        <>
-          <span class="sep" aria-hidden="true">·</span>
-          <span>{site}</span>
-        </>
-      )}
-    </div>
-  </header>
-
-  <dl class="stats-grid">
+<footer class="record-colophon" aria-label="Mission specifications" data-reveal>
+  <dl class="stats-row">
     {stats.slice(0, 3).map((s) => (
-      <div class="stat-cell" data-reveal>
-        <dt class="stat-label">{s.label}</dt>
-        <dd class="stat-value">{s.value}</dd>
-        {s.comparison && <dd class="stat-cmp">{s.comparison}</dd>}
+      <div class="stat-item">
+        <dt>{s.label}</dt>
+        <dd>{s.value}</dd>
       </div>
     ))}
   </dl>
 
-  <div class="legacy-row" data-reveal>
-    <p class="legacy-quote">{legacy}</p>
-    <div class="citation-wrap">
-      <CitationChip href={nssdcaUrl} label={`NSSDCA ${nssdcaId}`} />
-    </div>
+  <div class="colophon-meta">
+    <span>Last contact {lastContact} · Silent <strong data-silent-since={lastContact}>—</strong> days</span>
+    <CitationChip href={nssdcaUrl} label={`NSSDCA ${nssdcaId}`} />
   </div>
-</section>
+</footer>
 
 <style>
-  .record-sheet {
-    max-width: 780px;
-    margin: var(--s-12) auto var(--s-12);
-    padding: var(--s-8) var(--s-6);
-    border-top: 1px solid var(--c-line-strong);
-    border-bottom: 1px solid var(--c-line);
+  .record-colophon {
+    max-width: var(--measure);
+    margin: var(--s-16) auto var(--s-12);
+    padding: var(--s-8) var(--s-6) 0;
+    border-top: 1px solid var(--c-line);
     display: flex;
     flex-direction: column;
     gap: var(--s-6);
   }
 
-  .sheet-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--s-2) var(--s-4);
-    padding-bottom: var(--s-4);
-    border-bottom: 1px solid var(--c-line);
-  }
-
-  .sheet-title {
-    font: 500 var(--t-xs)/1 var(--f-record);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--c-ink);
-  }
-
-  .sheet-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--s-2);
-    font: 400 var(--t-xs)/1.4 var(--f-record);
-    letter-spacing: 0.06em;
-    color: var(--c-ink-dim);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .sheet-meta strong {
-    color: var(--c-ink);
-    font-weight: 500;
-  }
-
-  .sep {
-    opacity: 0.4;
-  }
-
-  .stats-grid {
+  .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--s-6);
@@ -116,74 +58,48 @@ const { stats, lastContact, site, nssdcaId, nssdcaUrl, legacy } = Astro.props;
     padding: 0;
   }
 
-  .stat-cell {
+  .stat-item {
     display: flex;
     flex-direction: column;
-    gap: var(--s-1);
-    padding-right: var(--s-4);
-    border-right: 1px solid var(--c-line);
+    gap: 6px;
   }
 
-  .stat-cell:last-child {
-    border-right: none;
-    padding-right: 0;
-  }
-
-  .stat-label {
+  .stat-item dt {
     font: 400 0.68rem/1.3 var(--f-record);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
   }
 
-  .stat-value {
-    font: 400 clamp(1.5rem, 1.2rem + 1vw, 2.1rem)/1.15 var(--f-voice);
-    color: var(--c-accent);
-    margin: var(--s-1) 0;
+  .stat-item dd {
+    font: 700 var(--t-md)/1.3 var(--f-voice);
+    color: var(--c-ink);
+    margin: 0;
     font-variant-numeric: tabular-nums;
   }
 
-  .stat-cmp {
-    font: 400 var(--t-xs)/1.45 var(--f-ui);
-    color: var(--c-ink-dim);
-    margin: 0;
-  }
-
-  .legacy-row {
+  .colophon-meta {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: var(--s-4);
-    padding-top: var(--s-4);
+    padding-top: var(--s-5);
     border-top: 1px solid var(--c-line);
+    font: 400 var(--t-xs)/1.5 var(--f-record);
+    color: var(--c-ink-dim);
+    font-variant-numeric: tabular-nums;
   }
 
-  .legacy-quote {
-    font: italic 400 var(--t-md)/var(--lh-voice) var(--f-voice);
+  .colophon-meta strong {
     color: var(--c-ink);
-    margin: 0;
-    max-width: 58ch;
+    font-weight: 400;
   }
 
-  .citation-wrap {
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 680px) {
-    .stats-grid {
+  @media (max-width: 640px) {
+    .stats-row {
       grid-template-columns: 1fr;
       gap: var(--s-4);
-    }
-    .stat-cell {
-      border-right: none;
-      border-bottom: 1px solid var(--c-line);
-      padding-right: 0;
-      padding-bottom: var(--s-4);
-    }
-    .stat-cell:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
     }
   }
 </style>

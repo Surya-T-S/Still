@@ -1,10 +1,11 @@
 /**
- * STILL Chapter, Physics & Telemetry Engine.
+ * STILL Chapter, Reading Focus & Telemetry Engine.
  * - Mode-aware scroll mechanics via Lenis:
  *   - Vacuum Mode (Dark): Low-friction zero-G inertial glide (lerp: 0.068).
  *   - Paper Mode (Light): High-friction tactile archival sheet response (lerp: 0.18).
- * - Chapter-by-chapter deck management with directional warp impulses (`still:warp`)
- *   and live speed-of-light telemetry (`still:chapterchange`).
+ * - Guided Active-Paragraph Reading Focus: tracks the paragraph in the reader's
+ *   eye-line and highlights it with `.is-reading-focus`.
+ * - Reader Comfort Font Size Toggle (`normal` vs `large`) persisted in localStorage.
  */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,6 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 let chapters: HTMLElement[] = [];
 let activeIdx = 0;
 let lenis: Lenis | null = null;
+let paragraphObserver: IntersectionObserver | null = null;
 
 function getThemeLerp(): number {
   const isPaper =
@@ -63,6 +65,30 @@ function renderHud() {
   document.querySelectorAll<HTMLElement>("[data-hud-light]").forEach((el) => {
     el.textContent = fmtLight(hud.sec);
   });
+}
+
+function bindReadingFocus(ch: HTMLElement) {
+  if (paragraphObserver) {
+    paragraphObserver.disconnect();
+  }
+  const paragraphs = Array.from(ch.querySelectorAll<HTMLElement>(".narration p"));
+  if (!paragraphs.length) return;
+
+  // Default first paragraph to focused on chapter entry
+  paragraphs.forEach((p, idx) => p.classList.toggle("is-reading-focus", idx === 0));
+
+  paragraphObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          paragraphs.forEach((p) => p.classList.toggle("is-reading-focus", p === entry.target));
+        }
+      });
+    },
+    { rootMargin: "-32% 0px -42% 0px", threshold: 0.1 },
+  );
+
+  paragraphs.forEach((p) => paragraphObserver?.observe(p));
 }
 
 function animateChapterEntry(ch: HTMLElement) {
@@ -141,7 +167,6 @@ export function scrollToChapter(idOrIndex: string | number) {
     c.classList.toggle("is-active", idx === activeIdx);
   });
 
-  // Reset scroll cleanly to the top of the newly opened chapter
   if (lenis) {
     lenis.scrollTo(0, { immediate: true });
   }
@@ -164,6 +189,7 @@ export function scrollToChapter(idOrIndex: string | number) {
   });
 
   animateChapterEntry(target);
+  bindReadingFocus(target);
 
   if (target.id) {
     const newUrl =

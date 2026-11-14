@@ -1,9 +1,17 @@
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Permanently hide any Astro dev bar if injected */
+astro-dev-toolbar {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 html {
   background: var(--c-bg);
   color: var(--c-ink);
   font-family: var(--f-ui);
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -13,17 +21,27 @@ html {
 body {
   margin: 0;
   font: 400 var(--t-md)/var(--lh-body) var(--f-ui);
-  letter-spacing: -0.01em;
-  transition: --c-accent var(--d-slow) var(--ease-in-out), --c-glow var(--d-slow) var(--ease-in-out);
+  letter-spacing: 0.005em;
+  word-spacing: 0.03em;
+  transition: --c-accent var(--d-slow) var(--ease-in-out), --c-glow var(--d-slow) var(--ease-in-out), background-color var(--d-base) var(--ease-out);
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+/* Pure #000000 obsidian canvas when viewing the Chapters Directory Page */
+body[data-view="chapters"] {
+  background-color: #000000 !important;
+  color: #f2efe9 !important;
+}
+body[data-view="chapters"]::before,
+body[data-view="chapters"]::after {
+  opacity: 0 !important;
 }
 
 /* ==========================================================
    VACUUM vs. PAPER ATMOSPHERE & TEXTURE MECHANICS
    ========================================================== */
 
-/* Vacuum Mode: deep-space radial horizon glow */
 body::before {
   content: "";
   position: fixed;
@@ -34,7 +52,6 @@ body::before {
   transition: opacity var(--d-slow) var(--ease-in-out), background var(--d-slow) var(--ease-in-out);
 }
 
-/* Paper Mode: physical cotton-rag fiber grain + ruled archival margin lines */
 html[data-theme="light"] body::before {
   background:
     radial-gradient(85% 65% at 50% 10%, rgba(255, 252, 245, 0.65), rgba(218, 208, 190, 0.28) 100%),
@@ -42,31 +59,30 @@ html[data-theme="light"] body::before {
       0deg,
       transparent,
       transparent 31px,
-      rgba(27, 26, 23, 0.028) 31px,
-      rgba(27, 26, 23, 0.028) 32px
+      rgba(21, 20, 18, 0.02) 31px,
+      rgba(21, 20, 18, 0.02) 32px
     );
 }
 
-/* Tactile Paper Fiber Noise Layer (active in Paper mode, subtle sensor grain in Vacuum mode) */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: var(--z-atmosphere);
   pointer-events: none;
-  opacity: 0.022;
+  opacity: 0.016;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 180px 180px;
 }
 
 html[data-theme="light"] body::after {
-  opacity: 0.055;
+  opacity: 0.045;
   mix-blend-mode: multiply;
 }
 
 img, svg { max-width: 100%; display: block; }
 a { color: inherit; }
-:focus-visible { outline: 1.5px solid var(--c-accent); outline-offset: 3px; border-radius: var(--r-pill); }
+:focus-visible { outline: 1px solid var(--c-accent); outline-offset: 4px; }
 
 .skip {
   position: absolute;
@@ -83,8 +99,8 @@ a { color: inherit; }
 main {
   position: relative;
   z-index: var(--z-content);
-  padding-top: 68px;
-  padding-bottom: 110px; /* space for floating bottom Flight Deck Capsule */
+  padding-top: 56px;
+  padding-bottom: var(--s-24);
 }
 
 /* ==========================================================
@@ -98,28 +114,28 @@ main {
 [data-chapter].is-active {
   display: block;
   opacity: 1;
-  animation: vacuum-chapter-enter 560ms var(--ease-spring) both;
+  animation: vacuum-chapter-enter 520ms var(--ease-spring) both;
 }
 
 html[data-theme="light"] [data-chapter].is-active {
-  animation: paper-sheet-enter 360ms cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation: paper-sheet-enter 340ms cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
 @keyframes vacuum-chapter-enter {
   from {
     opacity: 0;
-    transform: translate3d(0, 18px, 0) scale(0.992);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes paper-sheet-enter {
   from {
     opacity: 0;
-    transform: translate3d(calc(var(--nav-dir, 1) * 14px), 4px, 0);
+    transform: translate3d(calc(var(--nav-dir, 1) * 10px), 2px, 0);
   }
   to {
     opacity: 1;
@@ -128,7 +144,7 @@ html[data-theme="light"] [data-chapter].is-active {
 }
 
 /* ==========================================================
-   HIGH-CRAFT NAVIGATION-AWARE AEROSPACE BUTTONS
+   ULTRA-MINIMAL ARCHITECTURAL BUTTONS
    ========================================================== */
 .btn-orbital {
   position: relative;
@@ -136,118 +152,122 @@ html[data-theme="light"] [data-chapter].is-active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 13px 26px;
+  gap: 10px;
+  padding: 12px 24px;
   border-radius: var(--r-pill);
-  font: 700 var(--t-xs)/1 var(--f-record);
-  letter-spacing: 0.14em;
+  font: 400 var(--t-xs)/1 var(--f-record);
+  letter-spacing: 0.12em;
+  word-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-ink);
-  background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
+  color: var(--c-ink-body);
+  background: transparent;
   border: 1px solid var(--c-line-strong);
-  box-shadow: var(--sh-btn);
   cursor: pointer;
-  overflow: hidden;
   transition:
-    transform var(--d-fast) var(--ease-spring),
     border-color var(--d-fast) var(--ease-out),
-    box-shadow var(--d-fast) var(--ease-out),
-    color var(--d-fast) var(--ease-out);
-}
-
-.btn-orbital::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at var(--btn-origin-x, 50%) 50%, var(--btn-accent, var(--c-accent)), transparent 75%);
-  opacity: 0.12;
-  transition: opacity var(--d-base) var(--ease-out), transform var(--d-base) var(--ease-out);
-  pointer-events: none;
+    background-color var(--d-fast) var(--ease-out),
+    color var(--d-fast) var(--ease-out),
+    transform var(--d-fast) var(--ease-spring);
 }
 
 .btn-orbital:hover,
 .btn-orbital:focus-visible {
-  transform: translateY(-2px);
+  color: var(--c-ink);
   border-color: var(--btn-accent, var(--c-accent));
-  box-shadow: var(--sh-btn-hover);
+  background: rgba(242, 239, 233, 0.04);
 }
 
-.btn-orbital:hover::before {
-  opacity: 0.24;
+html[data-theme="light"] .btn-orbital:hover,
+html[data-theme="light"] .btn-orbital:focus-visible {
+  background: rgba(21, 20, 18, 0.04);
 }
 
 .btn-orbital:active {
-  transform: translateY(1px) scale(0.99);
+  transform: translateY(1px);
 }
 
-/* Sector-aware target styling on buttons */
 [data-target-act="moon"] { --btn-accent: var(--c-moon); }
 [data-target-act="mars"] { --btn-accent: var(--c-mars); }
 [data-target-act="deep"] { --btn-accent: var(--c-deep); }
 
 .btn-orbital .btn-vec {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
   color: var(--btn-accent, var(--c-accent));
   transition: transform var(--d-fast) var(--ease-spring);
 }
 
 .btn-orbital[data-nav-dir="next"]:hover .btn-vec {
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 .btn-orbital[data-nav-dir="prev"]:hover .btn-vec {
-  transform: translateX(-4px);
+  transform: translateX(-3px);
 }
 
 .btn-orbital.is-primary {
-  background: linear-gradient(180deg, var(--c-bg-elevated) 0%, var(--c-bg-raised) 100%);
+  color: var(--c-ink);
   border-color: var(--btn-accent, var(--c-accent));
-}
-
-.btn-orbital .btn-badge {
-  font: 400 0.64rem/1 var(--f-record);
-  letter-spacing: 0.1em;
-  padding: 4px 9px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--c-line);
-  color: var(--btn-accent, var(--c-accent));
-}
-html[data-theme="light"] .btn-orbital .btn-badge {
-  background: rgba(27, 26, 23, 0.05);
+  background: rgba(242, 239, 233, 0.03);
 }
 
 /* ==========================================================
-   EDITORIAL STORY PROSE (Space Mono)
+   SCIENTIFIC LONG-FORM STORYTELLING TYPOGRAPHY & SPACING
    ========================================================== */
-.narration {
+.story-prose {
+  position: relative;
   max-width: var(--measure);
-  margin: 0 auto var(--s-12);
-  padding: 0 var(--s-6);
-  color: var(--c-ink);
-  font-size: var(--t-md);
+  margin: var(--s-12) auto var(--s-16);
+  padding-inline: var(--s-6);
+}
+
+.narration {
+  max-width: 100%;
+  margin: 0 auto;
+  color: var(--c-ink-body);
+  font-size: var(--t-prose);
   line-height: var(--lh-body);
+  letter-spacing: 0.006em;
+  word-spacing: 0.035em;
 }
+
 .narration p {
-  margin: 0 0 var(--s-6);
-  color: var(--c-ink-dim);
+  margin: 0 0 2.1rem;
+  color: var(--c-ink-body);
+  transition: color var(--d-base) var(--ease-out);
 }
+
+/* Subtle eye-line illumination as the reader moves down the story */
+.narration p.is-reading-focus {
+  color: var(--c-ink);
+}
+
+/* First paragraph opens with slightly brighter presence */
 .narration p:first-of-type {
   color: var(--c-ink);
 }
-.narration p:first-of-type::first-letter {
-  font-family: var(--f-voice);
-  font-weight: 700;
-  font-size: 2.75em;
-  line-height: 0.88;
-  float: left;
-  padding-right: 0.24em;
-  padding-top: 0.06em;
-  color: var(--c-accent);
+
+/* Final paragraph closes the chapter with quiet resonance */
+.narration p:last-of-type {
+  margin-bottom: 0;
+  color: var(--c-ink);
 }
-.narration p:last-child { margin-bottom: 0; }
+
+.narration em {
+  color: var(--c-ink);
+  font-style: italic;
+}
+
+@media (max-width: 680px) {
+  .story-prose {
+    padding-inline: var(--s-5);
+    margin: var(--s-10) auto var(--s-12);
+  }
+  .narration p {
+    margin-bottom: 1.75rem;
+  }
+}
 
 /* Registered properties for smooth act accent transitions */
-@property --c-accent { syntax: "<color>"; inherits: true; initial-value: #cbbda2; }
-@property --c-glow { syntax: "<color>"; inherits: true; initial-value: rgba(203, 189, 162, 0.07); }
+@property --c-accent { syntax: "<color>"; inherits: true; initial-value: #d4c6ab; }
+@property --c-glow { syntax: "<color>"; inherits: true; initial-value: rgba(212, 198, 171, 0.045); }
