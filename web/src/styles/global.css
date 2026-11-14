@@ -5,12 +5,31 @@
 @import "lenis/dist/lenis.css";
 
 *, *::before, *::after { box-sizing: border-box; }
-html { background: var(--c-bg); color: var(--c-ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
 body {
   margin: 0;
   font: 400 var(--t-md)/var(--lh-body) var(--f-ui);
-  transition: --c-accent var(--d-slow) var(--ease-in-out);
+  transition: --c-accent var(--d-slow) var(--ease-in-out), --c-glow var(--d-slow) var(--ease-in-out);
+  overflow-x: hidden;
 }
+
+/* Subtle fixed atmospheric horizon glow that shifts with each act */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-atmosphere);
+  pointer-events: none;
+  background: radial-gradient(75% 55% at 50% 18%, var(--c-glow), transparent 70%);
+  transition: opacity var(--d-slow) var(--ease-in-out);
+}
+
 img, svg { max-width: 100%; display: block; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: var(--r-sm); }
@@ -19,10 +38,16 @@ a { color: inherit; }
 .skip:focus { top: var(--s-4); }
 
 main { position: relative; z-index: var(--z-content); }
-.chapter { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
+.chapter {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1400px;
+  padding-bottom: var(--s-16);
+  border-bottom: 1px solid var(--c-line);
+}
 
 /* Hidden start state only when JS + motion are available, so no-JS users still see everything. */
 .js-motion [data-reveal], .js-motion [data-split] > * { opacity: 0; }
 
-/* Registered property so the act accent colour can transition smoothly. */
+/* Registered properties so act colours transition smoothly. */
 @property --c-accent { syntax: "<color>"; inherits: true; initial-value: #d9d3c3; }
+@property --c-glow { syntax: "<color>"; inherits: true; initial-value: rgba(217, 211, 195, 0.07); }

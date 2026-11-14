@@ -1,0 +1,299 @@
+---
+/**
+ * TrajectoryNav — owned by Surya.
+ * Unique astrophile navigation: a vertical orbital rail on desktop and a
+ * minimal trajectory pill + index drawer on mobile.
+ * Auto-discovers every [data-chapter] in the DOM; zero manual wiring needed.
+ */
+---
+<nav class="traj" aria-label="Mission trajectory navigation" data-traj>
+  <div class="rail" aria-hidden="true"></div>
+  <ol class="nodes" data-traj-nodes></ol>
+</nav>
+
+<div class="traj-mobile" data-traj-mobile>
+  <button
+    type="button"
+    class="pill"
+    aria-expanded="false"
+    aria-controls="traj-drawer"
+    data-traj-toggle
+  >
+    <span class="dot" aria-hidden="true"></span>
+    <span class="count" data-traj-count>00 / 00</span>
+    <span class="current" data-traj-current>EARTH</span>
+    <span class="chev" aria-hidden="true">▴</span>
+  </button>
+
+  <div id="traj-drawer" class="drawer" hidden data-traj-drawer>
+    <div class="drawer-head">
+      <span>TRAJECTORY INDEX</span>
+      <button type="button" class="close" aria-label="Close index" data-traj-close>✕</button>
+    </div>
+    <ol class="drawer-list" data-traj-drawer-list></ol>
+  </div>
+</div>
+
+<style>
+  /* Desktop vertical orbital rail */
+  .traj {
+    position: fixed;
+    right: var(--s-6);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: var(--z-nav);
+    display: flex;
+    align-items: center;
+  }
+  .rail {
+    position: absolute;
+    right: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--c-line-strong) 12%, var(--c-line-strong) 88%, transparent);
+    pointer-events: none;
+  }
+  .nodes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .nodes :global(li) {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .nodes :global(li[data-act-start="true"]) {
+    margin-top: 8px;
+  }
+  .nodes :global(button) {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    color: var(--c-ink-dim);
+  }
+  .nodes :global(.pip) {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--c-ink-faint);
+    transition: transform var(--d-fast) var(--ease-out), background-color var(--d-fast) var(--ease-out), box-shadow var(--d-fast) var(--ease-out);
+  }
+  .nodes :global(button:hover .pip),
+  .nodes :global(button:focus-visible .pip) {
+    transform: scale(1.6);
+    background: var(--c-ink);
+  }
+  .nodes :global(button[aria-current="true"] .pip) {
+    transform: scale(1.9);
+    background: var(--c-accent);
+    box-shadow: 0 0 10px var(--c-accent);
+  }
+  .nodes :global(.tip) {
+    font: 500 0.68rem/1 var(--f-record);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 5px 9px;
+    border-radius: var(--r-pill);
+    background: rgba(17, 17, 20, 0.9);
+    border: 1px solid var(--c-line);
+    color: var(--c-ink);
+    opacity: 0;
+    transform: translateX(6px);
+    pointer-events: none;
+    transition: opacity var(--d-fast) var(--ease-out), transform var(--d-fast) var(--ease-out);
+  }
+  .nodes :global(button:hover .tip),
+  .nodes :global(button:focus-visible .tip) {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Mobile trajectory pill + drawer */
+  .traj-mobile { display: none; }
+
+  @media (max-width: 900px) {
+    .traj { display: none; }
+    .traj-mobile {
+      display: block;
+      position: fixed;
+      bottom: var(--s-4);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: var(--z-nav);
+    }
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: var(--s-3);
+      font: 500 0.7rem/1 var(--f-record);
+      letter-spacing: 0.1em;
+      color: var(--c-ink);
+      background: rgba(12, 12, 15, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--c-line-strong);
+      border-radius: var(--r-pill);
+      padding: 10px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c-accent); }
+    .count { color: var(--c-ink-dim); font-variant-numeric: tabular-nums; }
+    .current { max-width: 18ch; overflow: hidden; text-overflow: ellipsis; }
+    .drawer {
+      position: fixed;
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92vw, 380px);
+      max-height: 60vh;
+      overflow-y: auto;
+      background: rgba(14, 14, 18, 0.96);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--c-line-strong);
+      border-radius: var(--r-md);
+      padding: var(--s-4);
+    }
+    .drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font: 500 0.68rem/1 var(--f-record);
+      letter-spacing: 0.14em;
+      color: var(--c-ink-dim);
+      padding-bottom: var(--s-3);
+      border-bottom: 1px solid var(--c-line);
+      margin-bottom: var(--s-3);
+    }
+    .close { background: none; border: 0; color: var(--c-ink-dim); cursor: pointer; font-size: 0.9rem; padding: 4px; }
+    .drawer-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+    .drawer-list :global(button) {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: 0;
+      padding: 8px 10px;
+      border-radius: var(--r-sm);
+      color: var(--c-ink-dim);
+      font: 400 var(--t-sm)/1.3 var(--f-ui);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .drawer-list :global(button[aria-current="true"]) {
+      color: var(--c-accent);
+      background: rgba(237, 234, 227, 0.05);
+    }
+    .drawer-list :global(.act-tag) {
+      font: 500 0.65rem/1 var(--f-record);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+    }
+  }
+</style>
+
+<script>
+  const chapters = Array.from(document.querySelectorAll<HTMLElement>("[data-chapter]"));
+  const nodesEl = document.querySelector<HTMLOListElement>("[data-traj-nodes]");
+  const drawerListEl = document.querySelector<HTMLOListElement>("[data-traj-drawer-list]");
+  const toggleBtn = document.querySelector<HTMLButtonElement>("[data-traj-toggle]");
+  const closeBtn = document.querySelector<HTMLButtonElement>("[data-traj-close]");
+  const drawerEl = document.querySelector<HTMLDivElement>("[data-traj-drawer]");
+  const countEl = document.querySelector<HTMLElement>("[data-traj-count]");
+  const currentEl = document.querySelector<HTMLElement>("[data-traj-current]");
+
+  if (chapters.length && nodesEl && drawerListEl) {
+    let prevAct = "";
+    const deskBtns: HTMLButtonElement[] = [];
+    const mobBtns: HTMLButtonElement[] = [];
+
+    const jumpTo = (target: HTMLElement) => {
+      target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      if (drawerEl && !drawerEl.hidden) {
+        drawerEl.hidden = true;
+        toggleBtn?.setAttribute("aria-expanded", "false");
+      }
+    };
+
+    chapters.forEach((ch, idx) => {
+      const label = ch.dataset.label || `Stop ${idx + 1}`;
+      const act = ch.dataset.act || "moon";
+      const actStart = idx > 0 && act !== prevAct;
+      prevAct = act;
+
+      // Desktop node
+      const li = document.createElement("li");
+      if (actStart) li.dataset.actStart = "true";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.setAttribute("aria-label", `Jump to ${label}`);
+      btn.innerHTML = `<span class="tip">${label}</span><span class="pip" aria-hidden="true"></span>`;
+      btn.addEventListener("click", () => jumpTo(ch));
+      li.appendChild(btn);
+      nodesEl.appendChild(li);
+      deskBtns.push(btn);
+
+      // Mobile drawer item
+      const mLi = document.createElement("li");
+      const mBtn = document.createElement("button");
+      mBtn.type = "button";
+      mBtn.innerHTML = `<span>${label}</span><span class="act-tag">${act}</span>`;
+      mBtn.addEventListener("click", () => jumpTo(ch));
+      mLi.appendChild(mBtn);
+      drawerListEl.appendChild(mLi);
+      mobBtns.push(mBtn);
+    });
+
+    const setActive = (index: number) => {
+      deskBtns.forEach((b, i) => b.setAttribute("aria-current", i === index ? "true" : "false"));
+      mobBtns.forEach((b, i) => b.setAttribute("aria-current", i === index ? "true" : "false"));
+      const pad = (n: number) => String(n).padStart(2, "0");
+      if (countEl) countEl.textContent = `${pad(index + 1)} / ${pad(chapters.length)}`;
+      if (currentEl) currentEl.textContent = (chapters[index].dataset.label || "").toUpperCase();
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            const idx = chapters.indexOf(e.target as HTMLElement);
+            if (idx !== -1) setActive(idx);
+          }
+        }
+      },
+      { rootMargin: "-40% 0px -45% 0px", threshold: 0 },
+    );
+    chapters.forEach((ch) => io.observe(ch));
+    setActive(0);
+
+    toggleBtn?.addEventListener("click", () => {
+      if (!drawerEl) return;
+      const open = drawerEl.hidden;
+      drawerEl.hidden = !open;
+      toggleBtn.setAttribute("aria-expanded", String(open));
+    });
+    closeBtn?.addEventListener("click", () => {
+      if (!drawerEl) return;
+      drawerEl.hidden = true;
+      toggleBtn?.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && drawerEl && !drawerEl.hidden) {
+        drawerEl.hidden = true;
+        toggleBtn?.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+</script>

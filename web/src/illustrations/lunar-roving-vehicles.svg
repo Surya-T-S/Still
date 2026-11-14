@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-lrv">
+  <title id="t-lrv">Apollo Lunar Roving Vehicle</title>
+  <!-- chassis -->
+  <path d="M72 132 L248 132 L262 146 L58 146 Z"/>
+  <!-- seats -->
+  <path d="M126 132 L126 102 L144 102 M168 132 L168 102 L186 102"/>
+  <!-- high-gain umbrella dish -->
+  <path d="M222 132 L222 86"/>
+  <path d="M198 76 Q222 94 246 76"/>
+  <path d="M222 86 L222 66"/>
+  <!-- TV camera mast -->
+  <path d="M202 132 L202 98 L210 98"/>
+  <!-- wire-mesh wheels -->
+  <circle cx="82" cy="154" r="20"/>
+  <circle cx="82" cy="154" r="7"/>
+  <circle cx="238" cy="154" r="20"/>
+  <circle cx="238" cy="154" r="7"/>
+  <path d="M18 176 L302 176" opacity="0.35"/>
+</svg>

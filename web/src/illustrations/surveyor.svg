@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" role="img" aria-labelledby="t-surv">
+  <title id="t-surv">Surveyor 3 lunar lander</title>
+  <!-- tripod mast -->
+  <path d="M160 44 L160 132"/>
+  <rect x="136" y="42" width="48" height="16" rx="2"/>
+  <rect x="150" y="68" width="20" height="24" rx="2"/>
+  <!-- three splayed legs -->
+  <path d="M142 118 L74 170 M178 118 L246 170 M160 132 L160 174"/>
+  <circle cx="74" cy="172" r="5"/>
+  <circle cx="160" cy="176" r="5"/>
+  <circle cx="246" cy="172" r="5"/>
+  <!-- soil scoop arm -->
+  <path d="M142 128 L106 138 L94 152"/>
+  <path d="M16 178 L304 178" opacity="0.35"/>
+</svg>
