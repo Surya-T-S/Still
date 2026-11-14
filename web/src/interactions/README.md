@@ -1,14 +1,16 @@
-# Signature interactions (owned by C)
+# Signature Interactions (owned by Surya)
 
-One self-contained `.astro` component per interaction. Each one:
-- receives its numbers **as props from B's data** (never hard-coded),
-- works with keyboard only,
-- has a `prefers-reduced-motion` fallback.
+All 5 interactive moments are built, self-contained, keyboard-accessible, and `prefers-reduced-motion` safe.
+Vrindha can drop them directly into `web/src/pages/index.astro`:
 
-| File | Act | Props (from `data/artifacts.json`) |
+| Component | Where to use | Props |
 |---|---|---|
-| `PingTheMoon.astro` | Moon · Eagle | `lightTimeSec` (round trip = ×2), `recessionCmPerYear` |
-| `SolOdometer.astro` | Mars · Opportunity | `planned`, `actual`, `lastContact` |
-| `FlightCounter.astro` | Mars · Ingenuity | `planned`, `actual` |
-| `SendAMessage.astro` | Deep · Pioneer 10 | `lightTimeSec` |
-| `ThenNowSlider.astro` | any | `images.then`, `images.now` |
+| `ThenNowSlider.astro` | Any artifact with `images.then && images.now` | `thenImg={a.images.then}`, `nowImg={a.images.now}`, `title={a.nickname ?? a.name}` |
+| `PingTheMoon.astro` | `alsep` (or `apollo-lunar-modules`) | `lightTimeSec={a.lightTimeSec}` |
+| `SolOdometer.astro` | `spirit-opportunity` | `planned={a.planned?.value}`, `actual={a.actual?.value}`, `unit={a.actual?.unit}` |
+| `FlightCounter.astro` | `ingenuity` | `planned={a.planned?.value}`, `actual={a.actual?.value}` |
+| `SendAMessage.astro` | `pioneer` | `lightTimeSec={a.lightTimeSec}`, `targetName={a.nickname ?? a.name}` |
+
+## Navigation & Act Dividers (also ready for `Base.astro` / `index.astro`)
+- `TrajectoryNav.astro` — drop `<TrajectoryNav />` once inside `Base.astro` (auto-reads `[data-chapter]`).
+- `ActDivider.astro` — drop once before each act (`act`, `roman`, `title`, `subtitle`, `distanceNote`).

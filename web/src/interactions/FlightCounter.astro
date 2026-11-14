@@ -1,0 +1,112 @@
+---
+/**
+ * FlightCounter — owned by Surya.
+ * Visualizes Ingenuity's 5 planned flights vs 72 actual flights on Mars.
+ */
+interface Props {
+  planned?: number;
+  actual?: number;
+}
+const { planned = 5, actual = 72 } = Astro.props;
+---
+<div class="flights" data-reveal data-flights data-planned={planned} data-actual={actual}>
+  <div class="top">
+    <div>
+      <span class="k">GOAL</span>
+      <span class="v dim">{planned} flights</span>
+    </div>
+    <div class="right">
+      <span class="k">FLOWN ON MARS</span>
+      <span class="v accent"><span data-fl-count>0</span> flights</span>
+    </div>
+  </div>
+
+  <div class="dots" aria-hidden="true" data-fl-dots>
+    {Array.from({ length: actual }).map((_, i) => (
+      <span class={`fdot ${i < planned ? "is-goal" : ""}`} />
+    ))}
+  </div>
+
+  <p class="note">
+    Each mark is one powered takeoff and landing in Martian air.
+  </p>
+</div>
+
+<style>
+  .flights {
+    max-width: 640px;
+    margin: var(--s-8) auto var(--s-12);
+    padding: var(--s-6);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: rgba(17, 17, 20, 0.55);
+    display: grid;
+    gap: var(--s-4);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .right { text-align: right; }
+  .k {
+    display: block;
+    font: 500 0.68rem/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+    margin-bottom: var(--s-2);
+  }
+  .v { font: 400 var(--t-lg)/1 var(--f-voice); font-variant-numeric: tabular-nums; }
+  .dim { color: var(--c-ink-dim); }
+  .accent { color: var(--c-accent); }
+  .dots {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 6px;
+  }
+  .fdot {
+    height: 6px;
+    border-radius: 2px;
+    background: var(--c-accent);
+    opacity: 0.15;
+    transition: opacity 160ms ease;
+  }
+  .fdot.is-goal { background: var(--c-ink); }
+  .fdot.is-lit { opacity: 1; }
+  .note { margin: 0; font: 400 var(--t-xs)/1.5 var(--f-record); color: var(--c-ink-dim); }
+  @media (max-width: 520px) { .dots { grid-template-columns: repeat(12, 1fr); } }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { reduced } from "../motion/index";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.querySelectorAll<HTMLElement>("[data-flights]").forEach((root) => {
+    const countEl = root.querySelector<HTMLElement>("[data-fl-count]");
+    const dots = Array.from(root.querySelectorAll<HTMLElement>(".fdot"));
+    if (!countEl || !dots.length) return;
+
+    const actual = Number(root.dataset.actual || String(dots.length));
+    if (reduced()) {
+      countEl.textContent = String(actual);
+      dots.forEach((d) => d.classList.add("is-lit"));
+      return;
+    }
+
+    const state = { v: 0 };
+    gsap.to(state, {
+      v: actual,
+      duration: 2.0,
+      ease: "power2.out",
+      scrollTrigger: { trigger: root, start: "top 80%", once: true },
+      onUpdate: () => {
+        const cur = Math.round(state.v);
+        countEl.textContent = String(cur);
+        dots.forEach((d, idx) => d.classList.toggle("is-lit", idx < cur));
+      },
+    });
+  });
+</script>

@@ -1,0 +1,183 @@
+---
+/**
+ * PingTheMoon — owned by Surya.
+ * Interactive laser ranging moment for ALSEP / Apollo retroreflectors.
+ * Props come from data/artifacts.json (lightTimeSec).
+ */
+interface Props {
+  lightTimeSec?: number;
+  recessionCmPerYear?: number;
+}
+const { lightTimeSec = 1.28, recessionCmPerYear = 3.8 } = Astro.props;
+const roundTripSec = (lightTimeSec * 2).toFixed(2);
+---
+<div class="ping" data-reveal data-ping data-roundtrip={roundTripSec}>
+  <div class="track" aria-hidden="true">
+    <span class="end">EARTH</span>
+    <div class="beam-wrap">
+      <div class="beam-line"></div>
+      <div class="pulse" data-ping-pulse></div>
+    </div>
+    <span class="end">MOON</span>
+  </div>
+
+  <div class="controls">
+    <button type="button" class="btn" data-ping-btn>
+      Ping the Moon
+    </button>
+    <p class="readout" aria-live="polite" data-ping-readout>
+      Round-trip light time: <strong>{roundTripSec} s</strong>
+    </p>
+  </div>
+
+  <p class="reveal-note" hidden data-ping-note>
+    Echo received in {roundTripSec} s. Because of Apollo's mirrors, we know the Moon drifts
+    ~{recessionCmPerYear} cm farther from Earth every year.
+  </p>
+</div>
+
+<style>
+  .ping {
+    max-width: 640px;
+    margin: var(--s-8) auto var(--s-12);
+    padding: var(--s-6);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: rgba(17, 17, 20, 0.55);
+    display: grid;
+    gap: var(--s-6);
+  }
+  .track {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .end {
+    font: 500 0.68rem/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+  }
+  .beam-wrap {
+    position: relative;
+    height: 16px;
+    display: flex;
+    align-items: center;
+  }
+  .beam-line {
+    width: 100%;
+    height: 1px;
+    background: var(--c-line-strong);
+  }
+  .pulse {
+    position: absolute;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    box-shadow: 0 0 12px var(--c-accent);
+    opacity: 0;
+    transform: translateX(0);
+    pointer-events: none;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+  }
+  .btn {
+    appearance: none;
+    background: transparent;
+    color: var(--c-ink);
+    border: 1px solid var(--c-accent);
+    border-radius: var(--r-pill);
+    padding: 10px 20px;
+    font: 500 var(--t-xs)/1 var(--f-record);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--d-fast) var(--ease-out), color var(--d-fast) var(--ease-out), transform var(--d-fast) var(--ease-out);
+  }
+  .btn:hover:not(:disabled),
+  .btn:focus-visible:not(:disabled) {
+    background: var(--c-accent);
+    color: var(--c-bg);
+    transform: translateY(-1px);
+  }
+  .btn:disabled { opacity: 0.55; cursor: wait; }
+  .readout {
+    margin: 0;
+    font: 400 var(--t-xs)/1.4 var(--f-record);
+    color: var(--c-ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .readout strong { color: var(--c-accent); font-weight: 500; }
+  .reveal-note {
+    margin: 0;
+    font: 400 var(--t-sm)/var(--lh-body) var(--f-ui);
+    color: var(--c-ink);
+    border-top: 1px solid var(--c-line);
+    padding-top: var(--s-4);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-ping]").forEach((root) => {
+    const btn = root.querySelector<HTMLButtonElement>("[data-ping-btn]");
+    const pulse = root.querySelector<HTMLElement>("[data-ping-pulse]");
+    const readout = root.querySelector<HTMLElement>("[data-ping-readout]");
+    const note = root.querySelector<HTMLElement>("[data-ping-note]");
+    const wrap = root.querySelector<HTMLElement>(".beam-wrap");
+    if (!btn || !pulse || !readout || !note || !wrap) return;
+
+    const roundTrip = Number(root.dataset.roundtrip || "2.56");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let busy = false;
+
+    btn.addEventListener("click", () => {
+      if (busy) return;
+      busy = true;
+      btn.disabled = true;
+      note.hidden = true;
+
+      if (reduced) {
+        readout.innerHTML = `Echo returned: <strong>${roundTrip.toFixed(2)} s</strong>`;
+        note.hidden = false;
+        busy = false;
+        btn.disabled = false;
+        return;
+      }
+
+      const start = performance.now();
+      const totalMs = roundTrip * 1000;
+      const maxX = Math.max(0, wrap.clientWidth - 10);
+      pulse.style.opacity = "1";
+
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / totalMs);
+        const elapsed = ((now - start) / 1000).toFixed(2);
+        // Outbound 0..0.5, return 0.5..1
+        const x = p <= 0.5 ? (p * 2) * maxX : (1 - (p - 0.5) * 2) * maxX;
+        pulse.style.transform = `translateX(${x}px)`;
+        readout.innerHTML = p < 0.5
+          ? `Laser outbound… <strong>${elapsed} s</strong>`
+          : `Returning from Moon… <strong>${elapsed} s</strong>`;
+
+        if (p < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          pulse.style.opacity = "0";
+          readout.innerHTML = `Echo received: <strong>${roundTrip.toFixed(2)} s</strong>`;
+          note.hidden = false;
+          busy = false;
+          btn.disabled = false;
+          btn.textContent = "Ping again";
+        }
+      };
+      requestAnimationFrame(tick);
+    });
+  });
+</script>

@@ -1,0 +1,129 @@
+---
+/**
+ * SolOdometer — owned by Surya.
+ * Visualizes Opportunity's 90-sol warranty vs 5,352 sols of actual exploration.
+ */
+interface Props {
+  planned?: number;
+  actual?: number;
+  unit?: string;
+}
+const { planned = 90, actual = 5352, unit = "sols" } = Astro.props;
+const ratio = Math.round(actual / planned);
+const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
+---
+<div class="odo" data-reveal data-odo data-planned={planned} data-actual={actual}>
+  <div class="nums">
+    <div>
+      <span class="k">PLANNED</span>
+      <span class="v dim">{planned} {unit}</span>
+    </div>
+    <div class="right">
+      <span class="k">ACTUAL</span>
+      <span class="v accent"><span data-odo-count>0</span> {unit}</span>
+    </div>
+  </div>
+
+  <div class="bar-track" aria-hidden="true">
+    <div class="bar-fill" data-odo-bar></div>
+    <div class="bar-planned" style={`left: ${plannedPct}%`} title={`Planned: ${planned} ${unit}`}></div>
+  </div>
+
+  <p class="note">
+    Outlived its original {planned}-sol warranty by <strong>{ratio}×</strong>.
+  </p>
+</div>
+
+<style>
+  .odo {
+    max-width: 640px;
+    margin: var(--s-8) auto var(--s-12);
+    padding: var(--s-6);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: rgba(17, 17, 20, 0.55);
+    display: grid;
+    gap: var(--s-4);
+  }
+  .nums {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--s-4);
+  }
+  .right { text-align: right; }
+  .k {
+    display: block;
+    font: 500 0.68rem/1 var(--f-record);
+    letter-spacing: 0.16em;
+    color: var(--c-ink-dim);
+    margin-bottom: var(--s-2);
+  }
+  .v {
+    font: 400 var(--t-lg)/1 var(--f-voice);
+    font-variant-numeric: tabular-nums;
+  }
+  .dim { color: var(--c-ink-dim); }
+  .accent { color: var(--c-accent); }
+  .bar-track {
+    position: relative;
+    height: 8px;
+    border-radius: var(--r-pill);
+    background: rgba(237, 234, 227, 0.08);
+    overflow: hidden;
+  }
+  .bar-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--c-accent);
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  .bar-planned {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--c-ink);
+    opacity: 0.7;
+  }
+  .note {
+    margin: 0;
+    font: 400 var(--t-sm)/1.5 var(--f-ui);
+    color: var(--c-ink-dim);
+  }
+  .note strong { color: var(--c-ink); font-weight: 500; }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { reduced } from "../motion/index";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.querySelectorAll<HTMLElement>("[data-odo]").forEach((root) => {
+    const countEl = root.querySelector<HTMLElement>("[data-odo-count]");
+    const barEl = root.querySelector<HTMLElement>("[data-odo-bar]");
+    if (!countEl || !barEl) return;
+
+    const actual = Number(root.dataset.actual || "5352");
+    if (reduced()) {
+      countEl.textContent = actual.toLocaleString("en-US");
+      barEl.style.transform = "scaleX(1)";
+      return;
+    }
+
+    const state = { v: 0 };
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: root, start: "top 80%", once: true },
+    });
+    tl.to(state, {
+      v: actual,
+      duration: 2.2,
+      ease: "power2.out",
+      onUpdate: () => { countEl.textContent = Math.round(state.v).toLocaleString("en-US"); },
+    }, 0);
+    tl.to(barEl, { scaleX: 1, duration: 2.2, ease: "power2.out" }, 0);
+  });
+</script>
