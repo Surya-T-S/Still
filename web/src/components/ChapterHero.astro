@@ -1,0 +1,26 @@
+---
+/** ChapterHero — owned by C. Props are the contract with D. */
+interface Props {
+  name: string;        // official name
+  nickname?: string;   // big title if present
+  hook: string;        // A's first line
+  act: "moon" | "mars" | "deep";
+  lineArt: string;     // raw SVG markup (D passes it via lineArt() from ./illustrations)
+}
+const { name, nickname, hook, act, lineArt } = Astro.props;
+---
+<header class="hero" data-act={act}>
+  <div class="art" data-draw set:html={lineArt} />
+  <p class="kicker" data-reveal>{nickname ? name : act.toUpperCase()}</p>
+  <h2 class="title" data-reveal>{nickname ?? name}</h2>
+  <p class="hook" data-reveal>{hook}</p>
+</header>
+
+<style>
+  .hero { display: grid; justify-items: center; text-align: center; gap: var(--s-4); padding-block: var(--s-24) var(--s-12); }
+  .art { width: min(560px, 86vw); color: var(--c-accent); }
+  .art :global(svg) { width: 100%; height: auto; display: block; }
+  .kicker { font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-ink-dim); }
+  .title { font: 400 var(--t-hero)/var(--lh-tight) var(--f-voice); margin: 0; }
+  .hook { font: italic 400 var(--t-lg)/var(--lh-voice) var(--f-voice); color: var(--c-accent); margin: 0; }
+</style>

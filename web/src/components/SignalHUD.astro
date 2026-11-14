@@ -1,0 +1,27 @@
+---
+/** Signal Delay HUD: the spine of the experience. Updated by engine.ts from each chapter's data-* attributes. */
+---
+<aside class="hud" aria-live="polite" aria-label="Signal delay from Earth">
+  <span class="where" data-hud-where>EARTH</span>
+  <span class="sep" aria-hidden="true"></span>
+  <span><span class="k">DIST</span> <span data-hud-dist>0 km</span></span>
+  <span><span class="k">SIGNAL</span> <span data-hud-light>0 s</span></span>
+</aside>
+
+<style>
+  .hud {
+    position: fixed; top: var(--s-4); left: 50%; transform: translateX(-50%);
+    z-index: var(--z-hud);
+    display: flex; align-items: center; gap: var(--s-4);
+    font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.12em; color: var(--c-ink);
+    padding: var(--s-2) var(--s-4); border: 1px solid var(--c-line); border-radius: var(--r-pill);
+    background: rgba(10, 10, 11, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  .where { color: var(--c-accent); }
+  .k { color: var(--c-ink-dim); }
+  .sep { width: 6px; height: 6px; border-radius: 50%; background: var(--c-accent); animation: blip 2.4s infinite; }
+  @keyframes blip { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+  @media (max-width: 520px) { .hud { gap: var(--s-3); font-size: 0.66rem; } }
+  @media (prefers-reduced-motion: reduce) { .sep { animation: none; opacity: 1; } }
+</style>

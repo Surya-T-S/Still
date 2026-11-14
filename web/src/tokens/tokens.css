@@ -1,0 +1,66 @@
+/* ==========================================================
+   STILL — Design Tokens v0 (owned by Surya & Vrindha)
+   Everything visual reads from these. Change here, not inline.
+   ========================================================== */
+
+:root {
+  /* Canvas & ink */
+  --c-bg: #0a0a0b;
+  --c-bg-raised: #131315;
+  --c-ink: #edeae3;
+  --c-ink-dim: #8a877f;
+  --c-line: rgba(237, 234, 227, 0.14);
+
+  /* Act accents (D's scroll engine sets body[data-act], which swaps --c-accent) */
+  --c-moon: #d9d3c3;
+  --c-mars: #c2502a;
+  --c-deep: #7fa2ff;
+  --c-accent: var(--c-moon);
+
+  /* Type */
+  --f-voice: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-ui: "Inter Variable", "Inter", system-ui, sans-serif;
+  --f-record: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+  --t-xs: clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --t-sm: clamp(0.85rem, 0.82rem + 0.15vw, 0.95rem);
+  --t-md: clamp(1rem, 0.95rem + 0.25vw, 1.15rem);
+  --t-lg: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+  --t-xl: clamp(2.25rem, 1.6rem + 3vw, 4.5rem);
+  --t-hero: clamp(3rem, 2rem + 6vw, 8rem);
+
+  --lh-tight: 1.05;
+  --lh-voice: 1.25;
+  --lh-body: 1.6;
+  --measure: 60ch;
+
+  /* Space (4px base) */
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem;
+  --s-6: 1.5rem;  --s-8: 2rem;   --s-12: 3rem;   --s-16: 4rem;
+  --s-24: 6rem;   --s-32: 8rem;
+
+  /* Shape */
+  --r-sm: 4px;
+  --r-pill: 999px;
+  --stroke: 1.25px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* ≈ power3.out */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --d-fast: 180ms;
+  --d-base: 420ms;
+  --d-slow: 900ms;
+
+  /* Layers */
+  --z-stars: 0;
+  --z-content: 1;
+  --z-hud: 50;
+}
+
+[data-act="moon"] { --c-accent: var(--c-moon); }
+[data-act="mars"] { --c-accent: var(--c-mars); }
+[data-act="deep"] { --c-accent: var(--c-deep); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast: 0ms; --d-base: 0ms; --d-slow: 0ms; }
+}

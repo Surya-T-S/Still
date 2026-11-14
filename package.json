@@ -1,0 +1,15 @@
+{
+  "name": "still",
+  "private": true,
+  "version": "0.1.0",
+  "description": "STILL: storytelling about NASA's discarded hardware on the Moon, Mars and in deep space. NASA Space Apps Challenge 2026.",
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @still/web",
+    "build": "npm run build -w @still/web",
+    "build:strict": "npm run build:strict -w @still/web",
+    "preview": "npm run preview -w @still/web"
+  }
+}

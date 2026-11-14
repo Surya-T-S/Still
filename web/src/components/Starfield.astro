@@ -1,0 +1,47 @@
+---
+/** One canvas, ~300 stars, gentle scroll parallax. Pauses when the tab is hidden. */
+---
+<canvas class="stars" aria-hidden="true" data-stars></canvas>
+
+<style>
+  .stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: var(--z-stars); pointer-events: none; }
+</style>
+
+<script>
+  const c = document.querySelector<HTMLCanvasElement>("[data-stars]")!;
+  const ctx = c.getContext("2d")!;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  type S = { x: number; y: number; r: number; z: number; a: number };
+  let stars: S[] = [], w = 0, h = 0, raf = 0;
+
+  function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    w = innerWidth; h = innerHeight;
+    c.width = w * dpr; c.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(320, (w * h) / 5000));
+    stars = Array.from({ length: n }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      r: Math.random() * 1.1 + 0.2, z: Math.random() * 0.6 + 0.1, a: Math.random() * 0.6 + 0.2,
+    }));
+  }
+
+  function draw() {
+    const sy = still ? 0 : scrollY;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#edeae3";
+    for (const s of stars) {
+      const y = (((s.y - sy * s.z * 0.15) % h) + h) % h;
+      ctx.globalAlpha = s.a;
+      ctx.fillRect(s.x, y, s.r, s.r);
+    }
+    if (!still) raf = requestAnimationFrame(draw);
+  }
+
+  resize(); draw();
+  addEventListener("resize", () => { resize(); if (still) draw(); }, { passive: true });
+  document.addEventListener("visibilitychange", () => {
+    if (still) return;
+    if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(draw);
+  });
+</script>

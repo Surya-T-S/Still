@@ -1,0 +1,42 @@
+---
+/** RecordCard — owned by C. The factual layer (Depth 2). Max 3 stats visible. */
+import CitationChip from "./CitationChip.astro";
+interface Stat { label: string; value: string; comparison?: string; sourceUrl: string }
+interface Props {
+  stats: Stat[];
+  lastContact: string;   // ISO
+  site?: string;
+  nssdcaId: string;
+  nssdcaUrl: string;
+  legacy: string;
+}
+const { stats, lastContact, site, nssdcaId, nssdcaUrl, legacy } = Astro.props;
+---
+<section class="record" aria-label="The record">
+  <dl class="stats">
+    {stats.slice(0, 3).map((s) => (
+      <div class="stat" data-reveal>
+        <dt>{s.label}</dt>
+        <dd class="value">{s.value}</dd>
+        {s.comparison && <dd class="cmp">{s.comparison}</dd>}
+      </div>
+    ))}
+  </dl>
+  <p class="meta" data-reveal>
+    LAST CONTACT {lastContact}{site && <> · {site.toUpperCase()}</>}
+    · SILENT FOR <span data-silent-since={lastContact}>—</span> DAYS
+  </p>
+  <p class="legacy" data-reveal>{legacy}</p>
+  <CitationChip href={nssdcaUrl} label={`NSSDCA ${nssdcaId}`} />
+</section>
+
+<style>
+  .record { max-width: 960px; margin-inline: auto; padding: var(--s-12) var(--s-6) var(--s-24); display: grid; gap: var(--s-8); justify-items: center; text-align: center; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s-8); width: 100%; margin: 0; }
+  .stat { border-top: 1px solid var(--c-line); padding-top: var(--s-4); }
+  dt { font: 500 var(--t-xs)/1.4 var(--f-record); letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-ink-dim); }
+  .value { font: 400 var(--t-xl)/1.1 var(--f-voice); margin: var(--s-2) 0 0; color: var(--c-accent); }
+  .cmp { font: 400 var(--t-sm)/1.4 var(--f-ui); color: var(--c-ink-dim); margin: var(--s-1) 0 0; }
+  .meta { font: 400 var(--t-xs)/1.6 var(--f-record); letter-spacing: 0.1em; color: var(--c-ink-dim); margin: 0; }
+  .legacy { font: 400 var(--t-lg)/var(--lh-voice) var(--f-voice); max-width: 32ch; margin: 0; }
+</style>

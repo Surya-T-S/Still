@@ -1,0 +1,28 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "lenis/dist/lenis.css";
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--c-bg); color: var(--c-ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+body {
+  margin: 0;
+  font: 400 var(--t-md)/var(--lh-body) var(--f-ui);
+  transition: --c-accent var(--d-slow) var(--ease-in-out);
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: var(--r-sm); }
+
+.skip { position: absolute; left: var(--s-4); top: -100px; z-index: 100; background: var(--c-ink); color: var(--c-bg); padding: var(--s-2) var(--s-4); }
+.skip:focus { top: var(--s-4); }
+
+main { position: relative; z-index: var(--z-content); }
+.chapter { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
+
+/* Hidden start state only when JS + motion are available, so no-JS users still see everything. */
+.js-motion [data-reveal], .js-motion [data-split] > * { opacity: 0; }
+
+/* Registered property so the act accent colour can transition smoothly. */
+@property --c-accent { syntax: "<color>"; inherits: true; initial-value: #d9d3c3; }

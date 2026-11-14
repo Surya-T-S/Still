@@ -1,0 +1,94 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection, getEntry, render } from "astro:content";
+import ChapterHero from "../components/ChapterHero.astro";
+import VoiceBlock from "../components/VoiceBlock.astro";
+import RecordCard from "../components/RecordCard.astro";
+import { lineArt } from "../illustrations";
+
+const ACT_ORDER = { moon: 0, mars: 1, deep: 2 } as const;
+const ACT_LABEL = { moon: "The Moon", mars: "Mars", deep: "Deep Space" } as const;
+
+// B's data, ordered Moon → Mars → Deep Space
+const artifacts = (await getCollection("artifacts"))
+  .map((e) => e.data)
+  .sort((a, b) => ACT_ORDER[a.act] - ACT_ORDER[b.act] || a.order - b.order);
+
+// Fact gate: `npm run build:strict` refuses to ship unverified data.
+if (process.env.STRICT_FACTS === "true") {
+  const bad = artifacts.filter((a) => !a.verified).map((a) => a.slug);
+  if (bad.length) throw new Error(`Unverified artifacts (B must check): ${bad.join(", ")}`);
+}
+
+// Pair each artifact with A's story
+const chapters = await Promise.all(
+  artifacts.map(async (a) => {
+    const story = await getEntry("story", a.slug);
+    const Body = story ? (await render(story)).Content : null;
+    return { a, story: story?.data, Body };
+  }),
+);
+const prologue = (await getEntry("story", "prologue"))?.data;
+---
+<Base>
+  {prologue && (
+    <section class="prologue" data-chapter data-label="Earth" data-act="moon" data-distance="0" data-light="0">
+      <div data-split class="pro-lines">
+        {prologue.voice.map((l) => <p>{l}</p>)}
+      </div>
+      <p class="cta" data-reveal>{prologue.legacyLine} <span aria-hidden="true">↓</span></p>
+    </section>
+  )}
+
+  {chapters.map(({ a, story, Body }) => (
+    <section
+      class="chapter"
+      id={a.slug}
+      data-chapter
+      data-label={`${ACT_LABEL[a.act]} · ${a.nickname ?? a.name}`}
+      data-act={a.act}
+      data-distance={a.distanceKm}
+      data-light={a.lightTimeSec}
+    >
+      <ChapterHero
+        name={a.name}
+        nickname={a.nickname}
+        hook={story?.hook ?? ""}
+        act={a.act}
+        lineArt={lineArt(a.images.lineArt)}
+      />
+      {story && <VoiceBlock lines={story.voice} truthNote={story.truthNote} />}
+      {Body && <div class="narration" data-reveal><Body /></div>}
+      <RecordCard
+        stats={a.stats}
+        lastContact={a.lastContact}
+        site={a.location.site}
+        nssdcaId={a.nssdcaId}
+        nssdcaUrl={a.nssdcaUrl}
+        legacy={a.legacy}
+      />
+    </section>
+  ))}
+
+  <section id="archive" class="archive">
+    <h2>The Archive</h2>
+    <ul>
+      {artifacts.map((a) => (
+        <li><a href={`#${a.slug}`}>{a.nickname ?? a.name}</a> · {a.mission} · <a href={a.nssdcaUrl} target="_blank" rel="noopener">NSSDCA {a.nssdcaId}</a></li>
+      ))}
+    </ul>
+    <p class="credit">Imagery and data courtesy of NASA. This project is not endorsed by NASA.</p>
+  </section>
+</Base>
+
+<style>
+  .prologue { min-height: 100vh; display: grid; place-content: center; text-align: center; padding: var(--s-8); gap: var(--s-12); }
+  .pro-lines p { font: italic 400 var(--t-xl)/var(--lh-voice) var(--f-voice); margin: 0 auto var(--s-4); max-width: 22ch; }
+  .pro-lines p:last-child { font-style: normal; color: var(--c-accent); }
+  .cta { font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.2em; text-transform: uppercase; color: var(--c-ink-dim); }
+  .narration { max-width: var(--measure); margin-inline: auto; padding-inline: var(--s-6); color: var(--c-ink-dim); }
+  .archive { max-width: var(--measure); margin-inline: auto; padding: var(--s-24) var(--s-6); font-family: var(--f-record); font-size: var(--t-sm); }
+  .archive h2 { font: 400 var(--t-lg)/1 var(--f-voice); }
+  .archive li { margin-bottom: var(--s-2); color: var(--c-ink-dim); }
+  .credit { margin-top: var(--s-12); color: var(--c-ink-dim); font-size: var(--t-xs); }
+</style>

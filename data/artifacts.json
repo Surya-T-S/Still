@@ -1,0 +1,611 @@
+{
+  "apollo-lunar-modules": {
+    "slug": "apollo-lunar-modules",
+    "name": "Apollo Lunar Modules",
+    "nickname": "Eagle & The Descent Stages",
+    "act": "moon",
+    "order": 1,
+    "mission": "Apollo 11–17",
+    "nssdcaId": "1969-059C",
+    "nssdcaUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C",
+    "launchDate": "1969-07-16",
+    "arrivalDate": "1969-07-20",
+    "lastContact": "1969-07-21",
+    "status": "silent",
+    "location": {
+      "body": "Moon",
+      "site": "Sea of Tranquility (Apollo 11)",
+      "lat": 0.674,
+      "lon": 23.473
+    },
+    "distanceKm": 384400,
+    "lightTimeSec": 1.28,
+    "stats": [
+      {
+        "label": "First touchdown",
+        "value": "Jul 20, 1969",
+        "comparison": "Eagle's descent stage became the first crewed pad on another world",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+      },
+      {
+        "label": "Lunar landing sites",
+        "value": "6",
+        "comparison": "Six descent stages still stand across the near side of the Moon",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+      },
+      {
+        "label": "Signal delay",
+        "value": "1.28 s",
+        "comparison": "Shorter than a single deep breath",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+      }
+    ],
+    "legacy": "Because of these descent stages, astronauts had a launch pad to lift off the Moon and come home.",
+    "images": { "lineArt": "apollo-lunar-modules.svg" },
+    "sources": [
+      "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C"
+    ],
+    "verified": true
+  },
+  "lunar-roving-vehicles": {
+    "slug": "lunar-roving-vehicles",
+    "name": "Lunar Roving Vehicles",
+    "nickname": "Moon Buggies (LRV 1–3)",
+    "act": "moon",
+    "order": 2,
+    "mission": "Apollo 15, 16 & 17",
+    "nssdcaId": "1971-063C",
+    "nssdcaUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C",
+    "launchDate": "1971-07-26",
+    "arrivalDate": "1971-07-30",
+    "lastContact": "1972-12-14",
+    "status": "silent",
+    "location": {
+      "body": "Moon",
+      "site": "Hadley–Apennine (Apollo 15)",
+      "lat": 26.132,
+      "lon": 3.634
+    },
+    "distanceKm": 384400,
+    "lightTimeSec": 1.28,
+    "stats": [
+      {
+        "label": "Electric rovers",
+        "value": "3",
+        "comparison": "One each on Apollo 15, 16, and 17 — all parked permanently",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+      },
+      {
+        "label": "First drive",
+        "value": "Jul 31, 1971",
+        "comparison": "The first electric car ever driven on another world",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+      },
+      {
+        "label": "Power source",
+        "value": "2 batteries",
+        "comparison": "Silver-zinc batteries built for one-time lunar use",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+      }
+    ],
+    "legacy": "Because of the Moon Buggies, astronauts explored miles beyond their landing site instead of just walking distance.",
+    "images": { "lineArt": "lunar-roving-vehicles.svg" },
+    "sources": [
+      "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-063C"
+    ],
+    "verified": true
+  },
+  "alsep": {
+    "slug": "alsep",
+    "name": "ALSEP Scientific Packages",
+    "nickname": "The Listening Stations",
+    "act": "moon",
+    "order": 3,
+    "mission": "Apollo 12–17",
+    "nssdcaId": "1969-099C",
+    "nssdcaUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C",
+    "launchDate": "1969-11-14",
+    "arrivalDate": "1969-11-19",
+    "lastContact": "1977-09-30",
+    "status": "still-used",
+    "location": {
+      "body": "Moon",
+      "site": "Ocean of Storms (Apollo 12)"
+    },
+    "distanceKm": 384400,
+    "lightTimeSec": 1.28,
+    "stats": [
+      {
+        "label": "First ALSEP",
+        "value": "Nov 19, 1969",
+        "comparison": "Kept sending lunar science long after astronauts flew home",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+      },
+      {
+        "label": "Years of data",
+        "value": "~8 years",
+        "comparison": "Seismometers listened for moonquakes until 1977",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+      },
+      {
+        "label": "Retroreflectors",
+        "value": "Still active",
+        "comparison": "Mirrors left by Apollo still bounce Earth's lasers today",
+        "sourceUrl": "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+      }
+    ],
+    "legacy": "Because of ALSEP and Apollo's mirrors, we know the Moon has quakes and drifts slowly away from Earth.",
+    "images": { "lineArt": "alsep.svg" },
+    "sources": [
+      "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-099C"
+    ],
+    "verified": true
+  },
+  "surveyor": {
+    "slug": "surveyor",
+    "name": "Surveyor Landers",
+    "nickname": "Surveyor 3",
+    "act": "moon",
+    "order": 4,
+    "mission": "Surveyor Program",
+    "nssdcaId": "1967-035A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/surveyor-3/",
+    "launchDate": "1967-04-17",
+    "arrivalDate": "1967-04-20",
+    "lastContact": "1967-05-04",
+    "status": "silent",
+    "location": {
+      "body": "Moon",
+      "site": "Oceanus Procellarum",
+      "lat": -3.0,
+      "lon": -23.41
+    },
+    "distanceKm": 384400,
+    "lightTimeSec": 1.28,
+    "stats": [
+      {
+        "label": "Landed on Moon",
+        "value": "Apr 20, 1967",
+        "comparison": "Proved a spacecraft could land softly on lunar soil",
+        "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
+      },
+      {
+        "label": "Visited by humans",
+        "value": "Nov 1969",
+        "comparison": "Apollo 12 astronauts walked right up to Surveyor 3",
+        "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
+      },
+      {
+        "label": "Last signal",
+        "value": "May 4, 1967",
+        "comparison": "Fell silent after its first lunar night",
+        "sourceUrl": "https://science.nasa.gov/mission/surveyor-3/"
+      }
+    ],
+    "legacy": "Because of Surveyor, engineers knew the Moon's dust wouldn't swallow Apollo's landers.",
+    "images": { "lineArt": "surveyor.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/surveyor-3/"
+    ],
+    "verified": true
+  },
+  "sojourner": {
+    "slug": "sojourner",
+    "name": "Sojourner Rover",
+    "nickname": "Pathfinder's Little Wheel",
+    "act": "mars",
+    "order": 1,
+    "mission": "Mars Pathfinder",
+    "nssdcaId": "1996-068A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/mars-pathfinder/",
+    "launchDate": "1996-12-04",
+    "arrivalDate": "1997-07-04",
+    "lastContact": "1997-09-27",
+    "status": "silent",
+    "location": {
+      "body": "Mars",
+      "site": "Ares Vallis (Carl Sagan Memorial Station)",
+      "lat": 19.1,
+      "lon": -33.25
+    },
+    "distanceKm": 225000000,
+    "lightTimeSec": 750.5,
+    "stats": [
+      {
+        "label": "Landed on Mars",
+        "value": "Jul 4, 1997",
+        "comparison": "First wheeled rover ever to drive on another planet",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-pathfinder/"
+      },
+      {
+        "label": "Last contact",
+        "value": "Sep 27, 1997",
+        "comparison": "Outlived its 7-day primary goal by nearly 12 times",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-pathfinder/"
+      },
+      {
+        "label": "Size",
+        "value": "Microwave-sized",
+        "comparison": "Tiny six-wheeled pioneer that paved the way for all Mars rovers",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-pathfinder/"
+      }
+    ],
+    "legacy": "Because of Sojourner, humanity learned how to drive across Mars.",
+    "images": { "lineArt": "sojourner.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/mars-pathfinder/"
+    ],
+    "verified": true
+  },
+  "spirit-opportunity": {
+    "slug": "spirit-opportunity",
+    "name": "Spirit & Opportunity",
+    "nickname": "The Twin Rovers",
+    "act": "mars",
+    "order": 2,
+    "mission": "Mars Exploration Rovers",
+    "nssdcaId": "2003-032A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/",
+    "launchDate": "2003-07-07",
+    "arrivalDate": "2004-01-25",
+    "lastContact": "2018-06-10",
+    "status": "silent",
+    "location": {
+      "body": "Mars",
+      "site": "Gusev Crater & Meridiani Planum"
+    },
+    "distanceKm": 225000000,
+    "lightTimeSec": 750.5,
+    "planned": { "value": 90, "unit": "sols" },
+    "actual": { "value": 5352, "unit": "sols" },
+    "stats": [
+      {
+        "label": "Planned mission",
+        "value": "90 sols",
+        "comparison": "Designed for just three Martian months",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+      },
+      {
+        "label": "Opportunity lasted",
+        "value": "Nearly 15 years",
+        "comparison": "Last signal sent June 10, 2018 before a global dust storm",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+      },
+      {
+        "label": "Distance driven",
+        "value": "45+ km",
+        "comparison": "Opportunity drove further than a marathon on another world",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+      }
+    ],
+    "legacy": "Because of Spirit and Opportunity, we know liquid water once shaped ancient Mars.",
+    "images": { "lineArt": "spirit-opportunity.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+    ],
+    "verified": true
+  },
+  "viking": {
+    "slug": "viking",
+    "name": "Viking 1 & 2 Landers",
+    "nickname": "First Eyes on Mars",
+    "act": "mars",
+    "order": 3,
+    "mission": "Viking Program",
+    "nssdcaId": "1975-075C",
+    "nssdcaUrl": "https://science.nasa.gov/mission/viking-1/",
+    "launchDate": "1975-08-20",
+    "arrivalDate": "1976-07-20",
+    "lastContact": "1982-11-13",
+    "status": "silent",
+    "location": {
+      "body": "Mars",
+      "site": "Chryse Planitia & Utopia Planitia"
+    },
+    "distanceKm": 225000000,
+    "lightTimeSec": 750.5,
+    "stats": [
+      {
+        "label": "First U.S. landing",
+        "value": "Jul 20, 1976",
+        "comparison": "Sent back the first clear photos from the Martian surface",
+        "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
+      },
+      {
+        "label": "Viking 1 operated",
+        "value": "6+ years",
+        "comparison": "Last contact November 13, 1982",
+        "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
+      },
+      {
+        "label": "Still resting",
+        "value": "Chryse Planitia",
+        "comparison": "Named Thomas Mutch Memorial Station",
+        "sourceUrl": "https://science.nasa.gov/mission/viking-1/"
+      }
+    ],
+    "legacy": "Because of Viking 1 and 2, humanity saw the red rocks and pink sky of Mars up close for the first time.",
+    "images": { "lineArt": "viking.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/viking-1/"
+    ],
+    "verified": true
+  },
+  "phoenix-insight": {
+    "slug": "phoenix-insight",
+    "name": "Phoenix & InSight Landers",
+    "nickname": "Ice Digger & Pulse Listener",
+    "act": "mars",
+    "order": 4,
+    "mission": "Phoenix & InSight",
+    "nssdcaId": "2018-042A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/insight/",
+    "launchDate": "2018-05-05",
+    "arrivalDate": "2018-11-26",
+    "lastContact": "2022-12-15",
+    "status": "silent",
+    "location": {
+      "body": "Mars",
+      "site": "Elysium Planitia (InSight) & Vastitas Borealis (Phoenix)"
+    },
+    "distanceKm": 225000000,
+    "lightTimeSec": 750.5,
+    "stats": [
+      {
+        "label": "Phoenix (2008)",
+        "value": "Found water ice",
+        "comparison": "Scooped Martian soil and proved water ice lies right beneath",
+        "sourceUrl": "https://science.nasa.gov/mission/insight/"
+      },
+      {
+        "label": "InSight (2018–2022)",
+        "value": "Marsquakes",
+        "comparison": "Listened to over 1,300 marsquakes before dust silenced its panels",
+        "sourceUrl": "https://science.nasa.gov/mission/insight/"
+      },
+      {
+        "label": "Last contact",
+        "value": "Dec 15, 2022",
+        "comparison": "InSight's final transmission from Elysium Planitia",
+        "sourceUrl": "https://science.nasa.gov/mission/insight/"
+      }
+    ],
+    "legacy": "Because of Phoenix and InSight, we know Mars hides ice under its surface and still rumbles deep inside.",
+    "images": { "lineArt": "phoenix-insight.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/insight/"
+    ],
+    "verified": true
+  },
+  "ingenuity": {
+    "slug": "ingenuity",
+    "name": "Ingenuity Mars Helicopter",
+    "nickname": "Ginny",
+    "act": "mars",
+    "order": 5,
+    "mission": "Mars 2020",
+    "nssdcaId": "2020-052A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/",
+    "launchDate": "2020-07-30",
+    "arrivalDate": "2021-02-18",
+    "lastContact": "2024-01-25",
+    "status": "silent",
+    "location": {
+      "body": "Mars",
+      "site": "Jezero Crater (Valinor Hills)"
+    },
+    "distanceKm": 225000000,
+    "lightTimeSec": 750.5,
+    "planned": { "value": 5, "unit": "flights" },
+    "actual": { "value": 72, "unit": "flights" },
+    "stats": [
+      {
+        "label": "Planned flights",
+        "value": "5",
+        "comparison": "Built as a short test in Mars's ultra-thin air",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      },
+      {
+        "label": "Actual flights",
+        "value": "72",
+        "comparison": "Flew 14× more times than planned before rotor damage",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      },
+      {
+        "label": "Final flight",
+        "value": "Jan 2024",
+        "comparison": "Now rests upright as a permanent airfield monument",
+        "sourceUrl": "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      }
+    ],
+    "legacy": "Because of Ingenuity, humanity proved powered flight is possible on another planet.",
+    "images": { "lineArt": "ingenuity.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+    ],
+    "verified": true
+  },
+  "dawn": {
+    "slug": "dawn",
+    "name": "Dawn Spacecraft",
+    "nickname": "Orbiter of Two Worlds",
+    "act": "deep",
+    "order": 1,
+    "mission": "Discovery Program",
+    "nssdcaId": "2007-043A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/dawn/",
+    "launchDate": "2007-09-27",
+    "arrivalDate": "2015-03-06",
+    "lastContact": "2018-11-01",
+    "status": "drifting",
+    "location": {
+      "body": "Ceres",
+      "site": "Perpetual unpowered orbit around Ceres"
+    },
+    "distanceKm": 414000000,
+    "lightTimeSec": 1381,
+    "stats": [
+      {
+        "label": "Worlds orbited",
+        "value": "2",
+        "comparison": "First spacecraft to orbit two destinations beyond Earth: Vesta and Ceres",
+        "sourceUrl": "https://science.nasa.gov/mission/dawn/"
+      },
+      {
+        "label": "Fuel depleted",
+        "value": "Nov 1, 2018",
+        "comparison": "Ran out of hydrazine while still circling dwarf planet Ceres",
+        "sourceUrl": "https://science.nasa.gov/mission/dawn/"
+      },
+      {
+        "label": "Today",
+        "value": "Silent satellite",
+        "comparison": "Remains in a stable, unpowered orbit to protect Ceres from impact",
+        "sourceUrl": "https://science.nasa.gov/mission/dawn/"
+      }
+    ],
+    "legacy": "Because of Dawn, we mapped the largest worlds in the asteroid belt—time capsules from the solar system's birth.",
+    "images": { "lineArt": "dawn.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/dawn/"
+    ],
+    "verified": true
+  },
+  "near-shoemaker": {
+    "slug": "near-shoemaker",
+    "name": "NEAR Shoemaker",
+    "nickname": "Asteroid Lander",
+    "act": "deep",
+    "order": 2,
+    "mission": "NEAR (Discovery 1)",
+    "nssdcaId": "1996-008A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/near-shoemaker/",
+    "launchDate": "1996-02-17",
+    "arrivalDate": "2000-02-14",
+    "lastContact": "2001-02-28",
+    "status": "silent",
+    "location": {
+      "body": "433 Eros",
+      "site": "Surface of asteroid 433 Eros"
+    },
+    "distanceKm": 315000000,
+    "lightTimeSec": 1051,
+    "stats": [
+      {
+        "label": "Historic landing",
+        "value": "Feb 12, 2001",
+        "comparison": "First spacecraft ever to orbit and touch down on an asteroid",
+        "sourceUrl": "https://science.nasa.gov/mission/near-shoemaker/"
+      },
+      {
+        "label": "Built to land?",
+        "value": "No",
+        "comparison": "Engineers improvised a gentle touchdown anyway—and it survived",
+        "sourceUrl": "https://science.nasa.gov/mission/near-shoemaker/"
+      },
+      {
+        "label": "Last contact",
+        "value": "Feb 28, 2001",
+        "comparison": "Sent data from Eros's surface for two weeks before deep freeze",
+        "sourceUrl": "https://science.nasa.gov/mission/near-shoemaker/"
+      }
+    ],
+    "legacy": "Because of NEAR Shoemaker, we know asteroids aren't just dots of light—they are worlds you can land on.",
+    "images": { "lineArt": "near-shoemaker.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/near-shoemaker/"
+    ],
+    "verified": true
+  },
+  "pioneer": {
+    "slug": "pioneer",
+    "name": "Pioneer 10 & 11",
+    "nickname": "The Starbound Messengers",
+    "act": "deep",
+    "order": 3,
+    "mission": "Pioneer Outer Planets",
+    "nssdcaId": "1972-012A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/pioneer-10/",
+    "launchDate": "1972-03-02",
+    "arrivalDate": "1973-12-03",
+    "lastContact": "2003-01-23",
+    "status": "drifting",
+    "location": {
+      "body": "Interstellar",
+      "site": "Beyond the outer solar system"
+    },
+    "distanceKm": 20000000000,
+    "lightTimeSec": 66712,
+    "stats": [
+      {
+        "label": "Launched",
+        "value": "1972 & 1973",
+        "comparison": "First spacecraft to cross the asteroid belt and fly past Jupiter",
+        "sourceUrl": "https://science.nasa.gov/mission/pioneer-10/"
+      },
+      {
+        "label": "Last whisper",
+        "value": "Jan 23, 2003",
+        "comparison": "Pioneer 10's final faint signal after more than 30 years",
+        "sourceUrl": "https://science.nasa.gov/mission/pioneer-10/"
+      },
+      {
+        "label": "Golden plaques",
+        "value": "On board",
+        "comparison": "Both carry an engraved map showing where Earth is",
+        "sourceUrl": "https://science.nasa.gov/mission/pioneer-10/"
+      }
+    ],
+    "legacy": "Because of Pioneer 10 and 11, humanity sent its first greeting cards out toward the stars.",
+    "images": { "lineArt": "pioneer.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/pioneer-10/"
+    ],
+    "verified": true
+  },
+  "kepler": {
+    "slug": "kepler",
+    "name": "Kepler Space Telescope",
+    "nickname": "The Planet Hunter",
+    "act": "deep",
+    "order": 4,
+    "mission": "Kepler / K2",
+    "nssdcaId": "2009-011A",
+    "nssdcaUrl": "https://science.nasa.gov/mission/kepler/",
+    "launchDate": "2009-03-06",
+    "lastContact": "2018-10-30",
+    "status": "drifting",
+    "location": {
+      "body": "Heliocentric",
+      "site": "Earth-trailing orbit around the Sun"
+    },
+    "distanceKm": 150000000,
+    "lightTimeSec": 500.3,
+    "stats": [
+      {
+        "label": "Launched",
+        "value": "Mar 6, 2009",
+        "comparison": "Stared at one patch of sky to spot tiny dips in starlight",
+        "sourceUrl": "https://science.nasa.gov/mission/kepler/"
+      },
+      {
+        "label": "Retired",
+        "value": "Oct 30, 2018",
+        "comparison": "Drifting safely in a sun-centered orbit after running out of fuel",
+        "sourceUrl": "https://science.nasa.gov/mission/kepler/"
+      },
+      {
+        "label": "Discovery",
+        "value": "Thousands of worlds",
+        "comparison": "Showed there are more planets than stars in our galaxy",
+        "sourceUrl": "https://science.nasa.gov/mission/kepler/"
+      }
+    ],
+    "legacy": "Because of Kepler, we know the night sky is crowded with worlds orbiting other stars.",
+    "images": { "lineArt": "kepler.svg" },
+    "sources": [
+      "https://science.nasa.gov/mission/kepler/"
+    ],
+    "verified": true
+  }
+}

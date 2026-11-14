@@ -1,0 +1,34 @@
+---
+import "../tokens/tokens.css";
+import "../styles/global.css";
+import SignalHUD from "../components/SignalHUD.astro";
+import Starfield from "../components/Starfield.astro";
+
+interface Props { title?: string; description?: string }
+const {
+  title = "STILL · Abandoned, not forgotten",
+  description = "A journey to the hardware humanity left on the Moon, Mars and in deep space, and what each piece gave us.",
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0b" />
+    <script is:inline>
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("js-motion");
+    </script>
+  </head>
+  <body data-act="moon">
+    <a class="skip" href="#archive">Skip the story, go to the facts</a>
+    <Starfield />
+    <SignalHUD />
+    <main><slot /></main>
+    <script>
+      import "../scripts/engine.ts";
+    </script>
+  </body>
+</html>

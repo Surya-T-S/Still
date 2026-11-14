@@ -1,0 +1,5 @@
+# Each folder has its owners. Pull requests touching a folder need its owner's review.
+/story/        @Nandana
+/data/         @Sooraj
+/web/          @Surya @Vrindha
+/MASTER_PLAN.md @Nandana @Sooraj @Surya @Vrindha

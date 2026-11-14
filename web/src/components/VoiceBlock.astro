@@ -1,0 +1,21 @@
+---
+/** VoiceBlock — owned by C. The imagined first-person layer; always labelled. */
+interface Props { lines: string[]; truthNote?: string }
+const { lines, truthNote } = Astro.props;
+---
+<section class="voice" aria-label="Imagined voice">
+  <span class="label">imagined</span>
+  <blockquote data-split>
+    {lines.map((l) => <p>{l}</p>)}
+  </blockquote>
+  {truthNote && <p class="truth" data-reveal><span>Myth check</span>{truthNote}</p>}
+</section>
+
+<style>
+  .voice { max-width: var(--measure); margin-inline: auto; padding: var(--s-16) var(--s-6); }
+  .label { font: 500 var(--t-xs)/1 var(--f-record); letter-spacing: 0.18em; text-transform: uppercase; color: var(--c-ink-dim); border: 1px solid var(--c-line); border-radius: var(--r-pill); padding: var(--s-1) var(--s-3); }
+  blockquote { margin: var(--s-6) 0 0; }
+  blockquote p { font: italic 400 var(--t-xl)/var(--lh-voice) var(--f-voice); margin: 0 0 var(--s-4); }
+  .truth { font: 400 var(--t-sm)/var(--lh-body) var(--f-ui); color: var(--c-ink-dim); border-left: 2px solid var(--c-accent); padding-left: var(--s-4); margin-top: var(--s-8); }
+  .truth span { display: block; font: 500 var(--t-xs)/1.6 var(--f-record); text-transform: uppercase; letter-spacing: 0.14em; color: var(--c-accent); }
+</style>
