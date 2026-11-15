@@ -1,9 +1,7 @@
 ---
 /**
  * ChapterHero — owned by Surya.
- * Minimal literary chapter masthead with scientific Space Mono proportions.
- * Uncluttered: chapter number, sector, title, italic hook, and a quiet
- * single-line distance/signal-delay subtitle.
+ * Minimal literary chapter masthead with unbroken, properly proportioned headings.
  */
 interface Props {
   name: string;
@@ -75,7 +73,7 @@ function fmtLight(sec: number): string {
 
 <style>
   .chapter-hero {
-    max-width: var(--measure);
+    max-width: 960px;
     margin-inline: auto;
     padding: var(--s-20) var(--s-6) var(--s-10);
     display: flex;
@@ -83,7 +81,16 @@ function fmtLight(sec: number): string {
     align-items: center;
     text-align: center;
     gap: var(--s-5);
-    border-bottom: 1px solid var(--c-line);
+  }
+
+  .chapter-hero::after {
+    content: "";
+    display: block;
+    width: 100%;
+    max-width: var(--measure);
+    height: 1px;
+    margin-top: var(--s-5);
+    background: var(--c-line);
   }
 
   .eyebrow {
@@ -93,7 +100,7 @@ function fmtLight(sec: number): string {
     align-items: center;
     gap: 10px;
     font: 400 var(--t-xs)/1.4 var(--f-record);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-ink-dim);
   }
@@ -105,12 +112,16 @@ function fmtLight(sec: number): string {
   }
 
   .title {
-    font: 700 var(--t-hero)/var(--lh-tight) var(--f-voice);
+    font: 700 clamp(1.85rem, 1.45rem + 2.1vw, 3.0rem)/1.22 var(--f-voice);
     color: var(--c-ink);
     margin: var(--s-2) 0 0;
-    letter-spacing: -0.015em;
+    letter-spacing: 0em;
     word-spacing: 0.02em;
-    max-width: 20ch;
+    max-width: none;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    hyphens: none;
+    text-wrap: balance;
   }
 
   .hook {
@@ -119,24 +130,25 @@ function fmtLight(sec: number): string {
     margin: 0;
     letter-spacing: 0.004em;
     word-spacing: 0.03em;
-    max-width: 38ch;
+    max-width: 54ch;
+    text-wrap: balance;
   }
 
   .telemetry-line {
     margin: var(--s-2) 0 0;
     font: 400 var(--t-xs)/1.4 var(--f-record);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: var(--c-ink-dim);
     font-variant-numeric: tabular-nums;
   }
 
   @media (max-width: 680px) {
     .chapter-hero {
-      padding: var(--s-12) var(--s-4) var(--s-8);
+      padding: var(--s-12) var(--s-4) var(--s-6);
       gap: var(--s-4);
     }
     .title {
-      font-size: clamp(1.75rem, 1.35rem + 2.8vw, 2.5rem);
+      font-size: clamp(1.45rem, 1.15rem + 2.5vw, 2.1rem);
     }
   }
 
@@ -146,7 +158,7 @@ function fmtLight(sec: number): string {
     }
     .eyebrow {
       gap: 6px;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.08em;
     }
   }
 </style>
