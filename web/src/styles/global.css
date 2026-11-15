@@ -28,18 +28,18 @@ body {
   min-height: 100vh;
 }
 
-/* Pure #000000 obsidian canvas when viewing the Chapters Directory Page */
-body[data-view="chapters"] {
+/* Pure #000000 obsidian canvas in Vacuum (Dark) mode when viewing Chapters Directory */
+html:not([data-theme="light"]) body[data-view="chapters"] {
   background-color: #000000 !important;
   color: #f2efe9 !important;
 }
-body[data-view="chapters"]::before,
-body[data-view="chapters"]::after {
+html:not([data-theme="light"]) body[data-view="chapters"]::before,
+html:not([data-theme="light"]) body[data-view="chapters"]::after {
   opacity: 0 !important;
 }
 
 /* ==========================================================
-   VACUUM vs. PAPER ATMOSPHERE & TEXTURE MECHANICS
+   VACUUM vs. OLD-STYLE TEXTURED ARCHIVAL PAPER MECHANICS
    ========================================================== */
 
 body::before {
@@ -52,15 +52,26 @@ body::before {
   transition: opacity var(--d-slow) var(--ease-in-out), background var(--d-slow) var(--ease-in-out);
 }
 
+/* Old-styled vintage paper patination: aged edge vignette, organic foxing stains & laid-paper wire lines */
 html[data-theme="light"] body::before {
   background:
-    radial-gradient(85% 65% at 50% 10%, rgba(255, 252, 245, 0.65), rgba(218, 208, 190, 0.28) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(252, 245, 228, 0.42) 0%, rgba(212, 190, 152, 0.22) 62%, rgba(122, 90, 50, 0.34) 100%),
+    radial-gradient(circle at 14% 18%, rgba(150, 112, 64, 0.12) 0%, transparent 38%),
+    radial-gradient(circle at 86% 82%, rgba(142, 102, 56, 0.14) 0%, transparent 42%),
+    radial-gradient(circle at 82% 12%, rgba(160, 120, 70, 0.09) 0%, transparent 30%),
     repeating-linear-gradient(
       0deg,
       transparent,
+      transparent 2px,
+      rgba(56, 40, 20, 0.026) 2px,
+      rgba(56, 40, 20, 0.026) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
       transparent 31px,
-      rgba(21, 20, 18, 0.02) 31px,
-      rgba(21, 20, 18, 0.02) 32px
+      rgba(56, 40, 20, 0.018) 31px,
+      rgba(56, 40, 20, 0.018) 32px
     );
 }
 
@@ -71,13 +82,18 @@ body::after {
   z-index: var(--z-atmosphere);
   pointer-events: none;
   opacity: 0.016;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
 }
 
+/* Deeply textured old-paper fiber & parchment grain in Paper Mode */
 html[data-theme="light"] body::after {
-  opacity: 0.045;
+  opacity: 0.135;
   mix-blend-mode: multiply;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='fine'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23fine)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 360 360' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='coarse'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.035' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23coarse)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 200px 200px, 340px 340px;
 }
 
 img, svg { max-width: 100%; display: block; }
@@ -99,7 +115,7 @@ a { color: inherit; }
 main {
   position: relative;
   z-index: var(--z-content);
-  padding-top: 56px;
+  padding-top: 60px;
   padding-bottom: var(--s-24);
 }
 
@@ -179,7 +195,7 @@ html[data-theme="light"] [data-chapter].is-active {
 
 html[data-theme="light"] .btn-orbital:hover,
 html[data-theme="light"] .btn-orbital:focus-visible {
-  background: rgba(21, 20, 18, 0.04);
+  background: rgba(42, 34, 25, 0.06);
 }
 
 .btn-orbital:active {
@@ -209,6 +225,9 @@ html[data-theme="light"] .btn-orbital:focus-visible {
   color: var(--c-ink);
   border-color: var(--btn-accent, var(--c-accent));
   background: rgba(242, 239, 233, 0.03);
+}
+html[data-theme="light"] .btn-orbital.is-primary {
+  background: rgba(42, 34, 25, 0.045);
 }
 
 /* ==========================================================
@@ -242,15 +261,40 @@ html[data-theme="light"] .btn-orbital:focus-visible {
   color: var(--c-ink);
 }
 
-/* First paragraph opens with slightly brighter presence */
+/* First paragraph opens with slightly brighter presence & Rubric Red initial letter */
 .narration p:first-of-type {
   color: var(--c-ink);
 }
 
-/* Final paragraph closes the chapter with quiet resonance */
+.narration p:first-of-type::first-letter {
+  color: var(--c-rubric);
+  font-weight: 700;
+  font-size: 1.24em;
+  line-height: 1;
+}
+
+/* Final paragraph closes the chapter with quiet resonance & Rubric Red initial letter */
 .narration p:last-of-type {
   margin-bottom: 0;
   color: var(--c-ink);
+}
+
+.narration p:last-of-type::first-letter {
+  color: var(--c-rubric);
+  font-weight: 700;
+  font-size: 1.16em;
+  line-height: 1;
+}
+
+/* Key dates & pivotal milestones inside prose: first character highlighted in Rubric Red */
+.narration strong {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.narration strong::first-letter {
+  color: var(--c-rubric);
 }
 
 .narration em {
@@ -259,12 +303,25 @@ html[data-theme="light"] .btn-orbital:focus-visible {
 }
 
 @media (max-width: 680px) {
+  main {
+    padding-top: 54px;
+    padding-bottom: var(--s-16);
+  }
   .story-prose {
-    padding-inline: var(--s-5);
-    margin: var(--s-10) auto var(--s-12);
+    padding-inline: var(--s-4);
+    margin: var(--s-8) auto var(--s-10);
   }
   .narration p {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.65rem;
+  }
+  .btn-orbital {
+    padding: 11px 20px;
+  }
+}
+
+@media (max-width: 380px) {
+  .story-prose {
+    padding-inline: var(--s-3);
   }
 }
 

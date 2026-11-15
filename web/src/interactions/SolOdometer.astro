@@ -96,6 +96,12 @@ const plannedPct = Math.max(1.5, (planned / actual) * 100).toFixed(2);
     color: var(--c-ink-dim);
   }
   .note strong { color: var(--c-ink); font-weight: 500; }
+  @media (max-width: 680px) {
+    .odo {
+      margin-inline: var(--s-4);
+      padding: var(--s-5);
+    }
+  }
 </style>
 
 <script>

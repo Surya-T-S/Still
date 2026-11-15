@@ -110,6 +110,21 @@ const roundTripSec = (lightTimeSec * 2).toFixed(2);
     border-top: 1px solid var(--c-line);
     padding-top: var(--s-4);
   }
+  @media (max-width: 680px) {
+    .ping {
+      margin-inline: var(--s-4);
+      padding: var(--s-5);
+    }
+  }
+  @media (max-width: 480px) {
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .controls .btn-orbital {
+      width: 100%;
+    }
+  }
 </style>
 
 <script>

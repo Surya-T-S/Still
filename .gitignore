@@ -1,6 +1,44 @@
+# Dependencies
 node_modules/
+**/node_modules/
+
+# Astro & Vite build outputs
 dist/
+**/dist/
 .astro/
+**/.astro/
+.vite/
+**/.vite/
+
+# TypeScript & build caches
+*.tsbuildinfo
+.eslintcache
+.cache/
+
+# Environment variables & local secrets
 .env
+.env.*
+!.env.example
+
+# Logs & package manager debug files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Deployment & serverless directories
+.vercel/
+.netlify/
+.wrangler/
+coverage/
+
+# Editor & OS files
+.vscode/
+.idea/
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
+Desktop.ini

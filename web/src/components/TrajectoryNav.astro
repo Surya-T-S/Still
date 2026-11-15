@@ -83,10 +83,16 @@
     transition: background-color var(--d-base) var(--ease-out), border-color var(--d-base) var(--ease-out);
   }
 
-  :global(body[data-view="chapters"]) .minimal-nav {
+  :global(html:not([data-theme="light"]) body[data-view="chapters"]) .minimal-nav {
     background: rgba(0, 0, 0, 0.94);
     border-bottom-color: rgba(255, 255, 255, 0.10);
     color: #f2efe9;
+  }
+
+  :global(html[data-theme="light"] body[data-view="chapters"]) .minimal-nav {
+    background: var(--c-bg-glass);
+    border-bottom-color: var(--c-line-strong);
+    color: var(--c-ink);
   }
 
   .scroll-progress-track {
@@ -190,9 +196,9 @@
   }
 
   .chapters-trigger.is-active {
-    background: #f2efe9;
-    color: #000000;
-    border-color: #f2efe9;
+    background: var(--c-ink);
+    color: var(--c-bg);
+    border-color: var(--c-ink);
   }
 
   /* Minimal Step Pair */
@@ -236,12 +242,54 @@
     font-variant-numeric: tabular-nums;
   }
 
-  @media (max-width: 680px) {
+  @media (max-width: 720px) {
+    .minimal-nav {
+      height: 54px;
+    }
     .nav-inner {
       padding-inline: var(--s-4);
     }
     .status-where,
     .nav-sep {
+      display: none;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .nav-inner {
+      padding-inline: 0.85rem;
+      gap: 8px;
+    }
+    .brand-btn {
+      font-size: 0.92rem;
+      letter-spacing: 0.18em;
+    }
+    .nav-right {
+      gap: 6px;
+    }
+    .nav-pill {
+      height: 30px;
+      padding: 0 11px;
+      font-size: 0.62rem;
+      letter-spacing: 0.09em;
+    }
+    .step-pair {
+      height: 30px;
+      padding: 0 2px;
+    }
+    .step-btn {
+      width: 24px;
+      height: 24px;
+      font-size: 0.68rem;
+    }
+    .step-readout {
+      font-size: 0.60rem;
+      padding-inline: 4px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .step-readout {
       display: none;
     }
   }
@@ -332,7 +380,12 @@
     updateScrollProgress();
   });
 
-  homeBtn?.addEventListener("click", () => scrollToChapter("prologue"));
+  homeBtn?.addEventListener("click", () => {
+    window.dispatchEvent(new CustomEvent("still:timetravel"));
+    if (currentId !== "prologue") {
+      scrollToChapter("prologue");
+    }
+  });
   chaptersBtn?.addEventListener("click", () => {
     if (currentId === "chapters") {
       scrollToChapter(lastStoryId || "prologue");

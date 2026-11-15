@@ -80,6 +80,21 @@ const mins = Math.round((lightTimeSec % 3600) / 60);
     font-variant-numeric: tabular-nums;
   }
   .status strong { color: var(--c-accent); font-weight: 700; }
+  @media (max-width: 680px) {
+    .send {
+      margin-inline: var(--s-4);
+      padding: var(--s-5);
+    }
+  }
+  @media (max-width: 480px) {
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .row .btn-orbital {
+      width: 100%;
+    }
+  }
 </style>
 
 <script>

@@ -48,6 +48,12 @@ const { lines, truthNote } = Astro.props;
     color: var(--c-ink);
   }
 
+  .voice-line:first-child::first-letter {
+    color: var(--c-rubric);
+    font-weight: 700;
+    font-style: normal;
+  }
+
   .truth-note {
     margin: var(--s-5) 0 0;
     padding-left: var(--s-6);

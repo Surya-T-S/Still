@@ -75,6 +75,12 @@ const { planned = 5, actual = 72 } = Astro.props;
   .fdot.is-goal { background: var(--c-ink); }
   .fdot.is-lit { opacity: 1; }
   .note { margin: 0; font: 400 var(--t-xs)/1.5 var(--f-record); color: var(--c-ink-dim); }
+  @media (max-width: 680px) {
+    .flights {
+      margin-inline: var(--s-4);
+      padding: var(--s-5);
+    }
+  }
   @media (max-width: 520px) { .dots { grid-template-columns: repeat(12, 1fr); } }
 </style>
 

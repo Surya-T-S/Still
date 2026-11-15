@@ -130,10 +130,23 @@ function fmtLight(sec: number): string {
     font-variant-numeric: tabular-nums;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 680px) {
     .chapter-hero {
-      padding-top: var(--s-12);
-      padding-bottom: var(--s-8);
+      padding: var(--s-12) var(--s-4) var(--s-8);
+      gap: var(--s-4);
+    }
+    .title {
+      font-size: clamp(1.75rem, 1.35rem + 2.8vw, 2.5rem);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .chapter-hero {
+      padding-inline: var(--s-3);
+    }
+    .eyebrow {
+      gap: 6px;
+      letter-spacing: 0.10em;
     }
   }
 </style>

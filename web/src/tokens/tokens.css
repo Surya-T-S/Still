@@ -2,7 +2,7 @@
    STILL — Design Tokens
    Typography: Space Mono (400, 700, 400i, 700i)
    Calibrated to human vision science & editorial typography:
-   - 60ch optimal line length (55–65 characters per saccade sweep)
+   - 68ch comfortable horizontal measure
    - 1.04rem–1.14rem (16.6px–18.2px) body size for effortless x-height recognition
    - +0.005em letter-spacing & +0.03em word-spacing for clean monospace word shapes
    - 1.90 line-height & 1.85em paragraph spacing for calm vertical rhythm
@@ -27,49 +27,48 @@
   --c-line: rgba(242, 239, 233, 0.08);
   --c-line-strong: rgba(242, 239, 233, 0.18);
 
-  /* Muted historical status tones */
+  /* Muted historical status tones & Editorial Rubric Red */
   --c-status-brass: #c4a66e;
   --c-status-sage: #6fa086;
+  --c-rubric: #e03e2f;
 
   /* Sector accents: weathered physical materials */
-  --c-moon: #d4c6ab;
-  /* sun-bleached Apollo Kapton & lunar regolith */
-  --c-mars: #cc7154;
-  /* oxidized Martian iron-oxide dust */
-  --c-deep: #87a2be;
-  /* cold heliocentric & interstellar steel */
+  --c-moon: #d4c6ab;   /* sun-bleached Apollo Kapton & lunar regolith */
+  --c-mars: #cc7154;   /* oxidized Martian iron-oxide dust */
+  --c-deep: #87a2be;   /* cold heliocentric & interstellar steel */
   --c-accent: var(--c-moon);
   --c-glow: rgba(212, 198, 171, 0.045);
 }
 
 [data-theme="light"] {
-  /* Canvas & surfaces (Archival Cotton-Rag Paper) */
-  --c-bg: #f4f0e8;
-  --c-bg-reading: rgba(244, 240, 232, 0.85);
-  --c-bg-raised: #ebe5d8;
-  --c-bg-elevated: #e2dac9;
-  --c-bg-glass: rgba(244, 240, 232, 0.90);
+  /* Canvas & surfaces (Authentic Aged 1969 Archival Parchment / Old-Style Cotton Rag Paper) */
+  --c-bg: #e6dac2;
+  --c-bg-reading: rgba(230, 218, 194, 0.82);
+  --c-bg-raised: #ddd0b4;
+  --c-bg-elevated: #d2c2a2;
+  --c-bg-glass: rgba(228, 215, 190, 0.88);
 
-  /* Ink (deep archival carbon & warm graphite) */
-  --c-ink: #151412;
-  --c-ink-body: #22201d;
-  --c-ink-dim: #5c574f;
-  --c-ink-faint: #8a8378;
+  /* Ink (deep iron-gall carbon & aged sepia) */
+  --c-ink: #1c1610;
+  --c-ink-body: #2a2219;
+  --c-ink-dim: #5c4e3d;
+  --c-ink-faint: #877560;
 
-  /* Hairlines */
-  --c-line: rgba(21, 20, 18, 0.09);
-  --c-line-strong: rgba(21, 20, 18, 0.20);
+  /* Vintage ruled hairlines */
+  --c-line: rgba(42, 34, 25, 0.14);
+  --c-line-strong: rgba(42, 34, 25, 0.28);
 
-  /* Muted historical status tones */
-  --c-status-brass: #876730;
-  --c-status-sage: #2f684b;
+  /* Muted historical status tones & Editorial Rubric Red */
+  --c-status-brass: #75531e;
+  --c-status-sage: #26593e;
+  --c-rubric: #b8281a;
 
-  /* Sector accents */
-  --c-moon: #5e5340;
-  --c-mars: #9e4127;
-  --c-deep: #325270;
+  /* Sector accents (vintage cartographic inks) */
+  --c-moon: #574226;
+  --c-mars: #8f3519;
+  --c-deep: #21445e;
   --c-accent: var(--c-moon);
-  --c-glow: rgba(94, 83, 64, 0.035);
+  --c-glow: rgba(87, 66, 38, 0.05);
 }
 
 :root {
@@ -78,20 +77,20 @@
   --f-ui: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --f-record: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Scientifically proportioned reading scale */
-  --t-xs: clamp(0.72rem, 0.70rem + 0.08vw, 0.78rem);
-  --t-sm: clamp(0.86rem, 0.83rem + 0.12vw, 0.94rem);
-  --t-md: clamp(1.04rem, 0.98rem + 0.24vw, 1.14rem);
-  --t-lg: clamp(1.18rem, 1.08rem + 0.42vw, 1.38rem);
-  --t-xl: clamp(1.50rem, 1.28rem + 1.0vw, 2.10rem);
-  --t-hero: clamp(2.10rem, 1.60rem + 2.3vw, 3.35rem);
+  /* Scientifically proportioned reading scale (stepped up for commanding legibility) */
+  --t-xs: clamp(0.76rem, 0.73rem + 0.10vw, 0.84rem);
+  --t-sm: clamp(0.92rem, 0.88rem + 0.16vw, 1.02rem);
+  --t-md: clamp(1.10rem, 1.03rem + 0.28vw, 1.22rem);
+  --t-lg: clamp(1.26rem, 1.14rem + 0.48vw, 1.50rem);
+  --t-xl: clamp(1.65rem, 1.40rem + 1.10vw, 2.35rem);
+  --t-hero: clamp(2.25rem, 1.72rem + 2.45vw, 3.60rem);
 
   /* Optimal reading rhythm & measure (slightly wider horizontal span) */
   --t-prose: var(--t-md);
   --lh-tight: 1.24;
-  --lh-voice: 1.82;
-  --lh-body: 1.90;
-  --measure: 77ch;
+  --lh-voice: 1.84;
+  --lh-body: 1.92;
+  --measure: 70ch;
 
   /* Space scale */
   --s-1: 0.25rem;
@@ -136,21 +135,22 @@ body[data-act="moon"] {
   --c-accent: var(--c-moon);
   --c-glow: rgba(212, 198, 171, 0.045);
 }
-
 body[data-act="mars"] {
   --c-accent: var(--c-mars);
   --c-glow: rgba(204, 113, 84, 0.05);
 }
-
 body[data-act="deep"] {
   --c-accent: var(--c-deep);
   --c-glow: rgba(135, 162, 190, 0.05);
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (min-width: 1800px) {
   :root {
-    --d-fast: 0ms;
-    --d-base: 0ms;
-    --d-slow: 0ms;
+    --t-md: clamp(1.16rem, 1.06rem + 0.30vw, 1.28rem);
+    --measure: 72ch;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast: 0ms; --d-base: 0ms; --d-slow: 0ms; }
 }

@@ -1,14 +1,17 @@
 ---
 /**
  * Starfield — owned by Surya.
- * Dual-physics background canvas:
- * 1. VACUUM MODE (Dark): True zero-G inertial scroll mechanics. Stars reside on 3 depth
- *    planes with Newtonian momentum damping, subtle orbital drift, and velocity-driven
- *    relativistic light-streak stretching during scrolling and chapter transitions.
- * 2. PAPER MODE (Light): Archival 1969 NASA Celestial Cartography sheet. Renders a
- *    precision drafting graticule (Right Ascension / Declination lines, margin vernier
- *    ticks) and plotted ink star-catalog symbols (+ crosshairs and magnitude rings)
- *    that move with 1:1 mechanical page-sheet precision.
+ * Refined, ultra-responsive, zero-clutter 3D starfield engine:
+ * 1. VACUUM MODE (Dark):
+ *    - Instant, tactile click response on STILL:
+ *      * Clicks 1..4: Stars remain anchored in place while their radial light-lines
+ *        respond immediately with a silky spring kick (and smoothly retract if paused).
+ *      * Click 5+: Seamless cascade into full-space Explosion (starts slowly, surges
+ *        into high-speed 360° flight with tapered light-trails, and coasts down smoothly).
+ *    - Zero middle-screen clutter: Uses area-uniform radial distribution (`sqrt(random)`)
+ *      with a protected inner exclusion zone so stars never bunch up in the center.
+ * 2. PAPER MODE (Light):
+ *    - Strictly scroll-driven (`sy`) with whisper-faint speck visibility (`0.14` alpha).
  */
 ---
 <canvas class="stars" aria-hidden="true" data-stars></canvas>
@@ -32,37 +35,122 @@
   type Star = {
     x: number;
     y: number;
+    paperX: number;
+    paperY: number;
     r: number;
     z: number;
     a: number;
+    fadeIn: number;
     phase: number;
     speed: number;
     color: string;
     inkColor: string;
     flare: boolean;
-    catalogRing: boolean;
   };
 
-  const VACUUM_PALETTE = ["#e6e1d6", "#d4e2f7", "#f2dec2", "#b8cde8"];
-  const PAPER_PALETTE = ["#4a453c", "#325270", "#875238", "#5c574f"];
+  const VACUUM_PALETTE = ["#f2efe9", "#d8e6f7", "#f5e1c4", "#bdd2ec"];
+  const PAPER_PALETTE = ["#3d3124", "#524334", "#4a3b2c"];
 
   let stars: Star[] = [];
   let w = 0;
   let h = 0;
   let raf = 0;
+  let lastFrameTime = 0;
 
-  // Pointer parallax state
+  // Pointer parallax state (Vacuum mode only)
   let ptrX = 0;
   let ptrY = 0;
   let curX = 0;
   let curY = 0;
 
-  // Scroll & Zero-G inertial physics state
+  // Page-scroll physics state
   let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
-  let vacuumPosY = lastScrollY;
   let vacuumVelY = 0;
   let warpImpulseY = 0;
-  let orbitalDriftX = 0;
+
+  // Responsive Two-Stage Click-Charge & Explosion State
+  const EXPLOSION_THRESHOLD = 5;
+  let clickCount = 0;
+  let lastClickTime = 0;
+
+  // Stage 1: Responsive stationary line expansion
+  let lineTarget = 0;
+  let lineStretch = 0;
+  let lineStretchVel = 0;
+
+  // Stage 2: Continuous cascade reservoir (slow start -> rapid surge -> smooth coast)
+  let blastFuel = 0;
+  let blastPreCharge = 0;
+  let radialVel = 0;
+  let shockwaveRadius = 0;
+  let shockwaveAlpha = 0;
+
+  /**
+   * Generates a position that avoids clustering in the dead center of the viewport
+   * using area-uniform annulus sampling.
+   */
+  function sampleBalancedPosition(forRespawn: boolean): { x: number; y: number } {
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+
+    if (!forRespawn || radialVel < 2.2) {
+      // Full-viewport uniform placement, nudging any dead-center hits outward
+      let x = Math.random() * w;
+      let y = Math.random() * h;
+      const minCenterClearance = Math.min(w, h) * 0.11;
+      const dx = x - cx;
+      const dy = y - cy;
+      const d = Math.hypot(dx, dy);
+      if (d < minCenterClearance) {
+        const ang = Math.random() * Math.PI * 2;
+        const pushR = minCenterClearance + Math.random() * Math.min(w, h) * 0.28;
+        x = cx + Math.cos(ang) * pushR;
+        y = cy + Math.sin(ang) * pushR;
+      }
+      return { x, y };
+    }
+
+    // During active radial flight: area-uniform annulus (sqrt distribution)
+    // outside the central reading/title zone so the middle NEVER gets cluttered!
+    const minR = Math.min(w, h) * 0.14;
+    const maxR = Math.hypot(cx, cy) * 0.62;
+    const u = Math.random();
+    const rad = Math.sqrt(u * (maxR * maxR - minR * minR) + minR * minR);
+    const angle = Math.random() * Math.PI * 2;
+    return {
+      x: cx + Math.cos(angle) * rad,
+      y: cy + Math.sin(angle) * rad,
+    };
+  }
+
+  function spawnStar(i: number): Star {
+    const layer = i % 9 === 0 ? 3 : i % 3 === 0 ? 2 : 1;
+    const z = layer === 3 ? 0.92 : layer === 2 ? 0.52 : 0.24;
+    const r =
+      layer === 3
+        ? Math.random() * 0.9 + 1.1
+        : layer === 2
+          ? Math.random() * 0.55 + 0.65
+          : Math.random() * 0.35 + 0.35;
+
+    const pos = sampleBalancedPosition(false);
+
+    return {
+      x: pos.x,
+      y: pos.y,
+      paperX: Math.random() * w,
+      paperY: Math.random() * h,
+      r,
+      z,
+      a: layer === 3 ? 0.90 : layer === 2 ? 0.56 : 0.28,
+      fadeIn: 1,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.016 + 0.004,
+      color: VACUUM_PALETTE[i % VACUUM_PALETTE.length],
+      inkColor: PAPER_PALETTE[i % PAPER_PALETTE.length],
+      flare: layer === 3 && i % 18 === 0,
+    };
+  }
 
   function resize() {
     const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -72,30 +160,9 @@
     c.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const n = Math.round(Math.min(340, (w * h) / 4500));
-    stars = Array.from({ length: n }, (_, i) => {
-      const layer = i % 11 === 0 ? 3 : i % 3 === 0 ? 2 : 1;
-      const z = layer === 3 ? 0.88 : layer === 2 ? 0.46 : 0.18;
-      const r =
-        layer === 3
-          ? Math.random() * 1.0 + 1.15
-          : layer === 2
-            ? Math.random() * 0.6 + 0.65
-            : Math.random() * 0.4 + 0.35;
-      return {
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r,
-        z,
-        a: layer === 3 ? 0.9 : layer === 2 ? 0.56 : 0.28,
-        phase: Math.random() * Math.PI * 2,
-        speed: Math.random() * 0.016 + 0.004,
-        color: VACUUM_PALETTE[i % VACUUM_PALETTE.length],
-        inkColor: PAPER_PALETTE[i % PAPER_PALETTE.length],
-        flare: layer === 3 && i % 22 === 0,
-        catalogRing: layer === 3 && i % 33 === 0,
-      };
-    });
+    // Refined, uncrowded star count (max 240)
+    const n = Math.round(Math.min(240, (w * h) / 6200));
+    stars = Array.from({ length: n }, (_, i) => spawnStar(i));
   }
 
   function drawPaperGraticule(sy: number) {
@@ -103,10 +170,9 @@
     const offsetY = ((-sy * 0.35) % gridStep + gridStep) % gridStep;
 
     ctx.save();
-    ctx.strokeStyle = "rgba(27, 26, 23, 0.045)";
+    ctx.strokeStyle = "rgba(61, 49, 36, 0.055)";
     ctx.lineWidth = 1;
 
-    // Vertical meridian lines
     for (let x = gridStep * 0.5; x < w; x += gridStep) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -114,7 +180,6 @@
       ctx.stroke();
     }
 
-    // Horizontal declination lines moving mechanically with paper scroll
     for (let y = offsetY; y < h; y += gridStep) {
       ctx.beginPath();
       ctx.moveTo(0, y);
@@ -122,8 +187,7 @@
       ctx.stroke();
     }
 
-    // Left & right archival ruler vernier ticks
-    ctx.strokeStyle = "rgba(27, 26, 23, 0.14)";
+    ctx.strokeStyle = "rgba(61, 49, 36, 0.14)";
     const tickStep = 28;
     const tickOffset = ((-sy * 0.5) % tickStep + tickStep) % tickStep;
     for (let y = tickOffset; y < h; y += tickStep) {
@@ -141,115 +205,279 @@
   }
 
   function draw(t = 0) {
+    const now = t || performance.now();
+    const dt = lastFrameTime ? Math.min(2.2, Math.max(0.25, (now - lastFrameTime) / 16.667)) : 1;
+    lastFrameTime = now;
+
     const isPaper = document.documentElement.dataset.theme === "light";
     const sy = still ? 0 : window.scrollY;
 
-    // Compute instantaneous scroll delta
     const scrollDelta = sy - lastScrollY;
     lastScrollY = sy;
 
-    if (!still) {
-      // Zero-G Vacuum physics: Newtonian momentum + low-damping coasting
-      vacuumVelY = vacuumVelY * 0.92 + scrollDelta * 0.24 + warpImpulseY;
-      warpImpulseY *= 0.86;
-      vacuumPosY += vacuumVelY;
-      orbitalDriftX += 0.06;
+    let dPtrX = 0;
+    let dPtrY = 0;
+    let driftStepX = 0;
 
-      // Pointer easing (more responsive in Paper, weightless in Vacuum)
-      const ptrEase = isPaper ? 0.14 : 0.045;
-      curX += (ptrX - curX) * ptrEase;
-      curY += (ptrY - curY) * ptrEase;
+    if (!still && !isPaper) {
+      // 1. Stage 2 Explosion Cascade:
+      //    Starts slowly as blastFuel feeds blastPreCharge, then surges smoothly into radialVel
+      if (blastFuel > 0.0005 || blastPreCharge > 0.0005 || radialVel > 0.002) {
+        const transfer1 = blastFuel * 0.034 * dt;
+        blastFuel -= transfer1;
+        blastPreCharge += transfer1;
+
+        const transfer2 = blastPreCharge * 0.044 * dt;
+        blastPreCharge -= transfer2;
+        radialVel += transfer2;
+
+        // Silky exponential drag for a long, graceful deceleration
+        radialVel *= Math.pow(0.974, dt);
+
+        if (radialVel < 0.003 && blastFuel < 0.004 && blastPreCharge < 0.004) {
+          radialVel = 0;
+          blastFuel = 0;
+          blastPreCharge = 0;
+          clickCount = 0;
+        }
+      }
+
+      // 2. Stage 1 Responsive Stationary Line Expansion
+      const timeSinceClick = now - lastClickTime;
+      if (timeSinceClick > 1050 && radialVel < 0.02 && blastFuel < 0.02) {
+        lineTarget *= Math.pow(0.962, dt);
+        if (lineTarget < 0.004) {
+          lineTarget = 0;
+          clickCount = 0;
+        }
+      }
+
+      const effectiveLineTarget =
+        radialVel > 0.02 || blastFuel > 0.02
+          ? Math.min(1.75, lineTarget * 0.55 + radialVel * 0.062)
+          : lineTarget;
+
+      // Snappy yet critically damped spring so every click is felt immediately
+      const springForce = (effectiveLineTarget - lineStretch) * 0.135 * dt;
+      lineStretchVel = (lineStretchVel + springForce) * Math.pow(0.78, dt);
+      lineStretch = Math.max(0, lineStretch + lineStretchVel * dt);
+
+      if (radialVel > 0.3) {
+        shockwaveRadius += radialVel * 1.45 * dt;
+        shockwaveAlpha =
+          Math.min(0.11, radialVel * 0.005) *
+          Math.max(0, 1 - shockwaveRadius / (Math.hypot(w, h) * 0.72));
+      } else {
+        shockwaveAlpha *= Math.pow(0.88, dt);
+      }
+
+      // Scroll & pointer frame deltas
+      vacuumVelY = vacuumVelY * Math.pow(0.91, dt) + scrollDelta * 0.24 + warpImpulseY;
+      warpImpulseY *= Math.pow(0.86, dt);
+
+      const driftFactor = Math.max(0, 1 - lineStretch * 1.4);
+      driftStepX = 0.045 * driftFactor * dt;
+
+      const prevCurX = curX;
+      const prevCurY = curY;
+      curX += (ptrX - curX) * 0.055 * dt;
+      curY += (ptrY - curY) * 0.055 * dt;
+      dPtrX = curX - prevCurX;
+      dPtrY = curY - prevCurY;
     }
 
     ctx.clearRect(0, 0, w, h);
 
     if (isPaper) {
       drawPaperGraticule(sy);
+    } else if (shockwaveAlpha > 0.003) {
+      ctx.save();
+      ctx.strokeStyle = "#f2efe9";
+      ctx.globalAlpha = shockwaveAlpha;
+      ctx.lineWidth = 1.15;
+      ctx.beginPath();
+      ctx.arc(w * 0.5, h * 0.5, shockwaveRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
     }
+
+    const absScrollVel = Math.abs(vacuumVelY);
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+    const maxCornerDist = Math.max(1, Math.hypot(cx, cy));
+    const innerSoftZone = Math.min(w, h) * 0.15;
 
     for (let i = 0; i < stars.length; i++) {
       const s = stars[i];
 
       if (isPaper) {
-        // PAPER MECHANICS: Crisp 1:1 mechanical drafting sheet parallax (no floaty streak)
-        const ox = still ? 0 : curX * s.z * 8;
-        const oy = still ? 0 : -sy * (0.15 + s.z * 0.25) + curY * s.z * 8;
-        const x = (((s.x + ox) % w) + w) % w;
-        const y = (((s.y + oy) % h) + h) % h;
+        // PAPER MODE: Strictly scroll-driven, very low speck visibility
+        const x = s.paperX;
+        const oy = still ? 0 : -sy * (0.12 + s.z * 0.18);
+        const y = (((s.paperY + oy) % h) + h) % h;
 
-        ctx.globalAlpha = s.a * 0.52;
+        ctx.globalAlpha = s.a * 0.14;
         ctx.fillStyle = s.inkColor;
-        ctx.strokeStyle = s.inkColor;
+        ctx.beginPath();
+        ctx.arc(x, y, s.r * 0.62, 0, Math.PI * 2);
+        ctx.fill();
+        continue;
+      }
 
-        if (s.flare) {
-          // Plotted archival crosshair (+)
-          const arm = s.r * 3.2;
-          ctx.lineWidth = 0.75;
-          ctx.beginPath();
-          ctx.moveTo(x - arm, y);
-          ctx.lineTo(x + arm, y);
-          ctx.moveTo(x, y - arm);
-          ctx.lineTo(x, y + arm);
-          ctx.stroke();
+      // VACUUM MODE: Pure continuous delta integration on (s.x, s.y)
+      if (!still) {
+        s.x += (dPtrX * 26 + driftStepX) * s.z;
+        s.y += (dPtrY * 26 - vacuumVelY * 0.34 * dt) * s.z;
+      }
+
+      let dx = s.x - cx;
+      let dy = s.y - cy;
+      let dist = Math.hypot(dx, dy);
+      if (dist < 1) {
+        const randAngle = (i * 1.6180339) % (Math.PI * 2);
+        dx = Math.cos(randAngle);
+        dy = Math.sin(randAngle);
+        dist = 1;
+      }
+      const ux = dx / dist;
+      const uy = dy / dist;
+      const normDist = Math.max(0.08, dist / maxCornerDist);
+
+      // Stage 2: Continuous radial flight step
+      if (radialVel > 0.002) {
+        const radialStep = radialVel * s.z * (0.36 + normDist * 1.22) * dt;
+        s.x += ux * radialStep;
+        s.y += uy * radialStep;
+      }
+
+      if (s.fadeIn < 1) {
+        s.fadeIn = Math.min(1, s.fadeIn + 0.032 * dt);
+      }
+
+      // Continuous boundary handling with area-uniform respawn (zero center bunching)
+      const boundMargin = 200;
+      if (
+        s.x < -boundMargin ||
+        s.x > w + boundMargin ||
+        s.y < -boundMargin ||
+        s.y > h + boundMargin
+      ) {
+        if (radialVel > 0.15) {
+          const nextPos = sampleBalancedPosition(true);
+          s.x = nextPos.x;
+          s.y = nextPos.y;
+          s.fadeIn = 0;
         } else {
-          ctx.beginPath();
-          ctx.arc(x, y, s.r * 0.95, 0, Math.PI * 2);
-          ctx.fill();
+          if (s.x < -boundMargin) s.x += w + boundMargin * 2;
+          else if (s.x > w + boundMargin) s.x -= w + boundMargin * 2;
+          if (s.y < -boundMargin) s.y += h + boundMargin * 2;
+          else if (s.y > h + boundMargin) s.y -= h + boundMargin * 2;
         }
+        dx = s.x - cx;
+        dy = s.y - cy;
+        dist = Math.max(1, Math.hypot(dx, dy));
+      }
 
-        if (s.catalogRing) {
-          ctx.lineWidth = 0.65;
-          ctx.globalAlpha = s.a * 0.35;
-          ctx.beginPath();
-          ctx.arc(x, y, s.r * 3.6, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-      } else {
-        // VACUUM MECHANICS: Zero-G inertial drift + velocity light-streaks
-        const ox = still ? 0 : curX * s.z * 26 + orbitalDriftX * s.z;
-        const oy = still ? 0 : curY * s.z * 26 - vacuumPosY * s.z * 0.32;
-        const x = (((s.x + ox) % w) + w) % w;
-        const y = (((s.y + oy) % h) + h) % h;
+      // Soft attenuation near the exact center so the middle title/reading area is never cluttered
+      const centerClearanceAlpha =
+        dist < innerSoftZone ? 0.25 + 0.75 * (dist / innerSoftZone) : 1;
 
-        const twinkle = still
-          ? 1
-          : 0.78 + 0.22 * Math.sin(t * 0.0014 * (s.speed * 100) + s.phase);
-        const alpha = s.a * twinkle;
+      // Unified continuous radial line length
+      const radialLineLen = Math.min(
+        210,
+        (lineStretch * 88 + radialVel * 3.0) * s.z * (0.18 + normDist * 0.96),
+      );
 
-        const streak = still ? 0 : Math.min(28, Math.abs(vacuumVelY) * s.z * 1.35);
+      const twinkle = still
+        ? 1
+        : 0.78 + 0.22 * Math.sin(now * 0.0014 * (s.speed * 100) + s.phase);
+      const alpha =
+        Math.min(1, s.a * twinkle + Math.min(0.26, lineStretch * 0.18)) *
+        s.fadeIn *
+        centerClearanceAlpha;
+
+      ctx.fillStyle = s.color;
+      ctx.strokeStyle = s.color;
+
+      if (radialLineLen > 1.0) {
+        const dirX = dx / dist;
+        const dirY = dy / dist;
+        const headX = s.x + dirX * radialLineLen;
+        const headY = s.y + dirY * radialLineLen;
+
+        // Draw a refined two-layer tapered light-line (soft full-length trail + bright leading core)
+        ctx.lineCap = "round";
+        ctx.globalAlpha = alpha * 0.42;
+        ctx.lineWidth = s.r * (0.95 + Math.min(0.35, lineStretch * 0.2));
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(headX, headY);
+        ctx.stroke();
 
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = s.color;
-        ctx.strokeStyle = s.color;
-
-        if (streak > 1.2) {
-          ctx.lineWidth = s.r * 1.35;
+        ctx.lineWidth = s.r * (1.2 + Math.min(0.45, lineStretch * 0.25));
+        ctx.beginPath();
+        ctx.moveTo(s.x + dirX * (radialLineLen * 0.45), s.y + dirY * (radialLineLen * 0.45));
+        ctx.lineTo(headX, headY);
+        ctx.stroke();
+      } else {
+        ctx.globalAlpha = alpha;
+        const scrollStreak = still ? 0 : Math.min(28, absScrollVel * s.z * 1.4);
+        if (scrollStreak > 1.2) {
+          ctx.lineWidth = s.r * 1.3;
           ctx.lineCap = "round";
           ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x, y + (vacuumVelY >= 0 ? streak : -streak));
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(s.x, s.y + (vacuumVelY >= 0 ? scrollStreak : -scrollStreak));
           ctx.stroke();
         } else {
           ctx.beginPath();
-          ctx.arc(x, y, s.r, 0, Math.PI * 2);
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
           ctx.fill();
-        }
 
-        if (s.flare && streak < 4) {
-          ctx.lineWidth = 0.55;
-          ctx.globalAlpha = alpha * 0.45;
-          const arm = s.r * 4.8;
-          ctx.beginPath();
-          ctx.moveTo(x - arm, y);
-          ctx.lineTo(x + arm, y);
-          ctx.moveTo(x, y - arm);
-          ctx.lineTo(x, y + arm);
-          ctx.stroke();
+          if (s.flare) {
+            ctx.lineWidth = 0.55;
+            ctx.globalAlpha = alpha * 0.42;
+            const arm = s.r * 4.6;
+            ctx.beginPath();
+            ctx.moveTo(s.x - arm, s.y);
+            ctx.lineTo(s.x + arm, s.y);
+            ctx.moveTo(s.x, s.y - arm);
+            ctx.lineTo(s.x, s.y + arm);
+            ctx.stroke();
+          }
         }
       }
     }
 
     if (!still) raf = requestAnimationFrame(draw);
+  }
+
+  export function triggerTimeTravelBoomerang() {
+    if (still) return;
+    if (document.documentElement.dataset.theme === "light") return;
+
+    const now = performance.now();
+    if (now - lastClickTime > 4500 && radialVel < 0.02 && blastFuel < 0.02) {
+      clickCount = 0;
+    }
+    lastClickTime = now;
+    clickCount += 1;
+
+    // Clicks 1..4: Instant tactile spring kick + progressive stationary line expansion
+    if (clickCount < EXPLOSION_THRESHOLD && radialVel < 0.05 && blastFuel < 0.05) {
+      lineTarget = Math.min(1.4, (clickCount / (EXPLOSION_THRESHOLD - 1)) * 1.3);
+      lineStretchVel += 0.055; // Immediate responsive impulse on click frame
+      return;
+    }
+
+    // Click 5+: Smoothly feed energy into the continuous cascade reservoir
+    lineTarget = 1.5;
+    lineStretchVel += 0.04;
+    if (radialVel < 0.3 && blastFuel < 1) {
+      shockwaveRadius = 12;
+    }
+    blastFuel = Math.min(100, blastFuel + 40);
   }
 
   if (!still) {
@@ -262,11 +490,15 @@
       { passive: true },
     );
 
-    // React to chapter transitions with a directional zero-G warp impulse
     window.addEventListener("still:warp", (e: Event) => {
+      if (document.documentElement.dataset.theme === "light") return;
       const detail = (e as CustomEvent).detail;
       const dir = detail?.dir ?? 1;
       warpImpulseY = dir * 16;
+    });
+
+    window.addEventListener("still:timetravel", () => {
+      triggerTimeTravelBoomerang();
     });
   }
 
@@ -282,7 +514,11 @@
   );
   document.addEventListener("visibilitychange", () => {
     if (still) return;
-    if (document.hidden) cancelAnimationFrame(raf);
-    else raf = requestAnimationFrame(draw);
+    if (document.hidden) {
+      cancelAnimationFrame(raf);
+    } else {
+      lastFrameTime = 0;
+      raf = requestAnimationFrame(draw);
+    }
   });
 </script>

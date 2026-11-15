@@ -37,15 +37,15 @@ const { thenImg, nowImg, title = "Then & Now" } = Astro.props;
 
 <style>
   .then-now {
-    max-width: 780px;
-    margin: var(--s-8) auto var(--s-12);
+    max-width: var(--measure);
+    margin: var(--s-12) auto var(--s-16);
     padding-inline: var(--s-6);
   }
   .frame {
     position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
-    border-radius: var(--r-md);
+    border-radius: var(--r-sm);
     border: 1px solid var(--c-line);
     background: var(--c-bg-raised);
     user-select: none;
@@ -114,15 +114,22 @@ const { thenImg, nowImg, title = "Then & Now" } = Astro.props;
     margin: 0;
     opacity: 0;
     cursor: ew-resize;
+    touch-action: pan-y;
   }
   .caption {
     display: flex;
     justify-content: space-between;
     gap: var(--s-4);
     margin-top: var(--s-3);
-    font: 400 0.72rem/1.4 var(--f-record);
+    font: 400 var(--t-xs)/1.5 var(--f-record);
     color: var(--c-ink-dim);
     flex-wrap: wrap;
+  }
+  @media (max-width: 680px) {
+    .then-now {
+      padding-inline: var(--s-4);
+      margin: var(--s-8) auto var(--s-12);
+    }
   }
 </style>
 

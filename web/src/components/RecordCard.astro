@@ -34,7 +34,7 @@ const { stats, lastContact, nssdcaId, nssdcaUrl } = Astro.props;
   </dl>
 
   <div class="colophon-meta">
-    <span>Last contact {lastContact} · Silent <strong data-silent-since={lastContact}>—</strong> days</span>
+    <span>Last contact <strong class="rubric-date">{lastContact}</strong> · Silent <strong data-silent-since={lastContact}>—</strong> days</span>
     <CitationChip href={nssdcaUrl} label={`NSSDCA ${nssdcaId}`} />
   </div>
 </footer>
@@ -96,10 +96,22 @@ const { stats, lastContact, nssdcaId, nssdcaUrl } = Astro.props;
     font-weight: 400;
   }
 
-  @media (max-width: 640px) {
+  .colophon-meta .rubric-date {
+    display: inline-block;
+    font-weight: 700;
+    color: var(--c-ink);
+  }
+  .colophon-meta .rubric-date::first-letter {
+    color: var(--c-rubric);
+  }
+
+  @media (max-width: 720px) {
+    .record-colophon {
+      padding-inline: var(--s-4);
+    }
     .stats-row {
       grid-template-columns: 1fr;
-      gap: var(--s-4);
+      gap: var(--s-5);
     }
   }
 </style>
